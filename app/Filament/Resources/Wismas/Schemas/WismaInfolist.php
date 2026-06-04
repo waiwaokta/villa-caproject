@@ -8,90 +8,113 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Enums\FontWeight;
+use Filament\Schemas\Components\Grid;
 
 class WismaInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        return $schema->schema([
-            Tabs::make('Tabs')
-                ->tabs([
-                    Tab::make('Informasi Wisma')
-                        ->schema([
-                            TextEntry::make('name')
-                                ->label('Nama Wisma')
-                                ->weight(FontWeight::Bold),
-                            TextEntry::make('location')
-                                ->label('Lokasi'),
-                            TextEntry::make('capacity')
-                                ->label('Kapasitas'),
-                            IconEntry::make('is_active')
-                                ->label('Status Tampil di Web')
-                                ->boolean(),
-                            TextEntry::make('desc')
-                                ->label('Deskripsi')
-                                ->columnSpanFull(),
-                        ])
-                        ->columns(2),
-                    Tab::make('Foto Wisma')
-                        ->schema([
-                            RepeatableEntry::make('wismaPhotos')
-                                ->hiddenlabel()
-                                ->schema([
-                                    ImageEntry::make('file_path')
-                                        ->label('Foto')
-                                        ->height(150),
-                                    TextEntry::make('order')->label('Urutan'),
-                                    IconEntry::make('is_primary')
-                                        ->label('Foto Utama')
-                                        ->boolean(),
-                        ])
-                        ->columns(3),
-                        ]),
-                    Tab::make('Daftar Harga')
-                        ->schema([
-                            RepeatableEntry::make('prices')
-                                ->hiddenlabel()
-                                ->schema([
-                                    TextEntry::make('user_type')
-                                        ->label('Status Pengunjung')
-                                        ->badge()
-                                        ->formatStateUsing(fn($state) => match($state) {
-                                            'pln'  => 'PLN',
-                                            'umum' => 'Umum',
-                                            default => $state,
-                                        })
-                                        ->color(fn (string $state): string => match ($state) {
-                                            'pln'  => 'info',
-                                            'umum' => 'success',
-                                            default => 'gray',
-                                        }),
-                                    TextEntry::make('day_type')
-                                        ->label('Tipe Hari')
-                                        ->badge()
-                                        ->color(fn (string $state): string => match ($state) {
-                                            'weekday' => 'danger',
-                                            'weekend' => 'warning',
-                                            'holiday' => 'success',
-                                            default   => 'gray',
-                                        })
-                                        ->formatStateUsing(fn($state) => match($state) {
-                                            'weekday' => 'Senin – Jumat',
-                                            'weekend' => 'Sabtu & Minggu',
-                                            'holiday' => 'Libur Panjang',
-                                            default   => $state,
-                                        }),
-                                    TextEntry::make('price')
-                                        ->label('Harga')
-                                        ->money('IDR'),
-                                ])
-                                ->columns(3),
-                        ]),
-                ])
-                ->columnSpanFull(),
-        ]);
+        return $schema
+            ->columns(3)
+            ->schema([
+
+                Section::make('Informasi Wisma')
+                    ->icon('heroicon-o-home')
+                    ->columnSpan(2)
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('name')
+                            ->label('Nama Wisma')
+                            ->weight(FontWeight::Bold),
+                        TextEntry::make('location')
+                            ->label('Lokasi'),
+                        TextEntry::make('capacity')
+                            ->label('Kapasitas')
+                            ->suffix(' orang'),
+                        IconEntry::make('is_active')
+                            ->label('Tampil di Web')
+                            ->boolean(),
+                        TextEntry::make('desc')
+                            ->label('Deskripsi')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Foto Wisma')
+                    ->icon('heroicon-o-photo')
+                    ->columnSpan(1)
+                    ->schema([
+                        RepeatableEntry::make('wismaPhotos')
+                            ->hiddenLabel()
+                            ->schema([
+                                ImageEntry::make('file_path')
+                                    ->hiddenLabel()
+                                    ->height(100)
+                                    ->columnSpan(2),
+                                Grid::make(1)
+                                    ->schema([
+                                        TextEntry::make('order')
+                                            ->label('Urutan')
+                                            ->badge()
+                                            ->color('primary'),
+                                        IconEntry::make('is_primary')
+                                            ->label('Utama')
+                                            ->boolean(),
+                                    ])
+                                    ->columnSpan(1),
+                            ])
+                            ->columns(3)
+                            ->columnSpanFull()
+                            ->extraAttributes([
+                                'style' => 'max-height: 300px; overflow-y: auto; padding-right: 4px;'
+                            ]),
+                    ]),
+
+                Section::make('Daftar Harga')
+                    ->icon('heroicon-o-banknotes')
+                    ->columnSpanFull()
+                    ->schema([
+                        RepeatableEntry::make('prices')
+                            ->hiddenLabel()
+                            ->schema([
+                                TextEntry::make('user_type')
+                                    ->label('Status Pengguna')
+                                    ->badge()
+                                    ->color(fn(string $state): string => match($state) {
+                                        'pln'  => 'info',
+                                        'umum' => 'success',
+                                        default => 'gray',
+                                    })
+                                    ->formatStateUsing(fn($state) => match($state) {
+                                        'pln'  => 'PLN',
+                                        'umum' => 'Umum',
+                                        default => $state,
+                                    }),
+                                TextEntry::make('day_type')
+                                    ->label('Tipe Hari')
+                                    ->badge()
+                                    ->color(fn(string $state): string => match($state) {
+                                        'weekday' => 'danger',
+                                        'weekend' => 'primary',
+                                        'holiday' => 'success',
+                                        default   => 'gray',
+                                    })
+                                    ->formatStateUsing(fn($state) => match($state) {
+                                        'weekday' => 'Senin – Jumat',
+                                        'weekend' => 'Sabtu & Minggu',
+                                        'holiday' => 'Libur Panjang',
+                                        default   => $state,
+                                    }),
+                                TextEntry::make('price')
+                                    ->label('Harga')
+                                    ->money('IDR', locale: 'id'),
+                            ])
+                            ->columns(3)
+                            ->extraAttributes([
+                                'style' => 'max-height: 280px; overflow-y: auto; padding-right: 4px;'
+                            ]),
+                    ]),
+
+            ]);
     }
 }
