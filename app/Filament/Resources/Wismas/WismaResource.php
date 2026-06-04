@@ -11,6 +11,7 @@ use App\Filament\Resources\Wismas\Schemas\WismaInfolist;
 use App\Filament\Resources\Wismas\Tables\WismasTable;
 use App\Models\Wisma;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,6 +24,14 @@ class WismaResource extends Resource
     protected static ?string $model = Wisma::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Home;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+
+    protected static ?string $navigationLabel = 'Daftar Wisma';
+
+    protected static ?string $pluralModelLabel = 'DaftarWisma';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'name';
 

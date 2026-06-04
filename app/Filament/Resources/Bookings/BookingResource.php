@@ -11,6 +11,7 @@ use App\Filament\Resources\Bookings\Schemas\BookingInfolist;
 use App\Filament\Resources\Bookings\Tables\BookingsTable;
 use App\Models\Booking;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,6 +26,14 @@ class BookingResource extends Resource
     protected static ?string $model = Booking::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentCheck;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+
+    protected static ?string $navigationLabel = 'Daftar Booking';
+
+    protected static ?string $pluralModelLabel = 'Manajemen Booking';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'bookingID';
 
@@ -66,5 +75,15 @@ class BookingResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Total Pending';
     }
 }
