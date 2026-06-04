@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->uuid('bookingID')->primary();
-            $table->uuid('userID')->nullable();
             $table->uuid('wismaID');
             $table->date('check_in');
             $table->date('check_out');
@@ -29,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('userID')->references('id')->on('users')->onDelete('set null');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreign('wismaID')->references('wismaID')->on('wismas')->onDelete('cascade');
         });
     }

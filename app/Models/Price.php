@@ -10,6 +10,7 @@ class Price extends Model
 {
     use HasFactory;
 
+    protected $table = 'prices';
     protected $primaryKey = 'priceID';
     protected $keyType = 'string';
     public $incrementing = false;

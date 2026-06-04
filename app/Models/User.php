@@ -17,20 +17,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
-
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    protected static function boot(): void
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = (string) Str::uuid();
-            }
-        });
-    }
-
+    
     protected function casts(): array
     {
         return [

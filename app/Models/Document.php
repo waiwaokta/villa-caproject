@@ -10,6 +10,7 @@ class Document extends Model
 {
     use HasFactory;
 
+    protected $table = 'documents';
     protected $primaryKey = 'documentID';
     protected $keyType = 'string';
     public $incrementing = false;

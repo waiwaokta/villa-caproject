@@ -10,6 +10,7 @@ class WismaPhoto extends Model
 {
     use HasFactory;
 
+    protected $table = 'wisma_photos';
     protected $primaryKey = 'photoID';
     protected $keyType = 'string';
     public $incrementing = false;

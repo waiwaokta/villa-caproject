@@ -11,6 +11,7 @@ class Wisma extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'wismas';
     protected $primaryKey = 'wismaID';
     protected $keyType = 'string';
     public $incrementing = false;
@@ -33,14 +34,17 @@ class Wisma extends Model
         });
     }
 
-    public function photos()
+    public function wismaPhotos()
     {
-        return $this->hasMany(WismaPhoto::class, 'wismaID', 'wismaID');
+        return $this->hasMany(WismaPhoto::class, 'wismaID', 'wismaID')
+                    ->orderBy('order', 'asc');
     }
 
     public function prices()
     {
-        return $this->hasMany(Price::class, 'wismaID', 'wismaID');
+        return $this->hasMany(Price::class, 'wismaID', 'wismaID')
+                    ->orderBy('user_type') // pln dulu, baru umum
+                    ->orderByRaw("FIELD(day_type, 'weekday', 'weekend', 'holiday')"); // urutan hari
     }
 
     public function bookings()
@@ -51,6 +55,7 @@ class Wisma extends Model
     public function primaryPhoto()
     {
         return $this->hasOne(WismaPhoto::class, 'wismaID', 'wismaID')
-                    ->where('is_primary', true);
+                    ->where('is_primary', true)
+                    ->orderBy('order', 'asc');
     }
 }
