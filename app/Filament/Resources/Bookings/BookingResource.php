@@ -18,11 +18,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 class BookingResource extends Resource
 {
+    
     protected static ?string $model = Booking::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentCheck;
 
     protected static ?string $recordTitleAttribute = 'bookingID';
 
@@ -52,9 +54,9 @@ class BookingResource extends Resource
     {
         return [
             'index' => ListBookings::route('/'),
-            'create' => CreateBooking::route('/create'),
+            // 'create' => CreateBooking::route('/create'),
             'view' => ViewBooking::route('/{record}'),
-            'edit' => EditBooking::route('/{record}/edit'),
+            // 'edit' => EditBooking::route('/{record}/edit'),
         ];
     }
 

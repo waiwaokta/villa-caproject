@@ -7,7 +7,8 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\BadgeColumn;
+use Filament\Actions\Action;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -36,7 +37,7 @@ class BookingsTable
                     ->searchable(),
 
                 TextColumn::make('guest_phone')
-                    ->label('No. HP')
+                    ->label('No. Telp')
                     ->searchable(),
 
                 TextColumn::make('check_in')
@@ -60,7 +61,7 @@ class BookingsTable
                     ->sortable(),
 
                 TextColumn::make('user_type')
-                    ->label('Tipe')
+                    ->label('Tipe Tamu')
                     ->badge()
                     ->formatStateUsing(fn($state) => match($state) {
                         'pln'  => 'PLN',
@@ -90,7 +91,7 @@ class BookingsTable
                     }),
 
                 TextColumn::make('created_at')
-                    ->label('Tgl Booking')
+                    ->label('Tanggal Book')
                     ->date('d M Y')
                     ->sortable(),
             ])
@@ -113,13 +114,43 @@ class BookingsTable
             ])
             ->recordActions([
                 ViewAction::make(),
+                Action::make('approve')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn(Model $record) => $record->status === 'pending')
+                    ->requiresConfirmation()
+                    ->modalHeading('Setujui Booking')
+                    ->modalDescription(fn(Model $record) => "Setujui booking {$record->bookingID} atas nama {$record->guest_name}?")
+                    ->action(fn(Model $record) => $record->update(['status' => 'approved'])),
+
+                Action::make('reject')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn(Model $record) => $record->status === 'pending')
+                    ->requiresConfirmation()
+                    ->modalHeading('Tolak Booking')
+                    ->form([
+                        \Filament\Forms\Components\Textarea::make('reject_desc')
+                            ->label('Alasan Penolakan')
+                            ->required()
+                            ->placeholder('Tulis alasan penolakan...'),
+                    ])
+                    ->action(fn(array $data, Model $record) => $record->update([
+                        'status'      => 'rejected',
+                        'reject_desc' => $data['reject_desc'],
+                    ])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                ]),
-            ]);
+                ])
+            ])
+            ->emptyStateIcon('heroicon-o-home')
+            ->emptyStateHeading('Belum ada Booking')
+            ->emptyStateDescription('Booking baru akan muncul di sini');
     }
 }
