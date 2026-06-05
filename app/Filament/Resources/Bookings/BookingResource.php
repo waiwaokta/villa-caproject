@@ -79,11 +79,18 @@ class BookingResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 10 ? 'warning' : 'primary';
     }
 
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Total Pending';
+        return 'Total Pending (Belum Dikonfirmasi)';
     }
 }
