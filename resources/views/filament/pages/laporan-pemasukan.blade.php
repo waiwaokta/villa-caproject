@@ -2,97 +2,91 @@
 
     {{-- Filter --}}
     <x-filament::section>
-        <form wire:change.debounce.300ms="$refresh">
-            {{ $this->filterForm }}
-        </form>
+        {{ $this->filterForm }}
     </x-filament::section>
 
     {{-- Summary Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
         <x-filament::section>
-            <div class="text-center">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Total Booking Disetujui</p>
-                <p class="text-3xl font-bold text-primary-500 mt-1">{{ $this->getTotalBooking() }}</p>
-            </div>
+            <p style="font-size:13px;color:#6b7280;margin-bottom:6px">Total Booking Disetujui</p>
+            <p style="font-size:28px;font-weight:700;color:#f59e0b">{{ $this->getTotalBooking() }}</p>
         </x-filament::section>
 
         <x-filament::section>
-            <div class="text-center">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Total Pemasukan</p>
-                <p class="text-2xl font-bold text-success-500 mt-1">{{ $this->getTotalPemasukan() }}</p>
-            </div>
+            <p style="font-size:13px;color:#6b7280;margin-bottom:6px">Total Pemasukan</p>
+            <p style="font-size:28px;font-weight:700;color:#22c55e">{{ $this->getTotalPemasukan() }}</p>
         </x-filament::section>
 
         <x-filament::section>
-            <div class="text-center">
-                <p class="text-sm text-gray-500 dark:text-gray-400">Periode</p>
-                <p class="text-lg font-bold mt-1">
-                    @if($bulan && $tahun)
-                        {{ \Carbon\Carbon::create($tahun, $bulan)->translatedFormat('F Y') }}
-                    @elseif($tahun)
-                        Tahun {{ $tahun }}
-                    @else
-                        Semua Periode
-                    @endif
-                </p>
-            </div>
+            <p style="font-size:13px;color:#6b7280;margin-bottom:6px">Periode</p>
+            <p style="font-size:28px;font-weight:600;">
+                @if($bulan && $tahun)
+                    {{ \Carbon\Carbon::create($tahun, $bulan)->translatedFormat('F Y') }}
+                @elseif($tahun)
+                    Tahun {{ $tahun }}
+                @else
+                    Semua Periode
+                @endif
+            </p>
         </x-filament::section>
     </div>
 
     {{-- Tabel --}}
     <x-filament::section heading="Rincian Pemasukan">
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="border-b border-gray-200 dark:border-gray-700">
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Kode Booking</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Wisma</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Nama Tamu</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Tipe</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Check-in</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Check-out</th>
-                        <th class="text-left py-3 px-4 font-medium text-gray-500">Malam</th>
-                        <th class="text-right py-3 px-4 font-medium text-gray-500">Total</th>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+                <tr style="border-bottom:1px solid #374151;">
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Kode Booking</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Wisma</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Nama Tamu</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Tipe</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Check-in</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Check-out</th>
+                    <th style="text-align:left;padding:10px 12px;color:#9ca3af;font-weight:500;">Malam</th>
+                    <th style="text-align:right;padding:10px 12px;color:#9ca3af;font-weight:500;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($this->getBookings() as $booking)
+                    <tr style="border-bottom:1px solid #1f2937;">
+                        <td style="padding:10px 12px;font-family:monospace;font-weight:700;font-size:12px;">
+                            {{ $booking->bookingID }}
+                        </td>
+                        <td style="padding:10px 12px;">{{ $booking->wisma?->name ?? '-' }}</td>
+                        <td style="padding:10px 12px;">{{ $booking->guest_name }}</td>
+                        <td style="padding:10px 12px;">
+                            @if($booking->user_type === 'pln')
+                                <span style="background:#1d4ed8;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">PLN</span>
+                            @else
+                                <span style="background:#15803d;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">Umum</span>
+                            @endif
+                        </td>
+                        <td style="padding:10px 12px;">{{ $booking->check_in->format('d M Y') }}</td>
+                        <td style="padding:10px 12px;">{{ $booking->check_out->format('d M Y') }}</td>
+                        <td style="padding:10px 12px;">{{ $booking->total_nights }} malam</td>
+                        <td style="padding:10px 12px;text-align:right;font-weight:600;">
+                            Rp {{ number_format($booking->total_price, 0, ',', '.') }}
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @forelse($this->getBookings() as $booking)
-                        <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                            <td class="py-3 px-4 font-mono text-xs font-bold">{{ $booking->bookingID }}</td>
-                            <td class="py-3 px-4">{{ $booking->wisma?->name ?? '-' }}</td>
-                            <td class="py-3 px-4">{{ $booking->guest_name }}</td>
-                            <td class="py-3 px-4">
-                                <span class="px-2 py-1 rounded text-xs font-medium {{ $booking->user_type === 'pln' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700' }}">
-                                    {{ $booking->user_type === 'pln' ? 'PLN' : 'Umum' }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4">{{ $booking->check_in->format('d M Y') }}</td>
-                            <td class="py-3 px-4">{{ $booking->check_out->format('d M Y') }}</td>
-                            <td class="py-3 px-4">{{ $booking->total_nights }} malam</td>
-                            <td class="py-3 px-4 text-right font-medium">
-                                Rp {{ number_format($booking->total_price, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="py-8 text-center text-gray-400">
-                                Tidak ada data pemasukan untuk periode ini
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-                @if($this->getBookings()->count() > 0)
-                    <tfoot>
-                        <tr class="border-t-2 border-gray-300 dark:border-gray-600">
-                            <td colspan="7" class="py-3 px-4 font-bold text-right">Grand Total</td>
-                            <td class="py-3 px-4 text-right font-bold text-success-500">
-                                {{ $this->getTotalPemasukan() }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                @endif
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="8" style="padding:32px;text-align:center;color:#6b7280;">
+                            Tidak ada data pemasukan untuk periode ini
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+            @if($this->getBookings()->count() > 0)
+                <tfoot>
+                    <tr style="border-top:2px solid #374151;">
+                        <td colspan="7" style="padding:12px;text-align:right;font-weight:700;">Grand Total</td>
+                        <td style="padding:12px;text-align:right;font-weight:700;color:#22c55e;">
+                            {{ $this->getTotalPemasukan() }}
+                        </td>
+                    </tr>
+                </tfoot>
+            @endif
+        </table>
     </x-filament::section>
 
 </x-filament-panels::page>
