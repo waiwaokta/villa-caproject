@@ -12,7 +12,7 @@ class PemasukanChart extends ChartWidget
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = '1';
 
-    protected ?string $maxHeight = '350px';
+    protected ?string $maxHeight = '400px';
 
     public ?string $filter = 'bulan';
 

@@ -13,6 +13,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Filament\Support\Enums\FontWeight;
+
 
 class BookingsTable
 {
@@ -20,20 +22,22 @@ class BookingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('bookingID')
-                    ->label('Kode Booking')
-                    ->searchable()
-                    ->copyable()
-                    ->fontFamily('mono')
-                    ->weight(\Filament\Support\Enums\FontWeight::Bold),
+                // TextColumn::make('bookingID')
+                //     ->label('Kode Booking')
+                //     ->searchable()
+                //     ->copyable()
+                //     ->fontFamily('mono')
+                //     ->weight(\Filament\Support\Enums\FontWeight::Bold),
 
                 TextColumn::make('wisma.name')
                     ->label('Wisma')
+                    ->weight(FontWeight::Bold)
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('guest_name')
                     ->label('Nama Tamu')
+                    ->weight(FontWeight::Bold)
                     ->searchable(),
 
                 TextColumn::make('guest_phone')
@@ -50,10 +54,10 @@ class BookingsTable
                     ->date('d M Y')
                     ->sortable(),
 
-                TextColumn::make('total_nights')
-                    ->label('Malam')
-                    ->suffix(' malam')
-                    ->sortable(),
+                // TextColumn::make('total_nights')
+                //     ->label('Malam')
+                //     ->suffix(' malam')
+                //     ->sortable(),
 
                 TextColumn::make('total_price')
                     ->label('Total')
