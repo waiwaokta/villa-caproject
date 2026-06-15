@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -130,6 +131,48 @@ class BookingInfolist
                             ->dateTime('d M Y, H:i'),
                     ]),
 
+                // BAWAH FULL WIDTH — Dokumen
+                Section::make('Dokumen Booking Pengunjung')
+                    ->icon('heroicon-o-paper-clip')
+                    ->columnSpanFull()
+                    ->schema([
+                        RepeatableEntry::make('documents')
+                            ->label('')
+                            ->columns(4)
+                            ->schema([
+                                TextEntry::make('doc_type')
+                                    ->label('Tipe Dokumen')
+                                    ->badge()
+                                    ->formatStateUsing(fn($state) => match($state) {
+                                        'ktp'         => 'KTP',
+                                        'bukti_bayar' => 'Bukti Bayar',
+                                        'id_pln'      => 'ID PLN',
+                                        'npwp'        => 'NPWP',
+                                        default       => $state,
+                                    })
+                                    ->color(fn($state) => match($state) {
+                                        'ktp'         => 'info',
+                                        'bukti_bayar' => 'success',
+                                        'id_pln'      => 'warning',
+                                        'npwp'        => 'gray',
+                                        default       => 'gray',
+                                    }),
+
+                                TextEntry::make('documentID')
+                                    ->label('Lihat Dokumen')
+                                    ->formatStateUsing(fn($state) => 'Buka Dokumen')
+                                    ->url(fn($record) => url('/dokumen/' . $record->documentID))
+                                    ->openUrlInNewTab()
+                                    ->color('primary')
+                                    ->icon('heroicon-o-arrow-top-right-on-square'),
+
+                                TextEntry::make('created_at')
+                                    ->label('Diunggah')
+                                    ->dateTime('d M Y, H:i'),
+                            ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(false),
             ]);
     }
 }
