@@ -17,7 +17,7 @@ class Wisma extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'desc', 'location', 'capacity', 'is_active'
+        'name', 'desc', 'location', 'address', 'capacity', 'is_active'
     ];
 
     protected $casts = [

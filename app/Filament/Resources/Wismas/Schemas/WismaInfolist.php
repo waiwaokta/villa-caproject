@@ -28,7 +28,10 @@ class WismaInfolist
                             ->label('Nama Wisma')
                             ->weight(FontWeight::Bold),
                         TextEntry::make('location')
-                            ->label('Lokasi'),
+                            ->label('Lokasi / Daerah'),
+                        TextEntry::make('address')
+                            ->label('Alamat Lengkap')
+                            ->placeholder('-'),
                         TextEntry::make('capacity')
                             ->label('Kapasitas')
                             ->suffix(' orang'),

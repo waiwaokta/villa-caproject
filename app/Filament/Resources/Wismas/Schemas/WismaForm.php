@@ -26,10 +26,16 @@ class WismaForm
                         TextInput::make('name')
                             ->label('Nama Wisma')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(100),
                         TextInput::make('location')
                             ->label('Lokasi')
+                            ->placeholder('Batu, Sarangan, Ijen')
                             ->required()
+                            ->maxLength(50)
+                            ->dehydrateStateUsing(fn($state) => ucwords(strtolower(trim($state)))),
+                        TextInput::make('address')
+                            ->label('Alamat Lengkap')
+                            ->placeholder('Jl. Raya No. 123, Kota Batu')
                             ->maxLength(255),
                         TextInput::make('capacity')
                             ->label('Kapasitas (orang)')

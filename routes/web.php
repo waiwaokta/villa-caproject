@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BerandaController;
+// use App\Http\Controllers\WismaController;
 
 Route::get('/', function () {
     return redirect('/admin');
@@ -46,3 +48,29 @@ Route::delete(
 Route::post('/booking', [BookingController::class, 'store'])
     ->middleware('throttle:3,1') // max 3x per menit, security
     ->name('booking.store');
+
+// Beranda
+Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+
+// Foto wisma — public (tidak butuh auth, tapi via controller bukan URL langsung)
+Route::get('/foto/{photoID}', [BerandaController::class, 'foto'])
+    ->name('dokumen.foto');
+
+// Booking
+Route::post('/booking', [BookingController::class, 'store'])
+    ->middleware('throttle:booking')
+    ->name('booking.store');
+
+// Cek booking
+Route::get('/cek-booking', function () {
+    return view('cek-booking');
+})->middleware('throttle:cek-booking')
+  ->name('booking.cek');
+
+// Document routes — private access
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dokumen/{documentID}', [DocumentController::class, 'show'])
+        ->middleware('check.document.access');
+    Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy'])
+        ->middleware('role:admin');
+});

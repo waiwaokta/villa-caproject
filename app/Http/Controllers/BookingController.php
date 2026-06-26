@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Document;
+use App\Models\Holiday;
 use App\Models\Price;
 use App\Models\Wisma;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
@@ -20,28 +22,42 @@ class BookingController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $checkIn  = \Carbon\Carbon::parse($request->check_in);
-        $checkOut = \Carbon\Carbon::parse($request->check_out);
+        $checkIn  = Carbon::parse($request->check_in);
+        $checkOut = Carbon::parse($request->check_out);
         $nights   = $checkIn->diffInDays($checkOut);
 
         if ($nights < 1) {
             return back()->withErrors(['check_out' => 'Minimal menginap 1 malam.']);
         }
 
-        // Hitung total price dari tabel prices (snapshot saat booking)
-        $dayType     = $this->resolveDayType($checkIn);
-        $priceRecord = Price::where('wismaID', $request->wismaID)
-            ->where('user_type', $request->user_type)
-            ->where('day_type', $dayType)
-            ->firstOrFail();
+        // ⚠️ AVAILABILITY CHECK — cek tanggal sudah di-booking orang lain atau belum
+        // pending DAN approved sama-sama lock tanggal, rejected dianggap available
+        $isOverlap = Booking::where('wismaID', $wisma->wismaID)
+            ->whereIn('status', ['pending', 'approved'])
+            ->where(function ($q) use ($checkIn, $checkOut) {
+                $q->where('check_in', '<', $checkOut)
+                  ->where('check_out', '>', $checkIn);
+            })
+            ->exists();
 
-        $totalPrice = $priceRecord->price * $nights;
+        if ($isOverlap) {
+            return back()->withErrors([
+                'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
+            ])->withInput();
+        }
 
-        // Semua operasi dalam satu transaksi — gagal satu, semua rollback
+        // Hitung total price PER MALAM berdasarkan klasifikasi hari masing-masing
+        $totalPrice = $this->calculateTotalPrice(
+            $wisma->wismaID,
+            $request->user_type,
+            $checkIn,
+            $checkOut
+        );
+
         DB::transaction(function () use ($request, $wisma, $nights, $totalPrice) {
 
             $booking = Booking::create([
-                'user_id'      => Auth::id(), // null kalau guest
+                'user_id'      => Auth::id(),
                 'wismaID'      => $wisma->wismaID,
                 'check_in'     => $request->check_in,
                 'check_out'    => $request->check_out,
@@ -58,7 +74,6 @@ class BookingController extends Controller
                 'status'       => 'pending',
             ]);
 
-            // Upload semua dokumen
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
             $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
 
@@ -71,13 +86,65 @@ class BookingController extends Controller
             }
         });
 
-        // ⚠️ GANTI: redirect ke halaman tracking booking setelah web native selesai
         return redirect('/cek-booking')->with('success', 'Booking berhasil dikirim. Kode booking akan dikirim ke WhatsApp kamu.');
     }
 
     // ---------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------
+
+    /**
+     * Hitung total harga booking — per malam berdasarkan klasifikasi hari masing-masing.
+     * Tidak dikali rata, karena 1 booking bisa mencakup weekday + weekend + holiday sekaligus.
+     */
+    private function calculateTotalPrice(string $wismaID, string $userType, Carbon $checkIn, Carbon $checkOut): float
+    {
+        // Ambil semua harga wisma ini sekali saja — hindari query berulang per malam
+        $prices = Price::where('wismaID', $wismaID)
+            ->where('user_type', $userType)
+            ->get()
+            ->keyBy('day_type');
+
+        // Ambil semua tanggal holiday sekali saja — hindari query berulang per malam
+        $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
+        $datesInRange = collect($period)->map(fn(\Carbon\Carbon $d) => $d->toDateString());
+
+        $holidayDates = Holiday::whereIn('date', $datesInRange)
+            ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->toDateString())
+            ->toArray();
+
+        $total = 0;
+
+        foreach ($period as $date) {
+            $dayType = $this->resolveDayType($date, $holidayDates);
+
+            if (!isset($prices[$dayType])) {
+                throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk wisma ini.");
+            }
+
+            $total += (float) $prices[$dayType]->price;
+        }
+
+        return $total;
+    }
+
+    /**
+     * Klasifikasi 1 tanggal — holiday diprioritaskan dari tabel holidays,
+     * baru cek Sabtu/Minggu kalau bukan holiday.
+     */
+    private function resolveDayType(Carbon $date, array $holidayDates): string
+    {
+        if (in_array($date->toDateString(), $holidayDates)) {
+            return 'holiday';
+        }
+
+        if ($date->dayOfWeek === 0 || $date->dayOfWeek === 6) {
+            return 'weekend';
+        }
+
+        return 'weekday';
+    }
 
     private function uploadDocument(string $bookingID, string $docType, $file): void
     {
@@ -91,17 +158,5 @@ class BookingController extends Controller
             'is_primary' => false,
             'order'      => 0,
         ]);
-    }
-
-    private function resolveDayType(\Carbon\Carbon $date): string
-    {
-        $dayOfWeek = $date->dayOfWeek;
-
-        // ⚠️ GANTI: tambahkan logika hari libur nasional kalau sudah ada tabelnya
-        if ($dayOfWeek === 0 || $dayOfWeek === 6) {
-            return 'weekend';
-        }
-
-        return 'weekday';
     }
 }
