@@ -36,11 +36,11 @@ class SecurityHeaders
             'Content-Security-Policy',
             implode('; ', [
                 "default-src 'self'",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
-                "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* http://127.0.0.1:*",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net http://localhost:* http://127.0.0.1:*",
+                "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net http://localhost:* http://127.0.0.1:*",
                 "img-src 'self' data: blob:",
-                "connect-src 'self'",
+                "connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*",
                 "frame-ancestors 'none'",
             ])
         );
