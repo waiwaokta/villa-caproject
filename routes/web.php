@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
-// use App\Http\Controllers\WismaController;
+use App\Http\Controllers\WismaController;
 
 Route::get('/', function () {
     return redirect('/admin');
@@ -51,6 +51,10 @@ Route::post('/booking', [BookingController::class, 'store'])
 
 // Beranda
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+
+// Detail Wisma
+Route::get('/wisma/{wismaID}', [WismaController::class, 'show'])
+    ->name('wisma.show');
 
 // Foto wisma — public (tidak butuh auth, tapi via controller bukan URL langsung)
 Route::get('/foto/{photoID}', [BerandaController::class, 'foto'])

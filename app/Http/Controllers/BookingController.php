@@ -64,7 +64,7 @@ class BookingController extends Controller
                 'total_nights' => $nights,
                 'total_price'  => $totalPrice,
                 'user_type'    => $request->user_type,
-                'booking_type' => $request->booking_type,
+                'booking_type' => $request->booking_type, // null kalau PLN
                 'guest_name'   => $request->guest_name,
                 'guest_phone'  => $request->guest_phone,
                 'guest_ktp'    => $request->guest_ktp,
@@ -74,15 +74,22 @@ class BookingController extends Controller
                 'status'       => 'pending',
             ]);
 
-            $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
+            // Bukti bayar — wajib semua
             $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
 
-            if ($request->hasFile('doc_id_pln')) {
-                $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
+            // KTP — kalau ada (umum wajib, PLN opsional)
+            if ($request->hasFile('doc_ktp')) {
+                $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
             }
 
+            // NPWP — kalau ada (umum-instansi wajib, PLN opsional)
             if ($request->hasFile('doc_npwp')) {
                 $this->uploadDocument($booking->bookingID, 'npwp', $request->file('doc_npwp'));
+            }
+
+            // ID Card PLN — kalau PLN
+            if ($request->hasFile('doc_id_pln')) {
+                $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
             }
         });
 

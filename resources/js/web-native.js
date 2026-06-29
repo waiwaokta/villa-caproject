@@ -1,3 +1,11 @@
+document.addEventListener('DOMContentLoaded', () => {
+    initSliderWisma();
+    initSearchFilter();
+    initNavHamburger();
+    initGallery();
+    initAvailabilityCalendar();
+});
+
 // ============================================
 // SLIDER WISMA — beranda
 // ============================================
@@ -109,3 +117,79 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearchFilter();
     initNavHamburger();
 });
+
+// ============================================
+// GALERI FOTO — detail wisma
+// ============================================
+function initGallery() {
+    const thumbs = document.querySelectorAll('.gallery-thumb');
+    const mainImg = document.getElementById('galleryMainImg');
+    if (!thumbs.length || !mainImg) return;
+
+    thumbs.forEach(thumb => {
+        thumb.addEventListener('click', () => {
+            mainImg.src = thumb.dataset.full;
+            thumbs.forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        });
+    });
+}
+
+// ============================================
+// KALENDER AVAILABILITY — detail wisma, 3 bulan ke depan
+// ============================================
+function initAvailabilityCalendar() {
+    const wrap = document.getElementById('calendarWrap');
+    if (!wrap) return;
+
+    const occupiedDates = JSON.parse(wrap.dataset.occupied || '[]');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
+    let html = '';
+
+    for (let m = 0; m < 3; m++) {
+        const monthDate = new Date(today.getFullYear(), today.getMonth() + m, 1);
+        const year = monthDate.getFullYear();
+        const month = monthDate.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayOfWeek = new Date(year, month, 1).getDay();
+
+        html += `<div class="cal-month">`;
+        html += `<div class="cal-month-title">${monthNames[month]} ${year}</div>`;
+        html += `<div class="cal-grid">`;
+
+        dayLabels.forEach(label => {
+            html += `<div class="cal-day-label">${label}</div>`;
+        });
+
+        // Kosong sebelum tanggal 1
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            html += `<div class="cal-day cal-day-empty"></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateObj = new Date(year, month, d);
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+            let cls = 'cal-day-available';
+            if (dateObj < today) {
+                cls = 'cal-day-past';
+            } else if (occupiedDates.includes(dateStr)) {
+                cls = 'cal-day-occupied';
+            }
+
+            html += `<div class="cal-day ${cls}">${d}</div>`;
+        }
+
+        html += `</div></div>`;
+    }
+
+    wrap.innerHTML = html;
+}
