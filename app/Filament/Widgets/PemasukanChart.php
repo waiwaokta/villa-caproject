@@ -65,12 +65,25 @@ class PemasukanChart extends ChartWidget
                     'label'           => 'Pemasukan (Rp)',
                     'data'            => $data,
                     'borderColor'     => '#00a3ad',
-                    'backgroundColor' => 'rgba(0,163,173,0.1)',
+                    'backgroundColor' => '#00a4ad36',
                     'fill'            => true,
                     'tension'         => 0.4,
                 ],
             ],
             'labels' => $labels,
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'ticks' => [
+                        'maxTicksLimit' => 6, 
+                    ],
+                ],
+            ],
         ];
     }
 

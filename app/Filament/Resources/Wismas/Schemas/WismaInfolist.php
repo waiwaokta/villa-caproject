@@ -75,7 +75,7 @@ class WismaInfolist
 
                 Section::make('Daftar Harga')
                     ->icon('heroicon-o-banknotes')
-                    ->columnSpanFull()
+                    ->columnSpan(2)
                     ->schema([
                         RepeatableEntry::make('prices')
                             ->hiddenLabel()
@@ -112,7 +112,22 @@ class WismaInfolist
                                     ->label('Harga')
                                     ->money('IDR', locale: 'id'),
                             ])
-                            ->columns(3)
+                            ->columns(2)
+                            ->extraAttributes([
+                                'style' => 'max-height: 280px; overflow-y: auto; padding-right: 4px;'
+                            ]),
+                    ]),
+                Section::make('Fasilitas')
+                    ->icon('heroicon-o-tag')
+                    ->columnSpan(1)
+                    ->schema([
+                        RepeatableEntry::make('facilities')
+                            ->hiddenLabel()
+                            ->schema([
+                                TextEntry::make('name'),
+                                TextEntry::make('icon'),
+                            ])
+                            ->columns(2)
                             ->extraAttributes([
                                 'style' => 'max-height: 280px; overflow-y: auto; padding-right: 4px;'
                             ]),

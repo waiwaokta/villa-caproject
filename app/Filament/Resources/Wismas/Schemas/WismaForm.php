@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Wismas\Schemas;
 
+use App\Models\Facility;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Wizard;
@@ -73,6 +75,18 @@ class WismaForm
                             ->orderColumn('order')  
                             ->addActionLabel('Tambah foto')
                             ->defaultItems(0),
+                    ]),
+                Step::make('Fasilitas')
+                    ->icon(Heroicon::Sparkles)
+                    ->description('Pilih fasilitas yang tersedia di wisma ini')
+                    ->schema([
+                        CheckboxList::make('facilities')
+                            ->hiddenLabel()
+                            ->relationship('facilities', 'name')
+                            ->options(fn() => Facility::pluck('name', 'facilityID'))
+                            ->columns(3)
+                            ->gridDirection('row')
+                            ->bulkToggleable(),
                     ]),
                 Step::make('Daftar Harga')
                     ->icon(Heroicon::CurrencyDollar)

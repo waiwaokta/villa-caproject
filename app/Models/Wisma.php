@@ -58,4 +58,13 @@ class Wisma extends Model
                     ->where('is_primary', true)
                     ->orderBy('order', 'asc');
     }
+    public function facilities()
+    {
+        return $this->belongsToMany(
+            Facility::class,
+            'wisma_facility',
+            'wismaID',
+            'facilityID'
+        );
+    }
 }

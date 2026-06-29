@@ -1,0 +1,1 @@
+<i class="{{ $getRecord()->icon }}" style="font-size: 20px; color: #185FA5;"></i>

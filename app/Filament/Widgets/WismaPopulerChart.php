@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\Booking;
 use App\Models\Wisma;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 
 class WismaPopulerChart extends ChartWidget
 {
@@ -32,14 +31,14 @@ class WismaPopulerChart extends ChartWidget
         $data   = [];
         $colors = [];
 
-        $baseColors = [
-            '#00a3ad', '#f59e0b', '#4DC951', '#EF2929',
-            '#6366f1', '#ec4899', '#14b8a6', '#f97316',
-        ];
+        // $baseColors = [
+        //     '#00a3ad', '#f59e0b', '#4DC951', '#EF2929',
+        //     '#6366f1', '#ec4899', '#14b8a6', '#f97316',
+        // ];
 
         foreach ($wismas as $i => $wisma) {
             $labels[] = $wisma->name;
-            $colors[] = $baseColors[$i % count($baseColors)];
+            // $colors[] = $baseColors[$i % count($baseColors)];
 
             $query = Booking::where('status', 'approved')
                 ->where('wismaID', $wisma->wismaID);
@@ -59,12 +58,26 @@ class WismaPopulerChart extends ChartWidget
                 [
                     'label'           => 'Jumlah Booking',
                     'data'            => $data,
-                    'backgroundColor' => $colors,
-                    'borderColor'     => $colors,
-                    'borderWidth'     => 1,
+                    'borderColor'     => '#00a3ad',
+                    'backgroundColor' => '#00a4ad36',
+                    'borderWidth'     => 1.5,
                 ],
             ],
             'labels' => $labels,
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'stepSize' => 1, // paksa kelipatan bulat, tidak ada desimal
+                    ],
+                ],
+            ],
         ];
     }
 

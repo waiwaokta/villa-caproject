@@ -10,6 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -61,7 +62,7 @@ class BookingsTable
 
                 TextColumn::make('total_price')
                     ->label('Total')
-                    ->money('IDR')
+                    ->money('IDR', locale: 'id')
                     ->sortable(),
 
                 TextColumn::make('user_type')
@@ -119,7 +120,7 @@ class BookingsTable
             ->recordActions([
                 ViewAction::make(),
                 Action::make('approve')
-                    ->label('Approve')
+                    ->label('Acc')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn(Model $record) => $record->status === 'pending')
@@ -136,7 +137,7 @@ class BookingsTable
                     ->requiresConfirmation()
                     ->modalHeading('Tolak Booking')
                     ->form([
-                        \Filament\Forms\Components\Textarea::make('reject_desc')
+                        Textarea::make('reject_desc')
                             ->label('Alasan Penolakan')
                             ->required()
                             ->placeholder('Tulis alasan penolakan...'),
