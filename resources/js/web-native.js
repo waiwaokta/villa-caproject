@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     initBookingForm();
 });
 
+    function getTodayLocal() {
+        const now = new Date();
+        const year  = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day   = String(now.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
 // ============================================
 // SLIDER WISMA — beranda
 // ============================================
@@ -262,9 +270,20 @@ function initBookingForm() {
     const wismaID        = document.querySelector('[name="wismaID"]').value;
 
     checkInInput.addEventListener('change', () => {
-        const nextDay = new Date(checkInInput.value);
+        const todayStr = getTodayLocal();
+        const selected = checkInInput.value;
+
+        if (selected < todayStr) {
+            checkInInput.value = todayStr;
+        }
+
+        const nextDay = new Date(checkInInput.value + 'T00:00:00');
         nextDay.setDate(nextDay.getDate() + 1);
-        checkOutInput.min = nextDay.toISOString().split('T')[0];
+        const y = nextDay.getFullYear();
+        const m = String(nextDay.getMonth() + 1).padStart(2, '0');
+        const d = String(nextDay.getDate()).padStart(2, '0');
+        checkOutInput.min = `${y}-${m}-${d}`;
+        checkOutInput.value = '';
         fetchEstimate();
     });
     checkOutInput.addEventListener('change', fetchEstimate);
