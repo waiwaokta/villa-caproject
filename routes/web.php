@@ -5,6 +5,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\WismaController;
+use App\Http\Controllers\Api\EstimatePriceController;
 
 Route::get('/', function () {
     return redirect('/admin');
@@ -67,7 +68,7 @@ Route::post('/booking', [BookingController::class, 'store'])
 
 // Cek booking
 Route::get('/cek-booking', function () {
-    return view('cek-booking');
+    return view('booking.check-book');
 })->middleware('throttle:cek-booking')
   ->name('booking.cek');
 
@@ -78,3 +79,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy'])
         ->middleware('role:admin');
 });
+
+Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
+    ->middleware('throttle:30,1');
+
+Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
+    ->name('booking.create');

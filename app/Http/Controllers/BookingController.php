@@ -16,6 +16,15 @@ use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
+    public function create(string $wismaID)
+    {
+        $wisma = Wisma::with(['prices'])
+            ->where('wismaID', $wismaID)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return view('booking.form', compact('wisma'));
+    }
     public function store(StoreBookingRequest $request)
     {
         $wisma = Wisma::where('wismaID', $request->wismaID)
@@ -54,44 +63,46 @@ class BookingController extends Controller
             $checkOut
         );
 
+        
         DB::transaction(function () use ($request, $wisma, $nights, $totalPrice) {
 
-            $booking = Booking::create([
-                'user_id'      => Auth::id(),
-                'wismaID'      => $wisma->wismaID,
-                'check_in'     => $request->check_in,
-                'check_out'    => $request->check_out,
-                'total_nights' => $nights,
-                'total_price'  => $totalPrice,
-                'user_type'    => $request->user_type,
-                'booking_type' => $request->booking_type, // null kalau PLN
-                'guest_name'   => $request->guest_name,
-                'guest_phone'  => $request->guest_phone,
-                'guest_ktp'    => $request->guest_ktp,
-                'employee_id'  => $request->employee_id,
-                'inst_name'    => $request->inst_name,
-                'inst_npwp'    => $request->inst_npwp,
-                'status'       => 'pending',
-            ]);
+        $booking = Booking::create([
+            'user_id'      => Auth::id(),
+            'wismaID'      => $wisma->wismaID,
+            'check_in'     => $request->check_in,
+            'check_out'    => $request->check_out,
+            'total_nights' => $nights,
+            'total_price'  => $totalPrice,
+            'user_type'    => $request->user_type,
+            'booking_type' => $request->booking_type,
+            'guest_name'   => $request->guest_name,
+            'guest_phone'  => $request->guest_phone,
+            'guest_ktp'    => $request->guest_ktp,
+            'employee_id'  => $request->employee_id,
+            'inst_name'    => $request->inst_name,
+            'inst_npwp'    => $request->inst_npwp,
+            'status'       => 'pending',
+        ]);
 
-            // Bukti bayar — wajib semua
-            $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
+        $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
 
-            // KTP — kalau ada (umum wajib, PLN opsional)
-            if ($request->hasFile('doc_ktp')) {
-                $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
-            }
+        if ($request->hasFile('doc_ktp')) {
+            $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
+        }
 
-            // NPWP — kalau ada (umum-instansi wajib, PLN opsional)
-            if ($request->hasFile('doc_npwp')) {
-                $this->uploadDocument($booking->bookingID, 'npwp', $request->file('doc_npwp'));
-            }
+        if ($request->hasFile('doc_npwp')) {
+            $this->uploadDocument($booking->bookingID, 'npwp', $request->file('doc_npwp'));
+        }
 
-            // ID Card PLN — kalau PLN
-            if ($request->hasFile('doc_id_pln')) {
-                $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
-            }
-        });
+        if ($request->hasFile('doc_id_pln')) {
+            $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
+        }
+
+        // PLN: KTP atau NPWP, simpan sesuai mana yang diisi
+        if ($request->hasFile('doc_ktp_pln')) {
+            $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp_pln'));
+        }
+    });
 
         return redirect('/cek-booking')->with('success', 'Booking berhasil dikirim. Kode booking akan dikirim ke WhatsApp kamu.');
     }

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavHamburger();
     initGallery();
     initAvailabilityCalendar();
+    initBookingForm();
 });
 
 // ============================================
@@ -192,4 +193,126 @@ function initAvailabilityCalendar() {
     }
 
     wrap.innerHTML = html;
+}
+
+// ============================================
+// FORM BOOKING — show/hide field dinamis + estimasi harga
+// ============================================
+function initBookingForm() {
+    const form = document.getElementById('bookingForm');
+    if (!form) return;
+
+    const userTypeRadios    = document.querySelectorAll('input[name="user_type"]');
+    const bookingTypeRadios = document.querySelectorAll('input[name="booking_type"]');
+    const bookingTypeWrap   = document.getElementById('bookingTypeWrap');
+    const employeeIdWrap    = document.getElementById('employeeIdWrap');
+    const instansiWrap      = document.getElementById('instansiWrap');
+    const docKtpWrap        = document.getElementById('docKtpWrap');
+    const docNpwpWrap       = document.getElementById('docNpwpWrap');
+    const docIdPlnWrap      = document.getElementById('docIdPlnWrap');
+    const docPlnKtpNpwpWrap = document.getElementById('docPlnKtpNpwpWrap');
+
+    function getUserType() {
+        return document.querySelector('input[name="user_type"]:checked')?.value;
+    }
+    function getBookingType() {
+        return document.querySelector('input[name="booking_type"]:checked')?.value;
+    }
+
+    function updateFieldVisibility() {
+        const userType    = getUserType();
+        const bookingType = getBookingType();
+        const isPln       = userType === 'pln';
+        const isInstansi  = !isPln && bookingType === 'instansi';
+
+        // booking_type cuma relevan kalau umum
+        bookingTypeWrap.style.display = isPln ? 'none' : 'grid';
+
+        // employee_id cuma kalau PLN
+        employeeIdWrap.style.display = isPln ? 'block' : 'none';
+
+        // instansi fields cuma kalau umum-instansi
+        instansiWrap.style.display = isInstansi ? 'block' : 'none';
+
+        // Dokumen
+        docKtpWrap.style.display        = isPln ? 'none' : 'block';
+        docNpwpWrap.style.display       = isInstansi ? 'block' : 'none';
+        docIdPlnWrap.style.display      = isPln ? 'block' : 'none';
+        docPlnKtpNpwpWrap.style.display = isPln ? 'block' : 'none';
+
+        // Toggle required attribute biar validasi browser konsisten sama backend
+        document.querySelector('[name="doc_ktp"]').required = !isPln;
+        document.querySelector('[name="doc_npwp"]').required = isInstansi;
+        document.querySelector('[name="doc_id_pln"]').required = isPln;
+    }
+
+    userTypeRadios.forEach(r => r.addEventListener('change', () => {
+        updateFieldVisibility();
+        fetchEstimate();
+    }));
+    bookingTypeRadios.forEach(r => r.addEventListener('change', updateFieldVisibility));
+
+    updateFieldVisibility(); // jalankan sekali di awal
+
+    // ============================================
+    // ESTIMASI HARGA — real-time via AJAX
+    // ============================================
+    const checkInInput  = document.getElementById('inputCheckIn');
+    const checkOutInput = document.getElementById('inputCheckOut');
+    const wismaID        = document.querySelector('[name="wismaID"]').value;
+
+    checkInInput.addEventListener('change', () => {
+        const nextDay = new Date(checkInInput.value);
+        nextDay.setDate(nextDay.getDate() + 1);
+        checkOutInput.min = nextDay.toISOString().split('T')[0];
+        fetchEstimate();
+    });
+    checkOutInput.addEventListener('change', fetchEstimate);
+
+    async function fetchEstimate() {
+        const checkIn  = checkInInput.value;
+        const checkOut = checkOutInput.value;
+        const userType = getUserType();
+
+        const placeholder = document.getElementById('estimateLoading');
+        const content      = document.getElementById('estimateContent');
+        const dateError    = document.getElementById('dateError');
+
+        if (!checkIn || !checkOut) {
+            placeholder.style.display = 'block';
+            content.style.display = 'none';
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams({ wismaID, user_type: userType, check_in: checkIn, check_out: checkOut });
+            const res = await fetch('/api/estimate-price?' + params.toString());
+            const data = await res.json();
+
+            if (!res.ok) {
+                dateError.textContent = data.error || 'Tanggal tidak valid.';
+                dateError.style.display = 'block';
+                placeholder.style.display = 'block';
+                content.style.display = 'none';
+                return;
+            }
+
+            dateError.style.display = 'none';
+            placeholder.style.display = 'none';
+            content.style.display = 'block';
+
+            const breakdownEl = document.getElementById('estimateBreakdown');
+            breakdownEl.innerHTML = data.breakdown.map(row => `
+                <div class="estimate-row">
+                    <span class="estimate-row-date">${row.day_name}</span>
+                    <span class="estimate-row-price">Rp ${row.price.toLocaleString('id-ID')}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('estimateTotal').textContent = 'Rp ' + data.total.toLocaleString('id-ID');
+
+        } catch (err) {
+            console.error('Gagal memuat estimasi harga', err);
+        }
+    }
 }
