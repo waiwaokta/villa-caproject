@@ -29,7 +29,7 @@ class WismaResource extends Resource
 
     protected static ?string $navigationLabel = 'Daftar Wisma';
 
-    protected static ?string $pluralModelLabel = 'DaftarWisma';
+    protected static ?string $pluralModelLabel = 'Daftar Wisma';
 
     protected static ?int $navigationSort = 2;
 

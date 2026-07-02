@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\Holiday;
 use App\Models\Price;
 use App\Models\Wisma;
+use App\Services\FonnteService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
@@ -64,7 +65,7 @@ class BookingController extends Controller
         );
 
         
-        DB::transaction(function () use ($request, $wisma, $nights, $totalPrice) {
+        $booking = DB::transaction(function () use ($request, $wisma, $nights, $totalPrice,) {
 
         $booking = Booking::create([
             'user_id'      => Auth::id(),
@@ -102,8 +103,10 @@ class BookingController extends Controller
         if ($request->hasFile('doc_ktp_pln')) {
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp_pln'));
         }
+        return $booking;
     });
 
+        app(FonnteService::class)->sendNewBookingAlert($booking);
         return redirect('/cek-booking')->with('success', 'Booking berhasil dikirim. Kode booking akan dikirim ke WhatsApp kamu.');
     }
 

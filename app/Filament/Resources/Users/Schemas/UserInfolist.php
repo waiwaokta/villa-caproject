@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\User;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -44,6 +45,11 @@ class UserInfolist
                                 'customer' => 'info',
                                 default    => 'gray',
                             }),
+                        IconEntry::make('notify_new_book')
+                            ->label('Terima Notifikasi Booking Terbaru')
+                            ->boolean()
+                            ->trueColor('success')
+                            ->falseColor('danger')
                     ]),
 
                 Section::make('Informasi Sistem')

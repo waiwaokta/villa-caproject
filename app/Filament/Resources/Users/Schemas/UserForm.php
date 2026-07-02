@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -51,6 +52,10 @@ class UserForm
                         ->dehydrated(fn($state) => filled($state))
                         ->placeholder('Kosongkan jika tidak ingin mengubah password')
                         ->columnSpanFull(),
+                    Toggle::make('notify_new_book')
+                        ->label('Terima Notifikasi Booking Terbaru')
+                        ->visible(fn (callable $get) => $get('role') === 'admin')
+                        ->default(false),
                 ])
                 ->columnSpanFull(),
 
