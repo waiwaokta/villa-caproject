@@ -73,8 +73,8 @@ class WismaForm
                             ->columns(2)
                             ->reorderableWithDragAndDrop()
                             ->orderColumn('order')  
-                            ->addActionLabel('Tambah foto')
-                            ->defaultItems(0),
+                            ->addActionLabel('+ Tambah foto')
+                            ->defaultItems(1),
                     ]),
                 Step::make('Fasilitas')
                     ->icon(Heroicon::Sparkles)
@@ -118,10 +118,11 @@ class WismaForm
                                 ->required(),
                         ])
                         ->columns(3)
-                        ->addActionLabel('Tambah harga')
-                        ->defaultItems(0),
+                        ->addActionLabel('+ Tambah harga')
+                        ->defaultItems(1),
                     ]),
             ])
+            ->skippable()
             ->columnSpanFull()
         ]);
     }

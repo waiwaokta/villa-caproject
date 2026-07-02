@@ -28,13 +28,9 @@ class WismaController extends Controller
      */
     private function getAvailability(string $wismaID): array
     {
-        $startDate = Carbon::today();
-        $endDate   = Carbon::today()->addMonths(3);
-
         $bookings = Booking::where('wismaID', $wismaID)
             ->whereIn('status', ['pending', 'approved'])
-            ->where('check_out', '>=', $startDate)
-            ->where('check_in', '<=', $endDate)
+            ->where('check_out', '>=', Carbon::today())
             ->get(['check_in', 'check_out']);
 
         $occupiedDates = [];

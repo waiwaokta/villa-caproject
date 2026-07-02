@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearchFilter();
     initNavHamburger();
     initGallery();
+    initLightbox();
     initAvailabilityCalendar();
     initBookingForm();
 });
@@ -145,62 +146,222 @@ function initGallery() {
 }
 
 // ============================================
-// KALENDER AVAILABILITY — detail wisma, 3 bulan ke depan
+// KALENDER AVAILABILITY — detail wisma
 // ============================================
 function initAvailabilityCalendar() {
     const wrap = document.getElementById('calendarWrap');
     if (!wrap) return;
 
-    const occupiedDates = JSON.parse(wrap.dataset.occupied || '[]');
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const occupiedDates  = JSON.parse(wrap.dataset.occupied || '[]');
+    const todayStr       = getTodayLocal();
+    const now            = new Date();
+    const monthSelect    = document.getElementById('calMonthSelect');
+    const yearSelect     = document.getElementById('calYearSelect');
 
-    const dayLabels = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
     const monthNames = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        'Januari','Februari','Maret','April','Mei','Juni',
+        'Juli','Agustus','September','Oktober','November','Desember'
     ];
+    const dayLabels = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
 
-    let html = '';
+    let currentYear  = now.getFullYear();
+    let currentMonth = now.getMonth();
 
-    for (let m = 0; m < 3; m++) {
-        const monthDate = new Date(today.getFullYear(), today.getMonth() + m, 1);
-        const year = monthDate.getFullYear();
-        const month = monthDate.getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+    // Generate pilihan tahun — dari tahun ini sampai 5 tahun ke depan
+    function populateYears() {
+        yearSelect.innerHTML = '';
+        for (let y = now.getFullYear(); y <= now.getFullYear() + 5; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            yearSelect.appendChild(opt);
+        }
+    }
+
+    function syncSelects() {
+        monthSelect.value = currentMonth;
+        yearSelect.value  = currentYear;
+
+        // Disable bulan yang sudah lewat kalau tahun sekarang
+        Array.from(monthSelect.options).forEach(opt => {
+            const m = parseInt(opt.value);
+            const y = parseInt(yearSelect.value);
+            opt.disabled = (y === now.getFullYear() && m < now.getMonth());
+        });
+    }
+
+    function renderCalendar() {
+        const year           = currentYear;
+        const month          = currentMonth;
+        const daysInMonth    = new Date(year, month + 1, 0).getDate();
         const firstDayOfWeek = new Date(year, month, 1).getDay();
 
-        html += `<div class="cal-month">`;
-        html += `<div class="cal-month-title">${monthNames[month]} ${year}</div>`;
-        html += `<div class="cal-grid">`;
+        // Disable tombol prev kalau sudah di bulan ini
+        const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
+        document.getElementById('calPrev').disabled = isCurrentMonth;
 
+        syncSelects();
+
+        let html = '<div class="cal-grid">';
         dayLabels.forEach(label => {
             html += `<div class="cal-day-label">${label}</div>`;
         });
-
-        // Kosong sebelum tanggal 1
         for (let i = 0; i < firstDayOfWeek; i++) {
             html += `<div class="cal-day cal-day-empty"></div>`;
         }
-
         for (let d = 1; d <= daysInMonth; d++) {
-            const dateObj = new Date(year, month, d);
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dateStr    = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const isToday    = dateStr === todayStr;
+            const isPast     = dateStr < todayStr;
+            const isOccupied = occupiedDates.includes(dateStr);
 
-            let cls = 'cal-day-available';
-            if (dateObj < today) {
-                cls = 'cal-day-past';
-            } else if (occupiedDates.includes(dateStr)) {
-                cls = 'cal-day-occupied';
-            }
+            let cls = 'cal-day ';
+            if (isToday)         cls += 'cal-day-today';
+            else if (isPast)     cls += 'cal-day-past';
+            else if (isOccupied) cls += 'cal-day-occupied';
+            else                 cls += 'cal-day-available';
 
-            html += `<div class="cal-day ${cls}">${d}</div>`;
+            html += `<div class="${cls}">${d}</div>`;
         }
-
-        html += `</div></div>`;
+        html += '</div>';
+        wrap.innerHTML = html;
     }
 
-    wrap.innerHTML = html;
+    // Event listeners
+    document.getElementById('calPrev').addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar();
+    });
+
+    document.getElementById('calNext').addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar();
+    });
+
+    monthSelect.addEventListener('change', () => {
+        currentMonth = parseInt(monthSelect.value);
+        renderCalendar();
+    });
+
+    yearSelect.addEventListener('change', () => {
+        currentYear = parseInt(yearSelect.value);
+        // Kalau ganti ke tahun ini dan bulan sekarang sudah lewat, reset ke bulan ini
+        if (currentYear === now.getFullYear() && currentMonth < now.getMonth()) {
+            currentMonth = now.getMonth();
+        }
+        renderCalendar();
+    });
+
+    populateYears();
+    renderCalendar();
+}
+
+// ============================================
+// LIGHTBOX GALERI — detail wisma
+// ============================================
+function initLightbox() {
+    const overlay     = document.getElementById('lightboxOverlay');
+    if (!overlay) return;
+
+    const lightboxImg = document.getElementById('lightboxImg');
+    const thumbsWrap  = document.getElementById('lightboxThumbs');
+    const counter     = document.getElementById('lightboxCounter');
+    const mainImg     = document.getElementById('galleryMainImg');
+    const thumbs      = document.querySelectorAll('.gallery-thumb');
+
+    if (!mainImg) return;
+
+    // Kumpulkan semua foto dari thumbnail
+    const photos = Array.from(thumbs).map(t => t.dataset.full);
+    // Kalau tidak ada thumbnail (cuma 1 foto), pakai foto utama saja
+    if (photos.length === 0 && mainImg) photos.push(mainImg.src);
+
+    let currentIndex = 0;
+
+    // Buat thumbnail di lightbox
+    function buildLightboxThumbs() {
+        thumbsWrap.innerHTML = photos.map((src, i) => `
+            <img src="${src}"
+                class="lightbox-thumb ${i === 0 ? 'active' : ''}"
+                data-index="${i}"
+                alt="Foto ${i + 1}">
+        `).join('');
+
+        thumbsWrap.querySelectorAll('.lightbox-thumb').forEach(t => {
+            t.addEventListener('click', () => {
+                goToLightbox(parseInt(t.dataset.index));
+            });
+        });
+    }
+
+    function goToLightbox(index) {
+        currentIndex = Math.max(0, Math.min(index, photos.length - 1));
+        lightboxImg.src = photos[currentIndex];
+        counter.textContent = `${currentIndex + 1} / ${photos.length}`;
+
+        // Update active thumb
+        thumbsWrap.querySelectorAll('.lightbox-thumb').forEach((t, i) => {
+            t.classList.toggle('active', i === currentIndex);
+        });
+
+        // Scroll thumb ke posisi aktif
+        const activeThumb = thumbsWrap.querySelector('.lightbox-thumb.active');
+        if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+        // Disable prev/next kalau di ujung
+        document.getElementById('lightboxPrev').style.opacity = currentIndex === 0 ? '0.3' : '1';
+        document.getElementById('lightboxNext').style.opacity = currentIndex === photos.length - 1 ? '0.3' : '1';
+    }
+
+    function openLightbox(index) {
+        buildLightboxThumbs();
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden'; // prevent scroll background
+        goToLightbox(index);
+    }
+
+    function closeLightbox() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Klik foto utama → buka lightbox
+    mainImg.style.cursor = 'zoom-in';
+    mainImg.addEventListener('click', () => {
+        // Cari index foto yang sedang aktif di thumbnail
+        const activeThumb = document.querySelector('.gallery-thumb.active');
+        const idx = activeThumb ? Array.from(thumbs).indexOf(activeThumb) : 0;
+        openLightbox(Math.max(0, idx));
+    });
+
+    // Klik thumbnail gallery → buka lightbox di foto itu
+    thumbs.forEach((thumb, i) => {
+        thumb.addEventListener('dblclick', () => openLightbox(i));
+    });
+
+    // Navigasi
+    document.getElementById('lightboxPrev').addEventListener('click', () => {
+        if (currentIndex > 0) goToLightbox(currentIndex - 1);
+    });
+    document.getElementById('lightboxNext').addEventListener('click', () => {
+        if (currentIndex < photos.length - 1) goToLightbox(currentIndex + 1);
+    });
+
+    // Tutup
+    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeLightbox();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+        if (!overlay.classList.contains('open')) return;
+        if (e.key === 'ArrowLeft')  goToLightbox(currentIndex - 1);
+        if (e.key === 'ArrowRight') goToLightbox(currentIndex + 1);
+        if (e.key === 'Escape')     closeLightbox();
+    });
 }
 
 // ============================================

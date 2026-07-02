@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             // ->favicon(asset('images/favicon.ico'))
             ->font('Public Sans')
             ->id('admin')
-            ->path('admin')
+            ->path('atmint')
             ->login(Login::class)
             ->colors([
                 'primary' => '#00a3ad', 

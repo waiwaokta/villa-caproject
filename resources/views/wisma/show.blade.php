@@ -78,17 +78,44 @@
             {{-- KALENDER AVAILABILITY --}}
             <div class="wisma-section">
                 <h2>Ketersediaan</h2>
-                <p class="section-sub">Tanggal abu-abu artinya sudah dibooking</p>
-                <div class="calendar-wrap" id="calendarWrap" data-occupied="{{ json_encode(array_keys($availability)) }}">
-                    {{-- Diisi via JS --}}
+                <p class="section-sub">Tanggal berwarna merah artinya sudah dibooking</p>
+
+                <div class="cal-nav">
+                    <button class="cal-nav-btn" id="calPrev">
+                        <i class="ti ti-chevron-left"></i>
+                    </button>
+                    <div class="cal-nav-selectors">
+                        <select id="calMonthSelect" class="cal-select">
+                            <option value="0">Januari</option>
+                            <option value="1">Februari</option>
+                            <option value="2">Maret</option>
+                            <option value="3">April</option>
+                            <option value="4">Mei</option>
+                            <option value="5">Juni</option>
+                            <option value="6">Juli</option>
+                            <option value="7">Agustus</option>
+                            <option value="8">September</option>
+                            <option value="9">Oktober</option>
+                            <option value="10">November</option>
+                            <option value="11">Desember</option>
+                        </select>
+                        <select id="calYearSelect" class="cal-select"></select>
+                    </div>
+                    <button class="cal-nav-btn" id="calNext">
+                        <i class="ti ti-chevron-right"></i>
+                    </button>
                 </div>
+
+                <div class="calendar-wrap-single" id="calendarWrap"
+                    data-occupied="{{ json_encode(array_keys($availability)) }}">
+                </div>
+
                 <div class="calendar-legend">
                     <span><i class="legend-dot legend-available"></i> Tersedia</span>
                     <span><i class="legend-dot legend-occupied"></i> Sudah dibooking</span>
                     <span><i class="legend-dot legend-past"></i> Tanggal lewat</span>
                 </div>
             </div>
-
         </div>
 
         {{-- SIDEBAR HARGA + CTA --}}
@@ -121,6 +148,24 @@
             </div>
         </div>
     </div>
+</div>
+
+{{-- LIGHTBOX --}}
+<div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" id="lightboxClose">
+        <i class="ti ti-x"></i>
+    </button>
+    <div class="lightbox-img-wrap">
+        <button class="lightbox-btn-prev" id="lightboxPrev">
+            <i class="ti ti-chevron-left"></i>
+        </button>
+        <img src="" alt="Foto Wisma" id="lightboxImg">
+        <button class="lightbox-btn-next" id="lightboxNext">
+            <i class="ti ti-chevron-right"></i>
+        </button>
+    </div>
+    <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
 </div>
 
 @endsection
