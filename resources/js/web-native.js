@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initLightbox();
     initAvailabilityCalendar();
     initBookingForm();
+    initStatTicker();
 });
 
     function getTodayLocal() {
@@ -17,9 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 // ============================================
-// SLIDER WISMA — beranda
+// TICKER STATISTIK BOOKING — beranda
 // ============================================
-function initSliderWisma() {
+function initStatTicker() {
+    const track = document.getElementById('statTickerTrack');
+    if (!track) return; 
+
+    const original = track.innerHTML;
+    track.innerHTML = original.repeat(4);
+}
+
+    // ============================================
+    // SLIDER WISMA — beranda
+    // ============================================
+    function initSliderWisma() {
     const fwWrap = document.getElementById('fwWrap');
     if (!fwWrap) return; // halaman ini tidak punya slider, skip
 

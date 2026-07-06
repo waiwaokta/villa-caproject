@@ -13,6 +13,7 @@
     --text: #1a1a18;
     --text-secondary: #6b6b68;
     --border: #e8e8e4;
+    --nav-height: 62px;
 }
 
 body {
@@ -22,6 +23,53 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 a { text-decoration: none; color: inherit; }
+
+/* ============================================
+   TICKER STATISTIK BOOKING — beranda, sticky
+   ============================================ */
+.stat-ticker-wrap {
+    position: sticky;
+    top: var(--nav-height);
+    z-index: 90;
+    background: rgba(2, 26, 54, 0.85);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+}
+.stat-ticker-track {
+    display: inline-flex;
+    align-items: center;
+    animation: statTickerScroll 30s linear infinite;
+}
+.stat-ticker-wrap:hover .stat-ticker-track {
+    animation-play-state: paused;
+}
+.stat-ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 40px;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+}
+.stat-ticker-name {
+    color: #f8f6f2;
+    font-weight: 700;
+}
+.stat-ticker-count {
+    color: rgba(133,183,235,0.85);
+    font-weight: 500;
+}
+@keyframes statTickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-25%); }
+}
+@media (max-width: 640px) {
+    .stat-ticker-item { padding: 0 24px; font-size: 12px; }
+}
 
 /* NAV */
 .nav {
@@ -36,6 +84,7 @@ a { text-decoration: none; color: inherit; }
     top: 0;
     z-index: 100;
     border-bottom: 1px solid rgba(255,255,255,0.07);
+    min-height: var(--nav-height);
 }
 .nav-brand {
     color: #fff;
@@ -126,12 +175,14 @@ a { text-decoration: none; color: inherit; }
    BERANDA — hero, slider, why-grid, steps, testimoni
    ============================================ */
 .hero-slider-block {
-    background: linear-gradient(160deg,
-        #0a3a6e 0%, #0C447C 30%, #0e5490 50%, #042C53 75%, #021a36 100%
-    );
     position: relative;
 }
 
+.hero-section-wrap {
+    background: linear-gradient(160deg,
+        #0a3a6e 0%, #0C447C 30%, #0e5490 50%, #042C53 75%, #021a36 100%
+    );
+}
 .hero { padding: 64px 40px 40px; text-align: center; position: relative; }
 .hero::before {
     content: '';
