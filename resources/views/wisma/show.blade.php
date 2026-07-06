@@ -142,7 +142,7 @@
                 </div>
                 <p class="price-note">* Harga per malam</p>
 
-                <a href="/booking/{{ $wisma->wismaID }}" class="btn-book-now">
+                <a href="/booking/{{ $wisma->wismaID }}?check_in={{ $prefillCheckIn }}&check_out={{ $prefillCheckOut }}" class="btn-book-now">
                     <i class="ti ti-calendar-plus"></i> Booking Sekarang
                 </a>
             </div>

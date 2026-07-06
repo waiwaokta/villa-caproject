@@ -49,7 +49,6 @@
                     <label>Check-out</label>
                     <input type="date" id="filter-checkout" value="{{ request('check_out') }}">
                 </div>
-
                 <button class="search-btn" onclick="doSearch()">
                     <i class="ti ti-search"></i> Cari
                 </button>

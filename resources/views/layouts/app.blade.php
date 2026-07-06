@@ -23,7 +23,7 @@
         <i class="ti ti-building-community"></i> Wisma PLN
     </a>
     <div class="nav-links">
-        <a href="/#wisma">Wisma</a>
+        <a href="{{ route('wisma.search') }}">Wisma</a>
         <a href="/#tentang">Tentang</a>
         <a href="/#kontak">Kontak</a>
     </div>
@@ -33,13 +33,15 @@
     </button>
 </nav>
 <div class="nav-mobile-menu">
-    <a href="/#wisma">Wisma</a>
+    <a href="{{ route('wisma.search') }}">Wisma</a>
     <a href="/#tentang">Tentang</a>
     <a href="/#kontak">Kontak</a>
     <a href="/cek-booking">Cek Booking</a>
 </div>
 
-@yield('content')
+<main style="flex: 1;">
+    @yield('content')
+</main>
 
 <div class="footer">
     <span style="color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;">

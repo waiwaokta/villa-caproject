@@ -85,3 +85,7 @@ Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
 
 Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
     ->name('booking.create');
+
+// Cari Wisma — list ketersediaan berdasarkan lokasi & tanggal
+Route::get('/cari', [WismaController::class, 'search'])
+    ->name('wisma.search');

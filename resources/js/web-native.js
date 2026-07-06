@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initAvailabilityCalendar();
     initBookingForm();
     initStatTicker();
+    initWismaCardClick();
+    initWismaSearchDateGuard();
 });
 
     function getTodayLocal() {
@@ -92,30 +94,84 @@ function initStatTicker() {
 // ============================================
 function initSearchFilter() {
     const searchBtn = document.querySelector('.search-btn');
-    if (!searchBtn) return; // halaman ini tidak punya search box, skip
+    if (!searchBtn) return;
+
+    const checkinInput  = document.getElementById('filter-checkin');
+    const checkoutInput = document.getElementById('filter-checkout');
+
+    function syncCheckoutMin() { // ditambahkan — function terpisah biar bisa dipanggil langsung di awal juga
+        if (!checkinInput.value) return;
+        const nextDay = new Date(checkinInput.value + 'T00:00:00');
+        nextDay.setDate(nextDay.getDate() + 1);
+        const y = nextDay.getFullYear();
+        const m = String(nextDay.getMonth() + 1).padStart(2, '0');
+        const d = String(nextDay.getDate()).padStart(2, '0');
+        const minCheckout = `${y}-${m}-${d}`;
+        checkoutInput.min = minCheckout;
+        if (checkoutInput.value && checkoutInput.value < minCheckout) { // ditambahkan — kalau value sekarang udah invalid, reset otomatis
+            checkoutInput.value = minCheckout;
+        }
+    }
+
+    if (checkinInput && !checkinInput.value) {
+        checkinInput.value = getTodayLocal();
+    }
+    if (checkoutInput && !checkoutInput.value) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const y = tomorrow.getFullYear();
+        const m = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const d = String(tomorrow.getDate()).padStart(2, '0');
+        checkoutInput.value = `${y}-${m}-${d}`;
+    }
+    if (checkinInput && checkoutInput) {
+        syncCheckoutMin(); // diubah — panggil function baru, bukan inline lagi
+    }
 
     window.doSearch = function () {
         const lokasi   = document.getElementById('filter-lokasi').value;
         const checkin  = document.getElementById('filter-checkin').value;
         const checkout = document.getElementById('filter-checkout').value;
-        const usertype = document.getElementById('filter-usertype').value;
         const params   = new URLSearchParams({
             lokasi,
             check_in: checkin,
-            check_out: checkout,
-            user_type: usertype
+            check_out: checkout
         });
-        window.location.href = '/?' + params.toString();
+        window.location.href = '/cari?' + params.toString();
     };
 
-    const checkinInput = document.getElementById('filter-checkin');
     if (checkinInput) {
-        checkinInput.addEventListener('change', function () {
-            const nextDay = new Date(this.value);
-            nextDay.setDate(nextDay.getDate() + 1);
-            document.getElementById('filter-checkout').min = nextDay.toISOString().split('T')[0];
-        });
+        checkinInput.addEventListener('change', syncCheckoutMin); // diubah — pakai function baru, bukan inline
     }
+}
+
+// ============================================
+// VALIDASI TANGGAL — form cari wisma (/cari)
+// ============================================
+function initWismaSearchDateGuard() {
+    const form = document.querySelector('.wisma-box-standalone');
+    if (!form) return; // halaman ini tidak punya form cari wisma, skip
+
+    const checkinInput  = form.querySelector('[name="check_in"]');
+    const checkoutInput = form.querySelector('[name="check_out"]');
+    if (!checkinInput || !checkoutInput) return;
+
+    function syncMin() {
+        if (!checkinInput.value) return;
+        const nextDay = new Date(checkinInput.value + 'T00:00:00');
+        nextDay.setDate(nextDay.getDate() + 1);
+        const y = nextDay.getFullYear();
+        const m = String(nextDay.getMonth() + 1).padStart(2, '0');
+        const d = String(nextDay.getDate()).padStart(2, '0');
+        const minCheckout = `${y}-${m}-${d}`;
+        checkoutInput.min = minCheckout;
+        if (checkoutInput.value && checkoutInput.value < minCheckout) {
+            checkoutInput.value = minCheckout;
+        }
+    }
+
+    syncMin(); // jalankan sekali di awal, karena value sudah terisi dari controller
+    checkinInput.addEventListener('change', syncMin);
 }
 
 // ============================================
@@ -406,22 +462,15 @@ function initBookingForm() {
         const isPln       = userType === 'pln';
         const isInstansi  = !isPln && bookingType === 'instansi';
 
-        // booking_type cuma relevan kalau umum
         bookingTypeWrap.style.display = isPln ? 'none' : 'grid';
-
-        // employee_id cuma kalau PLN
         employeeIdWrap.style.display = isPln ? 'block' : 'none';
-
-        // instansi fields cuma kalau umum-instansi
         instansiWrap.style.display = isInstansi ? 'block' : 'none';
 
-        // Dokumen
         docKtpWrap.style.display        = isPln ? 'none' : 'block';
         docNpwpWrap.style.display       = isInstansi ? 'block' : 'none';
         docIdPlnWrap.style.display      = isPln ? 'block' : 'none';
         docPlnKtpNpwpWrap.style.display = isPln ? 'block' : 'none';
 
-        // Toggle required attribute biar validasi browser konsisten sama backend
         document.querySelector('[name="doc_ktp"]').required = !isPln;
         document.querySelector('[name="doc_npwp"]').required = isInstansi;
         document.querySelector('[name="doc_id_pln"]').required = isPln;
@@ -433,7 +482,7 @@ function initBookingForm() {
     }));
     bookingTypeRadios.forEach(r => r.addEventListener('change', updateFieldVisibility));
 
-    updateFieldVisibility(); // jalankan sekali di awal
+    updateFieldVisibility();
 
     // ============================================
     // ESTIMASI HARGA — real-time via AJAX
@@ -507,4 +556,31 @@ function initBookingForm() {
             console.error('Gagal memuat estimasi harga', err);
         }
     }
+
+    // Kalau tanggal sudah terisi otomatis dari prefill (misal dari halaman /cari), langsung fetch estimasi tanpa perlu user pilih ulang
+    if (checkInInput.value && checkOutInput.value) { // ditambahkan
+        const nextDay = new Date(checkInInput.value + 'T00:00:00'); // ditambahkan — set ulang min check-out juga, konsisten dengan behavior saat user pilih manual
+        nextDay.setDate(nextDay.getDate() + 1); // ditambahkan
+        const y = nextDay.getFullYear(); // ditambahkan
+        const m = String(nextDay.getMonth() + 1).padStart(2, '0'); // ditambahkan
+        const d = String(nextDay.getDate()).padStart(2, '0'); // ditambahkan
+        checkOutInput.min = `${y}-${m}-${d}`; // ditambahkan
+        fetchEstimate(); // ditambahkan — trigger estimasi langsung tanpa perlu event change
+    }
+}
+
+// ============================================
+// CARD WISMA — halaman /cari, klik card ke detail
+// ============================================
+function initWismaCardClick() {
+    const cards = document.querySelectorAll('.wisma-card');
+    if (!cards.length) return; // halaman ini tidak punya wisma-card, skip
+
+    cards.forEach(card => {
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('[data-stop-card-click]')) return; // klik di tombol "Pesan sekarang", jangan redirect ke detail
+            window.location.href = card.dataset.href;
+        });
+    });
 }

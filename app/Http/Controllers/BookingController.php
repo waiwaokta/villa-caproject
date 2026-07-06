@@ -14,17 +14,21 @@ use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-    public function create(string $wismaID)
+    public function create(string $wismaID, Request $request)
     {
         $wisma = Wisma::with(['prices'])
             ->where('wismaID', $wismaID)
             ->where('is_active', true)
             ->firstOrFail();
 
-        return view('booking.form', compact('wisma'));
+        $prefillCheckIn  = $request->query('check_in');
+        $prefillCheckOut = $request->query('check_out');
+
+        return view('booking.form', compact('wisma', 'prefillCheckIn', 'prefillCheckOut'));
     }
     public function store(StoreBookingRequest $request)
     {

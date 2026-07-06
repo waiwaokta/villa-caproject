@@ -21,6 +21,9 @@ body {
     background: var(--cream);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh; /* ditambahkan — biar body minimal setinggi viewport */
+    display: flex; /* ditambahkan — jadi flex container */
+    flex-direction: column;
 }
 a { text-decoration: none; color: inherit; }
 
@@ -223,7 +226,7 @@ a { text-decoration: none; color: inherit; }
 }
 
 .search-box {
-    background: rgba(255,255,255,0.97);
+    background: rgba(253, 252, 247, 0.97);
     border-radius: 16px;
     padding: 16px 20px;
     display: flex;
@@ -588,7 +591,7 @@ a { text-decoration: none; color: inherit; }
     .nav-links { display: none; }
     .nav-hamburger { display: block; }
     .nav { padding: 12px 20px; }
-    .footer { padding: 24px 20px; flex-direction: column; text-align: center; }
+    .footer { padding: 24px 20px; flex-direction: column; text-align: center; justify-content: center; gap: 14px; }
     .section { padding: 40px 20px; }
     .hero { padding: 40px 20px 28px; }
     .hero h1 { font-size: 24px; }
@@ -598,10 +601,13 @@ a { text-decoration: none; color: inherit; }
     .fw-content { padding: 20px 24px; }
     .fw-title { font-size: 20px; }
     .fw-actions { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .fw-btn-detail { order: -1; }
     .fw-price { margin-left: 0; padding-left: 0; border-left: none; }
     .fw-counter, .fw-dots { right: 24px; }
-    .sf { flex: 1 1 100%; }
-    .search-box { padding: 14px; }
+    .sf { flex: 1 1 45%; }
+    .search-box { flex-wrap: wrap; padding: 14px; gap: 10px; }
+    .sf:first-child { order: 3; flex: 1 1 100%; }
+    .search-btn { flex: 1 1 100%;  order: 4;}
 }
 
 /* ============================================
@@ -1217,4 +1223,146 @@ a { text-decoration: none; color: inherit; }
     font-size: 13px;
     font-weight: 700;
     margin-top: 8px;
+}
+
+/* ============================================
+   HALAMAN CARI WISMA
+   ============================================ */
+.wisma-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 40px 60px;
+}
+.wisma-page-header { margin-bottom: 28px; }
+.wisma-page-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.wisma-page-header p { font-size: 13px; color: var(--text-secondary); }
+
+.wisma-box-standalone {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    box-shadow: 0 8px 30px rgba(24,95,165,0.08);
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.wisma-result-info {
+    margin-bottom: 20px;
+}
+.wisma-result-info p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.wisma-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--cream2);
+    border-radius: 14px;
+}
+.wisma-empty i { font-size: 40px; color: var(--text-secondary); opacity: 0.4; margin-bottom: 12px; display: block; }
+.wisma-empty p { font-size: 14px; color: var(--text); font-weight: 600; }
+.wisma-empty-sub { font-size: 12px; color: var(--text-secondary); font-weight: 400 !important; margin-top: 4px; }
+
+.wisma-result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.wisma-card {
+    display: flex;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+    color: var(--text);
+}
+.wisma-card:hover {
+    box-shadow: 0 8px 24px rgba(24,95,165,0.1);
+    transform: translateY(-1px);
+}
+
+.wisma-card-img {
+    width: 240px;
+    flex-shrink: 0;
+    position: relative;
+    background: var(--cream2);
+}
+.wisma-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.wisma-card-img-fill {
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #042C53, #0e5490);
+}
+.wisma-card-img-fill i { font-size: 48px; opacity: .15; color: #fff; }
+
+.wisma-card-body {
+    flex: 1;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.wisma-card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+.wisma-card-location {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.wisma-card-location i { font-size: 12px; }
+.wisma-card-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 14px;
+    flex: 1;
+}
+.wisma-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.wisma-card-price {
+    display: flex;
+    flex-direction: column;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+.wisma-card-price strong { font-size: 17px; color: var(--blue-dark); font-weight: 700; }
+.wisma-card-btn {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 18px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+/* RESPONSIVE — halaman cari wisma, mobile */
+@media (max-width: 640px) {
+    .wisma-page { padding: 20px; }
+    .wisma-box-standalone { flex-wrap: wrap; padding: 14px; gap:10px; }
+    .wisma-box-standalone .sf { flex: 1 1 45%; }
+
+    .wisma-card { flex-direction: column; }
+    .wisma-card-img { width: 100%; height: 180px; }
+    .wisma-card-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .wisma-card-btn { width: 100%; text-align: center; }
 }
