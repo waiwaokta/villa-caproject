@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Document;
-use App\Models\Holiday;
 use App\Models\Price;
 use App\Models\Wisma;
+use App\Services\DayTypeResolver; 
 use App\Services\FonnteService;
+use App\Services\HolidayService; 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,11 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    public function __construct(
+        private HolidayService $holidayService, 
+        private DayTypeResolver $dayTypeResolver 
+    ) {}
+
     public function create(string $wismaID, Request $request)
     {
         $wisma = Wisma::with(['prices'])
@@ -117,11 +123,6 @@ class BookingController extends Controller
     // ---------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------
-
-    /**
-     * Hitung total harga booking — per malam berdasarkan klasifikasi hari masing-masing.
-     * Tidak dikali rata, karena 1 booking bisa mencakup weekday + weekend + holiday sekaligus.
-     */
     private function calculateTotalPrice(string $wismaID, string $userType, Carbon $checkIn, Carbon $checkOut): float
     {
         // Ambil semua harga wisma ini sekali saja — hindari query berulang per malam
@@ -130,19 +131,15 @@ class BookingController extends Controller
             ->get()
             ->keyBy('day_type');
 
-        // Ambil semua tanggal holiday sekali saja — hindari query berulang per malam
         $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
-        $datesInRange = collect($period)->map(fn(\Carbon\Carbon $d) => $d->toDateString());
 
-        $holidayDates = Holiday::whereIn('date', $datesInRange)
-            ->pluck('date')
-            ->map(fn($d) => Carbon::parse($d)->toDateString())
-            ->toArray();
+        // diubah — pakai HolidayService, bukan query Holiday langsung di sini
+        $holidayDates = $this->holidayService->getHolidayDatesInRange($checkIn, $checkOut);
 
         $total = 0;
 
         foreach ($period as $date) {
-            $dayType = $this->resolveDayType($date, $holidayDates);
+            $dayType = $this->dayTypeResolver->resolve($date, $holidayDates); 
 
             if (!isset($prices[$dayType])) {
                 throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk wisma ini.");
@@ -152,23 +149,6 @@ class BookingController extends Controller
         }
 
         return $total;
-    }
-
-    /**
-     * Klasifikasi 1 tanggal — holiday diprioritaskan dari tabel holidays,
-     * baru cek Sabtu/Minggu kalau bukan holiday.
-     */
-    private function resolveDayType(Carbon $date, array $holidayDates): string
-    {
-        if (in_array($date->toDateString(), $holidayDates)) {
-            return 'holiday';
-        }
-
-        if ($date->dayOfWeek === 0 || $date->dayOfWeek === 6) {
-            return 'weekend';
-        }
-
-        return 'weekday';
     }
 
     private function uploadDocument(string $bookingID, string $docType, $file): void

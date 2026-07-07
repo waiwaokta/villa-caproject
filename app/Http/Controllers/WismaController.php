@@ -7,7 +7,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 class WismaController extends Controller
 {
-    public function show(string $wismaID, Request $request) // ditambahkan — Request untuk baca query tanggal
+    public function show(string $wismaID, Request $request) 
     {
         $wisma = Wisma::with(['wismaPhotos', 'prices', 'facilities'])
             ->where('wismaID', $wismaID)
@@ -16,10 +16,10 @@ class WismaController extends Controller
             ->firstOrFail();
         $availability = $this->getAvailability($wismaID);
 
-        $prefillCheckIn  = $request->query('check_in'); // ditambahkan — dibawa dari /cari, null kalau akses langsung
-        $prefillCheckOut = $request->query('check_out'); // ditambahkan
+        $prefillCheckIn  = $request->query('check_in'); 
+        $prefillCheckOut = $request->query('check_out'); 
 
-        return view('wisma.show', compact('wisma', 'availability', 'prefillCheckIn', 'prefillCheckOut')); // diubah — tambah 2 variabel baru
+        return view('wisma.show', compact('wisma', 'availability', 'prefillCheckIn', 'prefillCheckOut')); 
     }
     public function search(Request $request)
     {
