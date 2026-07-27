@@ -7,9 +7,10 @@ use App\Models\Booking;
 use App\Models\Document;
 use App\Models\Price;
 use App\Models\Wisma;
-use App\Services\DayTypeResolver; 
+use App\Services\DayTypeResolver;
 use App\Services\FonnteService;
-use App\Services\HolidayService; 
+use App\Services\HolidayService;
+use App\Services\MaintenanceService; // ditambahkan
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +21,9 @@ use Illuminate\Http\Request;
 class BookingController extends Controller
 {
     public function __construct(
-        private HolidayService $holidayService, 
-        private DayTypeResolver $dayTypeResolver 
+        private HolidayService $holidayService,
+        private DayTypeResolver $dayTypeResolver,
+        private MaintenanceService $maintenanceService // ditambahkan
     ) {}
 
     public function create(string $wismaID, Request $request)
@@ -64,6 +66,13 @@ class BookingController extends Controller
             return back()->withErrors([
                 'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
             ])->withInput();
+        }
+
+        // ⚠️ MAINTENANCE CHECK — cek wisma sedang di-maintenance di rentang tanggal ini
+        if ($this->maintenanceService->isWismaBlocked($wisma->wismaID, $checkIn, $checkOut)) { // ditambahkan
+            return back()->withErrors([ // ditambahkan
+                'check_in' => 'Wisma sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.', // ditambahkan
+            ])->withInput(); // ditambahkan
         }
 
         // Hitung total price PER MALAM berdasarkan klasifikasi hari masing-masing
@@ -109,7 +118,6 @@ class BookingController extends Controller
             $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
         }
 
-        // PLN: KTP atau NPWP, simpan sesuai mana yang diisi
         if ($request->hasFile('doc_ktp_pln')) {
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp_pln'));
         }
@@ -123,9 +131,9 @@ class BookingController extends Controller
     // ---------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------
+
     private function calculateTotalPrice(string $wismaID, string $userType, Carbon $checkIn, Carbon $checkOut): float
     {
-        // Ambil semua harga wisma ini sekali saja — hindari query berulang per malam
         $prices = Price::where('wismaID', $wismaID)
             ->where('user_type', $userType)
             ->get()
@@ -133,13 +141,12 @@ class BookingController extends Controller
 
         $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
 
-        // diubah — pakai HolidayService, bukan query Holiday langsung di sini
         $holidayDates = $this->holidayService->getHolidayDatesInRange($checkIn, $checkOut);
 
         $total = 0;
 
         foreach ($period as $date) {
-            $dayType = $this->dayTypeResolver->resolve($date, $holidayDates); 
+            $dayType = $this->dayTypeResolver->resolve($date, $holidayDates);
 
             if (!isset($prices[$dayType])) {
                 throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk wisma ini.");

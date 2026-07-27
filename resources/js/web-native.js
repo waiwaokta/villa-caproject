@@ -489,14 +489,14 @@ function initBookingForm() {
     // ============================================
     const checkInInput  = document.getElementById('inputCheckIn');
     const checkOutInput = document.getElementById('inputCheckOut');
-    const wismaID        = document.querySelector('[name="wismaID"]').value;
+    const wismaID       = document.querySelector('[name="wismaID"]').value;
 
-    checkInInput.addEventListener('change', () => {
+    function syncCheckOutFromCheckIn() {
         const todayStr = getTodayLocal();
         const selected = checkInInput.value;
 
         if (selected < todayStr) {
-            checkInInput.value = todayStr;
+            checkInInput.value = todayStr; 
         }
 
         const nextDay = new Date(checkInInput.value + 'T00:00:00');
@@ -504,8 +504,23 @@ function initBookingForm() {
         const y = nextDay.getFullYear();
         const m = String(nextDay.getMonth() + 1).padStart(2, '0');
         const d = String(nextDay.getDate()).padStart(2, '0');
-        checkOutInput.min = `${y}-${m}-${d}`;
-        checkOutInput.value = '';
+        const nextDayStr = `${y}-${m}-${d}`;
+
+        checkOutInput.min = nextDayStr;
+        checkOutInput.value = nextDayStr; 
+    }
+
+    if (!checkInInput.value) {
+        checkInInput.value = getTodayLocal();
+        syncCheckOutFromCheckIn();
+    } else if (!checkOutInput.value) {
+        syncCheckOutFromCheckIn();
+    }
+
+    fetchEstimate();
+
+    checkInInput.addEventListener('change', () => { 
+        syncCheckOutFromCheckIn();
         fetchEstimate();
     });
     checkOutInput.addEventListener('change', fetchEstimate);
@@ -557,16 +572,26 @@ function initBookingForm() {
         }
     }
 
-    // Kalau tanggal sudah terisi otomatis dari prefill (misal dari halaman /cari), langsung fetch estimasi tanpa perlu user pilih ulang
-    if (checkInInput.value && checkOutInput.value) { // ditambahkan
-        const nextDay = new Date(checkInInput.value + 'T00:00:00'); // ditambahkan — set ulang min check-out juga, konsisten dengan behavior saat user pilih manual
-        nextDay.setDate(nextDay.getDate() + 1); // ditambahkan
-        const y = nextDay.getFullYear(); // ditambahkan
-        const m = String(nextDay.getMonth() + 1).padStart(2, '0'); // ditambahkan
-        const d = String(nextDay.getDate()).padStart(2, '0'); // ditambahkan
-        checkOutInput.min = `${y}-${m}-${d}`; // ditambahkan
-        fetchEstimate(); // ditambahkan — trigger estimasi langsung tanpa perlu event change
-    }
+    // // Kalau tanggal sudah terisi otomatis dari prefill (misal dari halaman /cari), langsung fetch estimasi tanpa perlu user pilih ulang
+    // checkInInput.addEventListener('change', () => {
+    //     const todayStr = getTodayLocal();
+    //     const selected = checkInInput.value;
+
+    //     if (selected < todayStr) {
+    //         checkInInput.value = todayStr;
+    //     }
+
+    //     const nextDay = new Date(checkInInput.value + 'T00:00:00');
+    //     nextDay.setDate(nextDay.getDate() + 1);
+    //     const y = nextDay.getFullYear();
+    //     const m = String(nextDay.getMonth() + 1).padStart(2, '0');
+    //     const d = String(nextDay.getDate()).padStart(2, '0');
+    //     const nextDayStr = `${y}-${m}-${d}`;
+
+    //     checkOutInput.min = nextDayStr;
+    //     checkOutInput.value = nextDayStr;
+    //     fetchEstimate();
+    // });
 }
 
 // ============================================

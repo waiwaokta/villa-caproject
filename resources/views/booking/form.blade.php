@@ -41,7 +41,7 @@
                         </div>
                         <div class="form-group">
                             <label>Check-out</label>
-                            <input type="date" name="check_out" id="inputCheckOut" required value="{{ $prefillCheckOut }}">
+                            <input type="date" name="check_out" id="inputCheckOut" required min="{{ date('Y-m-d', strtotime('+1 day')) }}" value="{{ $prefillCheckOut }}"> {{-- DIUBAH: tambah atribut min --}}
                         </div>
                     </div>
                     <p class="form-hint"><i class="ti ti-info-circle"></i> Check-in mulai 14:00, check-out maksimal 12:00</p>

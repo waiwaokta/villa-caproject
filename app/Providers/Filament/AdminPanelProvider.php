@@ -33,6 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->font('Public Sans')
             ->id('admin')
             ->path('atmint')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(Login::class)
             ->colors([
                 'primary' => '#00a3ad', 

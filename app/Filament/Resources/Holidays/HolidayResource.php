@@ -19,6 +19,8 @@ class HolidayResource extends Resource
 {
     protected static ?string $model = Holiday::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static string | UnitEnum | null $navigationGroup = 'Settings';
 
     protected static ?string $navigationLabel = 'Setup Libur Panjang';

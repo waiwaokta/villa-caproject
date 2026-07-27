@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/web-native.css',
                 'resources/js/web-native.js',
+                'resources/css/filament/admin/theme.css',
             ],
             refresh: true,
             fonts: [

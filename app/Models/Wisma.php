@@ -67,4 +67,9 @@ class Wisma extends Model
             'facilityID'
         );
     }
+
+    public function maintenance()
+    {
+        return $this->hasMany(Maintenance::class, 'wismaID', 'wismaID');
+    }
 }

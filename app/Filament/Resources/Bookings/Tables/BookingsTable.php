@@ -38,6 +38,7 @@ class BookingsTable
 
                 TextColumn::make('guest_name')
                     ->label('Nama Tamu')
+                    ->limit(15)
                     ->weight(FontWeight::Bold)
                     ->searchable(),
 
