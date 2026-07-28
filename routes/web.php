@@ -6,6 +6,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\WismaController;
 use App\Http\Controllers\Api\EstimatePriceController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', function () {
     return redirect('/admin');
@@ -86,6 +87,14 @@ Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
 Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
     ->name('booking.create');
 
-// Cari Wisma — list ketersediaan berdasarkan lokasi & tanggal
 Route::get('/cari', [WismaController::class, 'search'])
     ->name('wisma.search');
+
+Route::get('/tentang', function () {
+    return view('navbar.tentang');
+})->name('tentang');
+
+Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
+Route::post('/kontak', [ContactController::class, 'store'])
+    ->middleware('throttle:5,1') 
+    ->name('kontak.store');

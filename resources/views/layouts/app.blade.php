@@ -24,8 +24,8 @@
     </a>
     <div class="nav-links">
         <a href="{{ route('wisma.search') }}">Wisma</a>
-        <a href="/#tentang">Tentang</a>
-        <a href="/#kontak">Kontak</a>
+        <a href="{{ route('tentang') }}">Tentang</a>
+        <a href="{{ route('kontak') }}">Kontak</a>
     </div>
     <a href="/cek-booking" class="nav-btn">Cek Booking</a>
     <button class="nav-hamburger">
@@ -34,8 +34,8 @@
 </nav>
 <div class="nav-mobile-menu">
     <a href="{{ route('wisma.search') }}">Wisma</a>
-    <a href="/#tentang">Tentang</a>
-    <a href="/#kontak">Kontak</a>
+    <a href="{{ route('tentang') }}">Tentang</a>
+    <a href="{{ route('kontak') }}">Kontak</a>
     <a href="/cek-booking">Cek Booking</a>
 </div>
 
