@@ -44,15 +44,15 @@
 </main>
 
 <div class="footer">
-    <span style="color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;">
-        <i class="ti ti-building-community" style="color:var(--blue-accent)"></i> Wisma PLN
-    </span>
-    <div style="display:flex;gap:24px;">
-        <a href="#" style="color:rgba(255,255,255,0.5);font-size:12px;font-weight:500;">Kebijakan privasi</a>
-        <a href="#" style="color:rgba(255,255,255,0.5);font-size:12px;font-weight:500;">Syarat & ketentuan</a>
-        <a href="#" style="color:rgba(255,255,255,0.5);font-size:12px;font-weight:500;">Kontak</a>
+    <div class="footer-brand"> 
+        <i class="ti ti-building-community"></i> Wisma PLN
     </div>
-    <span style="color:rgba(255,255,255,0.3);font-size:11px;">© {{ date('Y') }} PT PLN (Persero)</span>
+    <div class="footer-links"> 
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Syarat & Ketentuan</a>
+        <a href="{{ route('kontak') }}">Kontak</a>
+    </div>
+    <span class="footer-copyright">© {{ date('Y') }} PT PLN (Persero)</span>
 </div>
 
 @stack('scripts')

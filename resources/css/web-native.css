@@ -164,6 +164,30 @@ a { text-decoration: none; color: inherit; }
     gap: 16px;
 }
 
+.footer-brand {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.footer-brand i { color: var(--blue-accent); }
+
+.footer-links { display: flex; gap: 24px; }
+.footer-links a {
+    color: var(--cream);
+    font-size: 12px;
+    font-weight: 500;
+    transition: color .2s;
+}
+.footer-links a:hover { color: rgba(255,255,255,0.85); }
+
+.footer-copyright {
+    color: var(--cream);
+    font-size: 11px;
+}
+
 /* DIVIDER */
 .divider { height: 1px; background: var(--border); margin: 0 40px; }
 
@@ -1273,6 +1297,233 @@ a { text-decoration: none; color: inherit; }
     font-size: 13px;
     font-weight: 700;
     margin-top: 8px;
+}
+
+.confirm-code-box {
+    background: var(--cream2);
+    border: 1.5px dashed var(--blue-accent);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+.confirm-code-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+.confirm-code-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    word-break: break-all;
+    margin-bottom: 6px;
+}
+.confirm-code-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.confirm-actions .btn-cek-status,
+.confirm-actions .btn-back-home {
+    flex: 1;
+    justify-content: center;
+    min-width: 180px;
+    margin-top: 0;
+    padding: 12px 20px;
+}
+.btn-cek-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background .2s;
+}
+.btn-cek-status:hover { background: #E6F1FB; }
+
+/* ============================================
+   HALAMAN CEK BOOKING
+   ============================================ */
+.cekbooking-page { max-width: 720px; margin: 0 auto; padding: 40px 40px 80px; }
+.cekbooking-header { margin-bottom: 24px; }
+.cekbooking-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.cekbooking-header p { font-size: 13px; color: var(--text-secondary); }
+
+.cekbooking-search-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.cekbooking-search-form { display: flex; gap: 12px; align-items: flex-end; }
+.cekbooking-search-form .form-group input {
+    width: 100%;
+    border: 1.5px solid #e5e5e1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+}
+.cekbooking-search-form .form-group input:focus { border-color: var(--blue-accent); }
+
+.btn-cek-booking {
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: opacity .2s;
+}
+.btn-cek-booking:hover { opacity: 0.9; }
+
+/* RESULT BOX */
+.cekbooking-result-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+.cekbooking-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--cream2);
+    flex-wrap: wrap;
+}
+.cekbooking-result-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.cekbooking-result-code { font-size: 13px; font-weight: 600; color: var(--text); word-break: break-all; }
+
+.cekbooking-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.cekbooking-status-pending { background: #FFF4E0; color: #B8720A; }
+.cekbooking-status-approved { background: #E8F5E9; color: #2E7D32; }
+.cekbooking-status-rejected { background: #FFE4E4; color: #C0392B; }
+
+.cekbooking-result-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+.cekbooking-info-item { display: flex; flex-direction: column; gap: 4px; }
+.cekbooking-info-item span { font-size: 11px; color: var(--text-secondary); }
+.cekbooking-info-item strong { font-size: 13px; color: var(--text); font-weight: 600; }
+
+/* TIMELINE BOX */
+.cekbooking-timeline-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+}
+.cekbooking-timeline-box h3 { font-size: 14px; font-weight: 700; margin-bottom: 20px; }
+
+.timeline {
+    position: relative;
+    display: flex; /* DITAMBAHKAN */
+    flex-direction: column-reverse; /* DITAMBAHKAN — balik urutan visual, item terakhir di HTML jadi tampil paling atas */
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    gap: 16px;
+    padding-bottom: 28px;
+}
+.timeline-item:first-child { padding-bottom: 0; }
+
+/* garis penghubung antar titik */
+.timeline-item:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 34px;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+}
+.timeline-item.timeline-done:not(:first-child)::before {
+    background: var(--blue-accent);
+}
+
+.timeline-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--cream2);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+.timeline-done .timeline-dot {
+    background: var(--blue-accent);
+    border-color: var(--blue-accent);
+    color: #fff;
+}
+.timeline-dot-pending { background: #F0A500 !important; border-color: #F0A500 !important; color: #fff !important; }
+.timeline-dot-approved { background: #2E7D32 !important; border-color: #2E7D32 !important; color: #fff !important; }
+.timeline-dot-rejected { background: #C0392B !important; border-color: #C0392B !important; color: #fff !important; }
+
+.timeline-content { flex: 1; padding-top: 4px; }
+.timeline-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.timeline-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 6px; }
+.timeline-date { font-size: 11px; color: var(--text-secondary); font-style: italic; }
+
+.timeline-success .timeline-title { color: #2E7D32; }
+.timeline-danger .timeline-title { color: #C0392B; }
+
+@media (max-width: 640px) {
+    .cekbooking-page { padding: 24px 20px 60px; }
+    .cekbooking-search-form { flex-direction: column; align-items: stretch; }
+    .cekbooking-result-info { grid-template-columns: 1fr 1fr; }
+    .cekbooking-result-header { flex-direction: column; }
+    .cekbooking-info-item:nth-child(1) { order: 1; }
+    .cekbooking-info-item:nth-child(2) { order: 2; }
+    .cekbooking-info-item:nth-child(3) { order: 3; }
+    .cekbooking-info-item:nth-child(6) { order: 4; }
+    .cekbooking-info-item:nth-child(4) { order: 5; }
+    .cekbooking-info-item:nth-child(5) { order: 6; } 
 }
 
 /* ============================================

@@ -7,73 +7,45 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\WismaController;
 use App\Http\Controllers\Api\EstimatePriceController;
 use App\Http\Controllers\ContactController;
-
-Route::get('/', function () {
-    return redirect('/admin');
-});
-
-// Cek booking — rate limit 10x per menit
-// ⚠️ GANTI: tambah CekBookingController setelah web native selesai
-Route::get('/cek-booking', function () {
-    return view('cek-booking');
-})->middleware('throttle:cek-booking')
-  ->name('booking.cek');
-
-// Document routes — private access
-Route::middleware(['auth'])->group(function () {
-    Route::get(
-        '/dokumen/{documentID}',
-        [DocumentController::class, 'show']
-    )->middleware('check.document.access');
-
-    Route::delete(
-        '/dokumen/{documentID}',
-        [DocumentController::class, 'destroy']
-    )->middleware('role:admin');
-});
-
-// Document routes — private access
-Route::middleware(['auth'])->group(function () {
-    Route::get(
-        '/dokumen/{documentID}',
-        [DocumentController::class, 'show']
-    )->middleware('check.document.access');
-
-Route::delete(
-    '/dokumen/{documentID}',
-    [DocumentController::class, 'destroy']
-)->middleware('role:admin');
-});
-
-// Tambahkan di dalam atau di luar middleware auth — 
-// karena guest booking diizinkan (user_id nullable)
-Route::post('/booking', [BookingController::class, 'store'])
-    ->middleware('throttle:3,1') // max 3x per menit, security
-    ->name('booking.store');
+use App\Http\Controllers\CekBookingController;
 
 // Beranda
-Route::get('/', [BerandaController::class, 'index'])->name('beranda');
+Route::get('/', [BerandaController::class, 'index'])->name('beranda'); // DIHAPUS — duplikat redirect('/admin') yang lama, sekarang cuma 1 definisi '/'
 
 // Detail Wisma
 Route::get('/wisma/{wismaID}', [WismaController::class, 'show'])
     ->name('wisma.show');
 
-// Foto wisma — public (tidak butuh auth, tapi via controller bukan URL langsung)
+// Foto wisma — public
 Route::get('/foto/{photoID}', [BerandaController::class, 'foto'])
     ->name('dokumen.foto');
 
-// Booking
+// Cari wisma
+Route::get('/cari', [WismaController::class, 'search'])
+    ->name('wisma.search');
+
+// Booking — form & submit
+Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
+    ->name('booking.create');
+
 Route::post('/booking', [BookingController::class, 'store'])
-    ->middleware('throttle:booking')
+    ->middleware('throttle:3,1')
     ->name('booking.store');
 
-// Cek booking
-Route::get('/cek-booking', function () {
-    return view('booking.check-book');
-})->middleware('throttle:cek-booking')
-  ->name('booking.cek');
+// Konfirmasi booking berhasil dikirim — DITAMBAHKAN, sebelumnya tidak ada route untuk confirm.blade.php
+Route::get('/booking/confirm/{bookingID}', [BookingController::class, 'confirm'])
+    ->name('booking.confirm');
 
-// Document routes — private access
+// Cek booking — tracking status
+Route::get('/cek-booking', [CekBookingController::class, 'index'])
+    ->middleware('throttle:cek-booking')
+    ->name('booking.cek');
+
+Route::post('/cek-booking', [CekBookingController::class, 'cari'])
+    ->middleware('throttle:cek-booking')
+    ->name('booking.cek.cari');
+
+// Dokumen — private access (DIHAPUS duplikatnya, sekarang cuma 1 block)
 Route::middleware(['auth'])->group(function () {
     Route::get('/dokumen/{documentID}', [DocumentController::class, 'show'])
         ->middleware('check.document.access');
@@ -81,20 +53,17 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:admin');
 });
 
+// API estimasi harga
 Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
     ->middleware('throttle:30,1');
 
-Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
-    ->name('booking.create');
-
-Route::get('/cari', [WismaController::class, 'search'])
-    ->name('wisma.search');
-
+// Halaman statis
 Route::get('/tentang', function () {
     return view('navbar.tentang');
 })->name('tentang');
 
+// Kontak
 Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
 Route::post('/kontak', [ContactController::class, 'store'])
-    ->middleware('throttle:5,1') 
+    ->middleware('throttle:5,1')
     ->name('kontak.store');

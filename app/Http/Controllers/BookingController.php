@@ -125,7 +125,7 @@ class BookingController extends Controller
     });
 
         app(FonnteService::class)->sendNewBookingAlert($booking);
-        return redirect('/cek-booking')->with('success', 'Booking berhasil dikirim. Kode booking akan dikirim ke WhatsApp kamu.');
+        return redirect()->route('booking.confirm', $booking->bookingID);
     }
 
     // ---------------------------------------------------------------
@@ -170,5 +170,15 @@ class BookingController extends Controller
             'is_primary' => false,
             'order'      => 0,
         ]);
+    }
+
+    public function confirm(string $bookingID)
+    {
+        $booking = Booking::with('wisma:wismaID,name')
+            ->select(['bookingID', 'wismaID', 'check_in', 'check_out', 'guest_name'])
+            ->where('bookingID', $bookingID)
+            ->firstOrFail();
+
+        return view('booking.confirm', compact('booking'));
     }
 }
