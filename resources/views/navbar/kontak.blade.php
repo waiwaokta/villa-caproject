@@ -66,6 +66,29 @@
         </div>
 
     </div>
+    <div class="kontak-faq">
+        <h2>Pertanyaan yang Sering Diajukan</h2>
+
+        <div class="faq-item">
+            <p class="faq-question">Jam berapa tim kami merespons pesan?</p>
+            <p class="faq-answer">Tim kami merespons pada jam kerja, Senin sampai Jumat pukul 08.00 sampai 17.00 WIB. Pesan yang masuk di luar jam tersebut akan diproses pada hari kerja berikutnya.</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-question">Apakah bisa melakukan booking melalui telepon?</p>
+            <p class="faq-answer">Saat ini seluruh proses booking dilakukan melalui form pada situs kami. Jika membutuhkan bantuan mengisi form, silakan hubungi kami melalui WhatsApp dan tim akan membantu proses pemesanan.</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-question">Bagaimana proses pengembalian dana jika booking dibatalkan?</p>
+            <p class="faq-answer">Kebijakan pengembalian dana disesuaikan dengan ketentuan yang berlaku pada saat pemesanan. Silakan hubungi tim kami melalui email atau WhatsApp untuk informasi lebih lanjut mengenai kasus pembatalan yang dialami.</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-question">Berapa lama waktu yang dibutuhkan untuk mendapat balasan email?</p>
+            <p class="faq-answer">Balasan email umumnya dikirim dalam waktu satu hingga dua hari kerja. Untuk respons yang lebih cepat, kami menyarankan menghubungi kami melalui WhatsApp.</p>
+        </div>
+    </div>
 </div>
 
 @endsection

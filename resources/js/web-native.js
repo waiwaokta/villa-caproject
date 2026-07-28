@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initStatTicker();
     initWismaCardClick();
     initWismaSearchDateGuard();
+    initTickerCardWisma();
 });
 
     function getTodayLocal() {
@@ -599,4 +600,22 @@ function initWismaCardClick() {
             window.location.href = card.dataset.href;
         });
     });
+}
+
+// ============================================
+// TICKER KARTU REKOMENDASI WISMA — halaman /cari
+// ============================================
+function initTickerCardWisma() {
+    const track = document.getElementById('rekomendasiTrack');
+    if (!track) return;
+
+    const originalCards = track.children.length;
+    if (originalCards === 0) return;
+
+    // Target sekitar 20-24 kartu total di DOM, gak peduli berapa jumlah data asli
+    const targetTotal = 24;
+    const repeatCount = Math.max(2, Math.ceil(targetTotal / originalCards));
+
+    const original = track.innerHTML;
+    track.innerHTML = original.repeat(repeatCount);
 }

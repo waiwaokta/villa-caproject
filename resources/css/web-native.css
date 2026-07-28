@@ -1627,6 +1627,19 @@ a { text-decoration: none; color: inherit; }
 .timeline-success .timeline-title { color: #2E7D32; }
 .timeline-danger .timeline-title { color: #C0392B; }
 
+.cekbooking-faq {
+    margin-top: 24px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+}
+.cekbooking-faq h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
 @media (max-width: 640px) {
     .cekbooking-page { padding: 24px 20px 60px; }
     .cekbooking-search-form { flex-direction: column; align-items: stretch; }
@@ -1768,6 +1781,102 @@ a { text-decoration: none; color: inherit; }
     padding: 9px 18px;
     border-radius: 8px;
     white-space: nowrap;
+}
+
+.wisma-rekomendasi { margin-top: 40px; }
+.wisma-rekomendasi-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+}
+
+.ticker-card-wrap {
+    overflow: hidden;
+    position: relative;
+}
+.ticker-card-wrap::before,
+.ticker-card-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 60px;
+    z-index: 2;
+    pointer-events: none;
+}
+.ticker-card-wrap::before {
+    left: 0;
+    background: linear-gradient(to right, var(--cream), transparent);
+}
+.ticker-card-wrap::after {
+    right: 0;
+    background: linear-gradient(to left, var(--cream), transparent);
+}
+
+.ticker-card-track {
+    display: inline-flex;
+    gap: 16px;
+    animation: tickerCardScroll 120s linear infinite;
+}
+.ticker-card-wrap:hover .ticker-card-track {
+    animation-play-state: paused;
+}
+
+@keyframes tickerCardScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.ticker-card {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    color: var(--text);
+}
+.ticker-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(24,95,165,0.1);
+}
+.ticker-card-img {
+    height: 130px;
+    background: var(--cream2);
+}
+.ticker-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ticker-card-img-fill {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #042C53, #0e5490);
+}
+.ticker-card-img-fill i { font-size: 32px; opacity: .2; color: #fff; }
+
+.ticker-card-body { padding: 12px 14px; }
+.ticker-card-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.ticker-card-location {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-bottom: 8px;
+}
+.ticker-card-price {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue-dark);
+}
+.ticker-card-price span {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 /* RESPONSIVE — halaman cari wisma, mobile */
@@ -2000,6 +2109,40 @@ a { text-decoration: none; color: inherit; }
     transition: opacity .2s;
 }
 .btn-whatsapp:hover { opacity: 0.9; }
+
+.kontak-faq {
+    margin-top: 32px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+}
+.kontak-faq h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+.faq-item {
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--cream2);
+}
+.faq-item:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+.faq-question {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+.faq-answer {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
 
 @media (max-width: 768px) {
     .kontak-page { padding: 24px 20px 60px; }

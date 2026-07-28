@@ -58,12 +58,24 @@ class WismaController extends Controller
             ->distinct()
             ->pluck('location');
 
+        $rekomendasi = collect();
+            if ($wismas->isEmpty()) {
+                $rekomendasi = Wisma::with(['primaryPhoto', 'prices'])
+                    ->where('is_active', true)
+                    ->has('wismaPhotos')
+                    ->inRandomOrder()
+                    ->limit(8)
+                    ->get();
+            }
+
         return view('wisma.wisma', [
             'wismas'    => $wismas,
             'lokasi'    => $lokasi,
             'checkIn'   => $checkIn->toDateString(),
             'checkOut'  => $checkOut->toDateString(),
             'lokasiTerpilih' => $request->lokasi ?? '',
+            'rekomendasi' => $rekomendasi,
+            'sudahSearch' => $request->filled('check_in') || $request->filled('lokasi'),
         ]);
     }
     private function getAvailability(string $wismaID): array

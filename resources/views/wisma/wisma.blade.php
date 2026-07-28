@@ -48,6 +48,37 @@
             <p>Wisma tidak tersedia untuk tanggal dan lokasi yang dipilih.</p>
             <p class="wisma-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
         </div>
+        @if ($rekomendasi->isNotEmpty())
+            <div class="wisma-rekomendasi">
+                <p class="wisma-rekomendasi-label">Wisma Lain yang Tersedia</p>
+
+                <div class="ticker-card-wrap">
+                    <div class="ticker-card-track" id="rekomendasiTrack">
+                        @foreach ($rekomendasi as $wisma)
+                            @php
+                                $harga = $wisma->prices->where('user_type', 'pln')->where('day_type', 'weekday')->first();
+                            @endphp
+                            <a href="{{ route('wisma.show', $wisma->wismaID) }}" class="ticker-card">
+                                <div class="ticker-card-img">
+                                    @if ($wisma->primaryPhoto)
+                                        <img src="{{ route('dokumen.foto', $wisma->primaryPhoto->photoID) }}" alt="{{ $wisma->name }}" loading="lazy">
+                                    @else
+                                        <div class="ticker-card-img-fill"><i class="ti ti-home-2"></i></div>
+                                    @endif
+                                </div>
+                                <div class="ticker-card-body">
+                                    <p class="ticker-card-name">{{ $wisma->name }}</p>
+                                    <p class="ticker-card-location"><i class="ti ti-map-pin"></i> {{ $wisma->location }}</p>
+                                    @if ($harga)
+                                        <p class="ticker-card-price">Mulai Rp {{ number_format($harga->price, 0, ',', '.') }} <span>/ malam</span></p>
+                                    @endif
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
     @else
         <div class="wisma-result-list">
             @foreach($wismas as $wisma)

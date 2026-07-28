@@ -29,6 +29,32 @@
         @endif
     </div>
 
+    @if (!isset($booking))
+        <div class="cekbooking-faq">
+            <h2>Pertanyaan yang Sering Diajukan</h2>
+
+            <div class="faq-item">
+                <p class="faq-question">Di mana saya dapat menemukan kode booking?</p>
+                <p class="faq-answer">Kode booking ditampilkan pada halaman konfirmasi setelah form booking berhasil dikirim. Kode yang sama juga tercantum pada pesan konfirmasi yang dikirim melalui WhatsApp.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">Berapa lama proses verifikasi booking?</p>
+                <p class="faq-answer">Proses verifikasi umumnya memakan waktu satu hingga dua hari kerja. Anda dapat memeriksa status terkini kapan saja menggunakan kode booking pada halaman ini.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">Apa yang terjadi jika booking saya tidak disetujui?</p>
+                <p class="faq-answer">Jika booking tidak disetujui, alasan penolakan akan ditampilkan pada halaman ini. Anda dapat melakukan pemesanan ulang dengan menyesuaikan data sesuai keterangan yang diberikan.</p>
+            </div>
+
+            <div class="faq-item">
+                <p class="faq-question">Saya kehilangan kode booking, apa yang harus dilakukan?</p>
+                <p class="faq-answer">Silakan hubungi tim kami melalui halaman kontak dengan menyertakan nama dan nomor WhatsApp yang digunakan saat melakukan pemesanan.</p>
+            </div>
+        </div>
+    @endif
+
     @isset($booking)
         @php
             $statusConfig = [
