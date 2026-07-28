@@ -21,8 +21,8 @@ body {
     background: var(--cream);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh; /* ditambahkan — biar body minimal setinggi viewport */
-    display: flex; /* ditambahkan — jadi flex container */
+    min-height: 100vh; /*biar body minimal setinggi viewport */
+    display: flex; /* jadi flex container */
     flex-direction: column;
 }
 a { text-decoration: none; color: inherit; }
@@ -98,10 +98,15 @@ a { text-decoration: none; color: inherit; }
     gap: 8px;
     letter-spacing: -0.01em;
 }
+/* .nav-logo-img { 
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+} */
 .nav-brand i { color: var(--blue-accent); font-size: 20px; }
 .nav-links { display: flex; gap: 28px; }
 .nav-links a {
-    color: rgba(255,255,255,0.65);
+    color: var(--cream);
     font-size: 13px;
     font-weight: 500;
     transition: color .2s;
@@ -182,9 +187,17 @@ a { text-decoration: none; color: inherit; }
 }
 
 .hero-section-wrap {
-    background: linear-gradient(160deg,
-        #0a3a6e 0%, #0C447C 30%, #0e5490 50%, #042C53 75%, #021a36 100%
+    background: linear-gradient(180deg,
+        #0a3a6e 0%, #103a63 20%, #0e5490 40%, #00A3AD 55%, #0e5490 70%, #042C53 85%, #021a36 100%
     );
+    background-size: 250% 250%; 
+    animation: heroGradientMove 10s ease-in-out infinite; 
+}
+
+@keyframes heroGradientMove { 
+    0%   { background-position: 0% 30%; }
+    50%  { background-position: 100% 70%; }
+    100% { background-position: 0% 30%; }
 }
 .hero { padding: 64px 40px 40px; text-align: center; position: relative; }
 .hero::before {
@@ -211,18 +224,47 @@ a { text-decoration: none; color: inherit; }
 }
 .hero h1 {
     color: #fff;
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 48px;
+    font-weight: 900;
     margin-bottom: 10px;
     letter-spacing: -0.03em;
-    line-height: 1.2;
+    line-height: 1.1;
 }
 .hero h1 span { color: #4DD9E0; }
 .hero p {
     color: rgba(181,212,244,0.8);
     font-size: 14px;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     line-height: 1.6;
+}
+
+/* ============================================
+   ENTRANCE ANIMATION — hero h1 & p, fade+blur+slide up
+   ============================================ */
+@keyframes heroFadeInUp {
+    from {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+    }
+}
+
+.hero h1 {
+    animation: heroFadeInUp 0.9s ease-out both; 
+}
+
+.hero p {
+    animation: heroFadeInUp 0.9s ease-out both; 
+    animation-delay: 0.15s; 
+}
+
+.hero-eyebrow {
+    animation: heroFadeInUp 0.7s ease-out both; 
 }
 
 .search-box {
@@ -236,6 +278,12 @@ a { text-decoration: none; color: inherit; }
     margin: 0 auto;
     box-shadow: 0 20px 60px rgba(2,26,54,0.35), 0 0 0 1px rgba(255,255,255,0.1);
 }
+
+.hero .search-box {
+    animation: heroFadeInUp 0.9s ease-out both;
+    animation-delay: 0.3s;
+}
+
 .sf { flex: 1; display: flex; flex-direction: column; gap: 5px; }
 .sf label {
     font-size: 10px;
@@ -342,9 +390,11 @@ a { text-decoration: none; color: inherit; }
     inset: 0;
     background: linear-gradient(
         to top,
-        rgba(2,26,54,0.97) 0%,
-        rgba(2,26,54,0.5) 45%,
-        rgba(2,26,54,0.1) 75%,
+        rgba(2,26,54,0.98) 0%,    
+        rgba(2,26,54,0.75) 25%,   
+        rgba(2,26,54,0.4) 50%,    
+        rgba(2,26,54,0.12) 75%,  
+        rgba(2,26,54,0.02) 90%,   
         transparent 100%
     );
 }
@@ -463,8 +513,8 @@ a { text-decoration: none; color: inherit; }
 .fw-dot.active { width: 22px; border-radius: 3px; background: #fff; }
 
 .slider-bottom-fade {
-    height: 64px;
-    background: linear-gradient(to bottom, #021a36 0%, var(--cream) 100%);
+    height: 24px;
+    background: linear-gradient(to bottom, #0d2239 10%, var(--cream) 100%);
     margin-top: -1px;
 }
 

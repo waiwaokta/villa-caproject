@@ -99,7 +99,7 @@ function initSearchFilter() {
     const checkinInput  = document.getElementById('filter-checkin');
     const checkoutInput = document.getElementById('filter-checkout');
 
-    function syncCheckoutMin() { // ditambahkan — function terpisah biar bisa dipanggil langsung di awal juga
+    function syncCheckoutMin() { // function terpisah biar bisa dipanggil langsung di awal juga
         if (!checkinInput.value) return;
         const nextDay = new Date(checkinInput.value + 'T00:00:00');
         nextDay.setDate(nextDay.getDate() + 1);
@@ -108,7 +108,7 @@ function initSearchFilter() {
         const d = String(nextDay.getDate()).padStart(2, '0');
         const minCheckout = `${y}-${m}-${d}`;
         checkoutInput.min = minCheckout;
-        if (checkoutInput.value && checkoutInput.value < minCheckout) { // ditambahkan — kalau value sekarang udah invalid, reset otomatis
+        if (checkoutInput.value && checkoutInput.value < minCheckout) { // kalau value sekarang udah invalid, reset otomatis
             checkoutInput.value = minCheckout;
         }
     }
@@ -186,15 +186,6 @@ function initNavHamburger() {
         mobileMenu.classList.toggle('open');
     });
 }
-
-// ============================================
-// INIT — jalankan semua function di atas setelah DOM siap
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    initSliderWisma();
-    initSearchFilter();
-    initNavHamburger();
-});
 
 // ============================================
 // GALERI FOTO — detail wisma
