@@ -6,7 +6,7 @@
     --blue: #185FA5;
     --blue-dark: #0C447C;
     --blue-deeper: #042C53;
-    --blue-deepest: #021a36;
+    --blue-deepest: #042141;
     --blue-light: #85B7EB;
     --blue-lighter: #B5D4F4;
     --blue-accent: #00A3AD;
@@ -21,11 +21,15 @@ body {
     background: var(--cream);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
-    min-height: 100vh; /*biar body minimal setinggi viewport */
-    display: flex; /* jadi flex container */
-    flex-direction: column;
 }
 a { text-decoration: none; color: inherit; }
+
+.site {
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
+}
 
 /* ============================================
    TICKER STATISTIK BOOKING — beranda, sticky
@@ -80,6 +84,7 @@ a { text-decoration: none; color: inherit; }
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 14px 40px;
+    border-radius: 0 0 12px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -152,40 +157,149 @@ a { text-decoration: none; color: inherit; }
     font-weight: 500;
 }
 
-/* FOOTER */
-.footer {
+/* ============================================
+   FOOTER — redesign ala Astra
+   ============================================ */
+.footer-new {
     background: var(--blue-deepest);
-    padding: 32px 40px;
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    border-radius: 12px 12px 0 0;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 56px 40px 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-gradient-wrap {
+    background: linear-gradient(180deg,
+        var(--blue-deepest) 0%, var(--blue) 60%, var(--blue-deepest) 100%
+    );
+    background-size: 500% 500%;
+    animation: footerGradientMove 10s ease-in-out infinite;
+}
+
+@keyframes footerGradientMove {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 35% 35%; }
+    100% { background-position: 0% 0%; }
+}
+
+.footer-col-brand { padding-right: 24px; }
+
+.footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+.footer-logo i { color: var(--blue-accent); font-size: 22px; }
+.footer-logo-img { height: 28px; width: auto; object-fit: contain; } /* siap dipakai begitu <img> di-uncomment */
+
+.footer-desc {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    margin-bottom: 18px;
+    max-width: 320px;
+}
+
+.footer-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 300px;
+}
+.footer-address i { flex-shrink: 0; margin-top: 2px; color: var(--blue-accent); font-size: 14px; }
+
+.footer-social-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+.footer-social { display: flex; gap: 10px; }
+.footer-social a {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    transition: background .2s;
+}
+.footer-social a:hover { background: var(--blue-accent); }
+
+.footer-col-title {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+}
+.footer-col a {
+    display: block;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    transition: color .2s;
+}
+.footer-col a:hover { color: #fff; }
+
+.footer-bottom {
+    background: rgba(0,0,0,0.15);
+    max-width: 1140px;
+    margin: 24px auto 0;
+    padding: 20px 32px;
+    border-radius: 12px 12px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(255,255,255,0.06);
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
 }
 
-.footer-brand {
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.footer-brand i { color: var(--blue-accent); }
-
-.footer-links { display: flex; gap: 24px; }
-.footer-links a {
-    color: var(--cream);
-    font-size: 12px;
-    font-weight: 500;
+.footer-copyright { font-size: 11.5px; color: rgba(255,255,255,0.4); }
+.footer-bottom-links { display: flex; gap: 20px; }
+.footer-bottom-links a {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.4);
     transition: color .2s;
 }
-.footer-links a:hover { color: rgba(255,255,255,0.85); }
+.footer-bottom-links a:hover { color: rgba(255,255,255,0.8); }
 
-.footer-copyright {
-    color: var(--cream);
-    font-size: 11px;
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 40px 20px 32px;
+    }
+    .footer-col-brand { padding-right: 0; }
+    .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 20px;
+    }
 }
 
 /* DIVIDER */
