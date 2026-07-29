@@ -23,10 +23,6 @@
     {{-- HERO + SLIDER --}}
     <div class="hero-slider-block">
         <div class="hero">
-            <div class="hero-eyebrow">
-                <i class="ti ti-building-community" style="font-size:12px"></i>
-                Penginapan Resmi PT PLN (Persero)
-            </div>
             <h1>Temukan <span>Wisma PLN</span><br>untuk liburan Anda</h1>
             <p>Tersedia di berbagai destinasi — harga spesial untuk pegawai & pensiunan PLN</p>
             <div class="search-box">

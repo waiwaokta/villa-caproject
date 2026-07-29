@@ -122,7 +122,7 @@ a { text-decoration: none; color: inherit; }
     transition: color .2s;
     letter-spacing: 0.01em;
 }
-.nav-links a:hover { color: #fff; }
+.nav-links a:hover { color: #ffffffa3; }
 .nav-btn {
     background: var(--blue-accent);
     color: #fff;
@@ -218,6 +218,7 @@ a { text-decoration: none; color: inherit; }
     font-size: 20px;
     font-weight: 700;
     margin-bottom: 14px;
+    width: fit-content;
 }
 .footer-logo i { color: var(--blue-accent); font-size: 22px; }
 .footer-logo-img { height: 28px; width: auto; object-fit: contain; } /* siap dipakai begitu <img> di-uncomment */
@@ -251,18 +252,7 @@ a { text-decoration: none; color: inherit; }
     font-weight: 600;
 }
 .footer-social { display: flex; gap: 10px; }
-.footer-social a {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 15px;
-    transition: background .2s;
-}
+
 .footer-social a:hover { background: var(--blue-accent); }
 
 .footer-col-title {
@@ -275,6 +265,7 @@ a { text-decoration: none; color: inherit; }
 }
 .footer-col a {
     display: block;
+    width: fit-content;
     color: rgba(255,255,255,0.7);
     font-size: 13px;
     font-weight: 500;
@@ -282,6 +273,19 @@ a { text-decoration: none; color: inherit; }
     transition: color .2s;
 }
 .footer-col a:hover { color: #fff; }
+
+.footer-social a {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    transition: background .2s;
+}
 
 .footer-bottom {
     background: rgba(0,0,0,0.15);
@@ -377,21 +381,6 @@ a { text-decoration: none; color: inherit; }
     background: radial-gradient(ellipse at 50% 0%, rgba(0,163,173,0.15) 0%, transparent 65%);
     pointer-events: none;
 }
-.hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(0,163,173,0.15);
-    border: 1px solid rgba(0,163,173,0.3);
-    color: #4DD9E0;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 5px 14px;
-    border-radius: 100px;
-    margin-bottom: 20px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
 .hero h1 {
     color: #fff;
     font-size: 48px;
@@ -431,10 +420,6 @@ a { text-decoration: none; color: inherit; }
 .hero p {
     animation: heroFadeInUp 0.9s ease-out both; 
     animation-delay: 0.15s; 
-}
-
-.hero-eyebrow {
-    animation: heroFadeInUp 0.7s ease-out both; 
 }
 
 .search-box {
@@ -1965,29 +1950,31 @@ a { text-decoration: none; color: inherit; }
 .tentang-hero-title {
     position: absolute;
     left: 50%;
-    bottom: 240px;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
     color: #fff;
     font-size: 40px;
     font-weight: 700;
     letter-spacing: -0.02em;
     text-align: center;
     z-index: 5;
+    width: 100%;
+    padding: 0 20px;
     text-shadow: 0 4px 24px rgba(2,26,54,0.4);
 }
 
 .tentang-content {
     max-width: 780px;
     margin: 0 auto;
-    padding: 56px 40px 80px;
+    padding: 48px 40px 80px;
 }
 
-.tentang-section { margin-bottom: 40px; }
+.tentang-section { margin-bottom: 36px; }
 .tentang-section h2 {
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
     color: var(--text);
 }
 .tentang-section p {
@@ -2000,7 +1987,7 @@ a { text-decoration: none; color: inherit; }
 .tentang-section p:last-child { margin-bottom: 0; }
 
 .tentang-section-closing h2 {
-    font-size: 24px;
+    font-size: 28px;
     color: var(--blue-dark);
 }
 
@@ -2035,10 +2022,21 @@ a { text-decoration: none; color: inherit; }
 /* RESPONSIVE */
 @media (max-width: 640px) {
     .tentang-hero-box { height: 40vh; min-height: 280px; }
-    .tentang-hero-title { font-size: 26px; bottom: 24px; padding: 0 20px; }
+    .tentang-hero-title { font-size: 26px; }
     .tentang-content { padding: 40px 20px 60px; }
     .tentang-section h2 { font-size: 18px; }
-    .tentang-stats { grid-template-columns: 1fr; padding: 20px; }
+    .tentang-stats { 
+        grid-template-columns: 1fr; 
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 12px
+    }
+    .tentang-stat-item {
+        width: 70%;
+        max-width: 240px;
+    }
     .tentang-stat-item strong { font-size: 22px; }
 }
 

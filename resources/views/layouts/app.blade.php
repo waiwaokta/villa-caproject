@@ -21,23 +21,23 @@
     <div class="site">
         <nav class="nav">
             <a href="/" class="nav-brand">
-                <i class="ti ti-building-community"></i> Wisma PLN
+                <i class="ti ti-building-community"></i> WISMA PLN
             </a>
             <div class="nav-links">
-                <a href="{{ route('wisma.search') }}">Wisma</a>
-                <a href="{{ route('tentang') }}">Tentang</a>
-                <a href="{{ route('kontak') }}">Kontak</a>
+                <a href="{{ route('wisma.search') }}">WISMA</a>
+                <a href="{{ route('tentang') }}">TENTANG</a>
+                <a href="{{ route('kontak') }}">KONTAK</a>
             </div>
-            <a href="/cek-booking" class="nav-btn">Cek Booking</a>
+            <a href="/cek-booking" class="nav-btn">CEK BOOKING</a>
             <button class="nav-hamburger">
                 <i class="ti ti-menu-2"></i>
             </button>
         </nav>
         <div class="nav-mobile-menu">
-            <a href="{{ route('wisma.search') }}">Wisma</a>
-            <a href="{{ route('tentang') }}">Tentang</a>
-            <a href="{{ route('kontak') }}">Kontak</a>
-            <a href="/cek-booking">Cek Booking</a>
+            <a href="{{ route('wisma.search') }}">WISMA</a>
+            <a href="{{ route('tentang') }}">TENTANG</a>
+            <a href="{{ route('kontak') }}">KONTAK</a>
+            <a href="/cek-booking">CEK BOOKING</a>
         </div>
 
         <main style="min-height: calc(100vh - 62px - 380px);">
@@ -51,7 +51,7 @@
                     {{-- KIRI — Brand, deskripsi, social media --}}
                     <div class="footer-col footer-col-brand">
                         <a href="/" class="footer-logo">
-                            <i class="ti ti-building-community"></i> Wisma PLN
+                            <i class="ti ti-building-community"></i> WISMA PLN
                         </a>
                         <p class="footer-desc">
                             Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.
@@ -71,13 +71,13 @@
 
                     {{-- TENGAH-KANAN — 2 kolom link --}}
                     <div class="footer-col">
-                        <p class="footer-col-title">Wisma</p>
+                        <p class="footer-col-title">WISMA</p>
                         <a href="{{ route('wisma.search') }}">Wisma</a>
                         <a href="{{ route('booking.cek') }}">Cek Booking</a>
                     </div>
 
                     <div class="footer-col">
-                        <p class="footer-col-title">Perusahaan</p>
+                        <p class="footer-col-title">PERUSAHAAN</p>
                         <a href="{{ route('tentang') }}">Tentang</a>
                         <a href="{{ route('kontak') }}">Kontak</a>
                     </div>
