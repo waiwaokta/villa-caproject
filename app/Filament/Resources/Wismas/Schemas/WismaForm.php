@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use App\Services\ImageOptimizerService;
 
 class WismaForm
 {
@@ -64,7 +65,11 @@ class WismaForm
                                     ->label('Foto')
                                     ->image()
                                     ->directory('wisma-photos')
-                                    ->required(),
+                                    ->required()
+                                    ->saveUploadedFileUsing(function ($file) { // DITAMBAHKAN — otomatis resize + compress + convert ke WebP sebelum disimpan
+                                        return app(ImageOptimizerService::class)->optimize($file);
+                                    })
+                                    ->helperText('Foto akan otomatis dioptimalkan. Anda tidak perlu mengubah ukuran atau format sebelum mengunggah.'),
                                 Toggle::make('is_primary')
                                     ->label('Foto utama')
                                     ->inline(false)
