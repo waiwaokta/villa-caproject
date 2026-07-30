@@ -103,6 +103,7 @@ class WismaForm
                         ->schema([
                             Select::make('user_type')
                                 ->label('Status Pengguna')
+                                ->selectablePlaceholder(false)
                                 ->options([
                                     'pln'  => 'Pegawai / Pensiunan PLN',
                                     'umum' => 'Umum',
@@ -110,6 +111,7 @@ class WismaForm
                                 ->required(),
                             Select::make('day_type')
                                 ->label('Tipe Hari')
+                                ->selectablePlaceholder(false)
                                 ->options([
                                     'weekday' => 'Senin – Jumat',
                                     'weekend' => 'Sabtu & Minggu',

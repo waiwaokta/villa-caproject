@@ -72,28 +72,6 @@ class BookingInfolist
                                 default      => $state,
                             })
                             ->color('gray'),
-
-                        TextEntry::make('status')
-                            ->label('Status')
-                            ->badge()
-                            ->formatStateUsing(fn($state) => match($state) {
-                                'pending'  => 'Menunggu',
-                                'approved' => 'Disetujui',
-                                'rejected' => 'Ditolak',
-                                default    => $state,
-                            })
-                            ->color(fn($state) => match($state) {
-                                'pending'  => 'warning',
-                                'approved' => 'success',
-                                'rejected' => 'danger',
-                                default    => 'gray',
-                            }),
-
-                        TextEntry::make('reject_desc')
-                            ->label('Alasan Penolakan')
-                            ->placeholder('-')
-                            ->columnSpanFull()
-                            ->visible(fn($record) => $record->status === 'rejected'),
                     ]),
 
                 // KANAN — Data Tamu

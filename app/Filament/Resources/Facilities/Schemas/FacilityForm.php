@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Facilities\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Wallacemartinss\FilamentIconPicker\Forms\Components\IconPickerField;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 
@@ -20,13 +21,10 @@ class FacilityForm
                         ->maxLength(100)
                         ->columnSpanFull(),
 
-                    TextInput::make('icon')
+                    IconPickerField::make('icon')
                         ->label('Class Icon (Tabler Icons)')
-                        ->placeholder('contoh: ti ti-wifi')
-                        ->helperText('Cari nama icon di tabler-icons.io, format: ti ti-nama-icon')
-                        ->default('ti ti-circle-check')
+                        ->allowedSets(['tabler-icons'])
                         ->required()
-                        ->maxLength(50)
                         ->columnSpanFull(),
                 ]);
     }

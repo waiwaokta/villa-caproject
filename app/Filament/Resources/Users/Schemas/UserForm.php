@@ -41,7 +41,8 @@ class UserForm
                             'admin'    => 'Admin',
                             'customer' => 'Customer',
                         ])
-                        ->default('customer')
+                        ->default('admin')
+                        ->selectablePlaceholder(false)
                         ->required(),
 
                     TextInput::make('password')

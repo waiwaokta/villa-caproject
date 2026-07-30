@@ -7,6 +7,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
+use Wallacemartinss\FilamentIconPicker\Infolists\Components\IconPickerEntry;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Schemas\Components\Grid;
@@ -35,9 +36,11 @@ class WismaInfolist
                         TextEntry::make('capacity')
                             ->label('Kapasitas')
                             ->suffix(' orang'),
-                        IconEntry::make('is_active')
-                            ->label('Tampil di Web')
-                            ->boolean(),
+                        TextEntry::make('is_active')
+                            ->label('Status di Web')
+                            ->badge()
+                            ->formatStateUsing(fn (bool $state): string => $state ? 'Tampil' : 'Tidak Tampil')
+                            ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
                         TextEntry::make('desc')
                             ->label('Deskripsi')
                             ->columnSpanFull(),
@@ -112,7 +115,7 @@ class WismaInfolist
                                     ->label('Harga')
                                     ->money('IDR', locale: 'id'),
                             ])
-                            ->columns(2)
+                            ->columns(3)
                             ->extraAttributes([
                                 'style' => 'max-height: 280px; overflow-y: auto; padding-right: 4px;'
                             ]),
@@ -125,7 +128,9 @@ class WismaInfolist
                             ->hiddenLabel()
                             ->schema([
                                 TextEntry::make('name'),
-                                TextEntry::make('icon'),
+                                IconPickerEntry::make('icon')
+                                    ->label('Icon')
+                                    ->showIconName(false),
                             ])
                             ->columns(2)
                             ->extraAttributes([

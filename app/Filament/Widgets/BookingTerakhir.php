@@ -14,7 +14,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class BookingTerakhir extends BaseWidget
 {
     protected static ?string $heading = 'Booking Terbaru';
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table

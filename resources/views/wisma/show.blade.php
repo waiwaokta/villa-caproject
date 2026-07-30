@@ -66,10 +66,10 @@
                     <h2>Fasilitas</h2>
                     <div class="facility-grid">
                         @foreach($wisma->facilities as $facility)
-                            <div class="facility-item">
-                                <i class="{{ $facility->icon }}"></i>
-                                <span>{{ $facility->name }}</span>
-                            </div>
+                        <div class="facility-item">
+                            <x-dynamic-component :component="$facility->icon"/>
+                            <span>{{ $facility->name }}</span>
+                        </div>
                         @endforeach
                     </div>
                 </div>

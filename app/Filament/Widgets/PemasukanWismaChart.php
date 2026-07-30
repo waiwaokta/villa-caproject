@@ -6,42 +6,75 @@ use App\Models\Booking;
 use App\Models\Wisma;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Schema;
 
 class PemasukanWismaChart extends ChartWidget
 {
+    use HasFiltersSchema;
+
     protected ?string $heading = 'Pemasukan / Wisma';
     protected static ?int $sort = 3;
     protected int|string|array $columnSpan = '1';
     protected ?string $maxHeight = '400px';
 
-    public ?string $filter = null;
-
-    protected function getFilters(): ?array
+    public function filtersSchema(Schema $schema): Schema
     {
-        $tahunTermuda = Booking::min('check_in');
-        $tahunAwal    = $tahunTermuda ? Carbon::parse($tahunTermuda)->year : now()->year;
+        $tahunSekarang = now()->year;
+        $tahunList = range($tahunSekarang, $tahunSekarang - 3);
 
-        $tahunList = range(now()->year, $tahunAwal);
-
-        return array_combine(
+        $tahunOptions = array_combine(
             array_map('strval', $tahunList),
             array_map('strval', $tahunList)
         );
-    }
 
-    public function getDefaultFilter(): ?string
-    {
-        return (string) now()->year;
+        $bulanOptions = [
+            ''   => 'Semua Bulan',
+            '1'  => 'Januari',
+            '2'  => 'Februari',
+            '3'  => 'Maret',
+            '4'  => 'April',
+            '5'  => 'Mei',
+            '6'  => 'Juni',
+            '7'  => 'Juli',
+            '8'  => 'Agustus',
+            '9'  => 'September',
+            '10' => 'Oktober',
+            '11' => 'November',
+            '12' => 'Desember',
+        ];
+
+        return $schema->components([
+            Select::make('tahun')
+                ->label('Tahun')
+                ->options($tahunOptions)
+                ->selectablePlaceholder(false)
+                ->default((string) $tahunSekarang),
+
+            Select::make('bulan')
+                ->label('Bulan')
+                ->options($bulanOptions)
+                ->selectablePlaceholder(false)
+                ->default(''),
+        ]);
     }
 
     protected function getData(): array
     {
-        $tahun = $this->filter ?? now()->year;
+        $tahun = $this->filters['tahun'] ?? now()->year; // DIUBAH — dari $this->filter, sekarang dari $this->filters['tahun']
+        $bulan = $this->filters['bulan'] ?? '';
 
         $wismas = Wisma::orderBy('name')->pluck('name', 'wismaID');
 
-        $pemasukanPerWisma = Booking::where('status', 'approved')
-            ->whereYear('check_in', $tahun)
+        $query = Booking::where('status', 'approved')
+            ->whereYear('check_in', $tahun);
+
+        if ($bulan !== '') {
+            $query->whereMonth('check_in', $bulan);
+        }
+
+        $pemasukanPerWisma = $query
             ->selectRaw('wismaID, SUM(total_price) as total')
             ->groupBy('wismaID')
             ->pluck('total', 'wismaID');
@@ -74,7 +107,7 @@ class PemasukanWismaChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'ticks' => [
-                        'maxTicksLimit' => 5, 
+                        'maxTicksLimit' => 5,
                     ],
                 ],
             ],

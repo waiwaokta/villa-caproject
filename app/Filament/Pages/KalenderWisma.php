@@ -493,4 +493,8 @@ class KalenderWisma extends Page
         sort($b);
         return json_encode($a) === json_encode($b);
     }
+    public function getCachedHeaderActions(): array // DIUBAH — dari protected ke public, karena parent class Page mendeklarasikan method ini sebagai public
+    {
+        return [];
+    }
 }

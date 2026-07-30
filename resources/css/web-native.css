@@ -919,7 +919,13 @@ a { text-decoration: none; color: inherit; }
     font-size: 13px;
     font-weight: 500;
 }
-.facility-item i { color: var(--blue); font-size: 18px; }
+.facility-item i,
+.facility-item svg {
+    color: var(--blue);
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
 
 /* KALENDER NAVIGASI */
 .cal-nav {

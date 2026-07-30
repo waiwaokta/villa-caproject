@@ -17,6 +17,29 @@ class ViewBooking extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('badge_status')
+                ->label(fn () => match ($this->record->status) {
+                    'pending'  => 'Menunggu Persetujuan',
+                    'approved' => 'Disetujui',
+                    'rejected' => 'Ditolak',
+                    default    => '-',
+                })
+                ->icon(fn () => match ($this->record->status) {
+                    'pending'  => 'heroicon-o-clock',
+                    'approved' => 'heroicon-o-check-circle',
+                    'rejected' => 'heroicon-o-x-circle',
+                    default    => 'heroicon-o-minus-circle',
+                })
+                ->color(fn () => match ($this->record->status) {
+                    'pending'  => 'warning',
+                    'approved' => 'success',
+                    'rejected' => 'danger',
+                    default    => 'gray',
+                })
+                ->disabled()
+                ->size('sm')
+                ->outlined(false),
+            
             Action::make('approve')
                 ->label('Setujui Booking')
                 ->icon('heroicon-o-check-circle')

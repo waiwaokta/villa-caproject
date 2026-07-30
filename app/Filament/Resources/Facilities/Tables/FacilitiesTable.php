@@ -10,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\IconColumn;
+use Wallacemartinss\FilamentIconPicker\Tables\Columns\IconPickerColumn;
 
 class FacilitiesTable
 {
@@ -27,11 +28,9 @@ class FacilitiesTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('icon')
-                    ->label('Class Icon')
-                    ->fontFamily('mono')
-                    ->size('sm')
-                    ->color('gray'),
+                IconPickerColumn::make('icon')
+                    ->label('Icon')
+                    ->medium(),
 
                 TextColumn::make('wismas_count')
                     ->label('Dipakai di')

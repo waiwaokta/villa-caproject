@@ -8,7 +8,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -33,9 +32,11 @@ class WismasTable
                     ->suffix(' orang')
                     ->sortable(),
 
-                IconColumn::make('is_active')
-                    ->label('Tampil di Web')
-                    ->boolean(),
+                TextColumn::make('is_active')
+                    ->label('Status di Web')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Tampil' : 'Tidak Tampil')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
 
                 TextColumn::make('created_at')
                     ->label('Ditambahkan')
@@ -44,7 +45,10 @@ class WismasTable
             ])
             ->filters([
                 TernaryFilter::make('is_active')
-                    ->label('Status Tampil'),
+                    ->label('Status Tampil')
+                    ->trueLabel('Tampil')
+                    ->falseLabel('Tidak Tampil')
+                    ->placeholder('Semua'),
             ])
             ->actions([
                 ViewAction::make(),

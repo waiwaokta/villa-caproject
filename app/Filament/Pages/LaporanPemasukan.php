@@ -45,6 +45,7 @@ class LaporanPemasukan extends Page implements HasSchemas
                 ->label('Wisma')
                 ->options(['' => 'Semua Wisma'] + Wisma::pluck('name', 'wismaID')->toArray())
                 ->placeholder('Semua Wisma')
+                ->selectablePlaceholder(false)
                 ->live(),
 
             Select::make('bulan')
@@ -55,6 +56,7 @@ class LaporanPemasukan extends Page implements HasSchemas
                     '07' => 'Juli',    '08' => 'Agustus',  '09' => 'September',
                     '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
                 ])
+                ->selectablePlaceholder(false)
                 ->live(),
 
             Select::make('tahun')
@@ -62,6 +64,7 @@ class LaporanPemasukan extends Page implements HasSchemas
                 ->options(collect(range(now()->year, now()->year - 3))
                     ->mapWithKeys(fn($y) => [$y => $y])
                     ->toArray())
+                ->selectablePlaceholder(false)
                 ->live(),
         ])->columns(3);
     }
