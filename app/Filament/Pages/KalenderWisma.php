@@ -275,12 +275,14 @@ class KalenderWisma extends Page
             DatePicker::make('date_start')
                 ->label('Tanggal Mulai')
                 ->required()
-                ->native(false),
+                ->native(false)
+                ->minDate(now()->toDateString()),
 
             DatePicker::make('date_end')
                 ->label('Tanggal Selesai (opsional)')
                 ->native(false)
                 ->afterOrEqual('date_start')
+                ->minDate(now()->toDateString())
                 ->helperText('Kosongkan jika hanya 1 hari.'),
         ];
     }

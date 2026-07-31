@@ -108,12 +108,18 @@ a { text-decoration: none; color: inherit; }
     gap: 8px;
     letter-spacing: -0.01em;
 }
-/* .nav-logo-img { 
-    height: 28px;
+.nav-brand-img {
+    height: 24px;
     width: auto;
     object-fit: contain;
-} */
-.nav-brand i { color: var(--blue-accent); font-size: 20px; }
+    vertical-align: middle;
+}
+
+.nav-brand-text {
+    color: var(--cream);
+    font-weight: 700;
+    font-size: 16px;
+}
 .nav-links { display: flex; gap: 28px; }
 .nav-links a {
     color: var(--cream);
@@ -185,7 +191,7 @@ a { text-decoration: none; color: inherit; }
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); */
     background-size: 200px 200px;
     opacity: 1;
     mix-blend-mode: overlay;
@@ -216,12 +222,12 @@ a { text-decoration: none; color: inherit; }
     gap: 8px;
     color: #fff;
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 14px;
     width: fit-content;
 }
 .footer-logo i { color: var(--blue-accent); font-size: 22px; }
-.footer-logo-img { height: 28px; width: auto; object-fit: contain; } /* siap dipakai begitu <img> di-uncomment */
+.footer-logo-img { height: 28px; width: auto; object-fit: contain; vertical-align: middle; margin-top: -4px;}
 
 .footer-desc {
     font-size: 12.5px;
@@ -263,6 +269,13 @@ a { text-decoration: none; color: inherit; }
     letter-spacing: 0.05em;
     margin-bottom: 16px;
 }
+
+.footer-logo-text {
+    color: var(--cream);
+    font-weight: 800;
+    font-size: 14px;
+}
+
 .footer-col a {
     display: block;
     width: fit-content;
@@ -1273,10 +1286,42 @@ a { text-decoration: none; color: inherit; }
 .form-group input[type="file"] {
     width: 100%;
     font-size: 12px;
-    border: 1.5px dashed #e5e5e1;
+    border: 1.5px solid #e5e5e1;
     border-radius: 8px;
     padding: 10px;
     font-family: inherit;
+}
+.rekening-info {
+    background: var(--cream2);
+    border: 1.5px dashed var(--blue-accent);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+}
+.rekening-info-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.rekening-info-bank {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.rekening-info-nomor {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--blue-dark);
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+}
+.rekening-info-nama {
+    font-size: 12px;
+    color: var(--text-secondary);
 }
 .form-hint {
     font-size: 11px;
@@ -1289,7 +1334,8 @@ a { text-decoration: none; color: inherit; }
 .form-error {
     background: #FFF0F0;
     color: #C0392B;
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 700;
     padding: 10px 12px;
     border-radius: 8px;
     margin-top: 10px;
@@ -2071,6 +2117,10 @@ a { text-decoration: none; color: inherit; }
     align-items: stretch;
 }
 
+.kontak-single-wrap {
+    max-width: 100%
+}
+
 .kontak-box {
     background: #fff;
     border: 1px solid var(--border);
@@ -2117,7 +2167,8 @@ a { text-decoration: none; color: inherit; }
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #f0fdf9, #e6f7f0);
-    height: 100%;
+    min-height: 320px;
+    padding: 48px 32px;
 }
 .kontak-wa-icon {
     width: 56px;

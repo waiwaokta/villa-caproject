@@ -159,8 +159,16 @@
                     {{-- Semua: bukti bayar wajib --}}
                     <div class="form-group">
                         <label>Bukti Pelunasan Pembayaran</label>
+
+                        <div class="rekening-info"> {{-- DITAMBAHKAN — box info rekening tujuan transfer --}}
+                            <p class="rekening-info-label">Transfer ke rekening berikut</p>
+                            <p class="rekening-info-bank">Bank BNI</p>
+                            <p class="rekening-info-nomor">9884879520205002</p>
+                            <p class="rekening-info-nama">a.n. General Affair UID Jatim</p>
+                        </div>
+
                         <input type="file" name="doc_bukti_bayar" required accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint">Transfer ke rekening yang tertera, lalu unggah bukti transfer.</p>
+                        <p class="form-hint">Setelah transfer, unggah bukti pembayaran di atas.</p>
                     </div>
                 </div>
             </div>

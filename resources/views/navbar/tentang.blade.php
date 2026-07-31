@@ -9,7 +9,7 @@
     {{-- WRAPPER — parent relative, biar header text bisa absolute & fleksibel ditransform terpisah dari box foto --}}
     <div class="tentang-hero-wrap">
         <div class="tentang-hero-box">
-            <img src="{{ asset('images/forest-tentang.jpg') }}" alt="Wisma PLN" class="tentang-hero-img">
+            <img src="{{ asset('images/forest-tentang.webp') }}" alt="Wisma PLN" class="tentang-hero-img">
             <div class="tentang-hero-overlay"></div>
         </div>
 
@@ -54,7 +54,7 @@
 
         <div class="tentang-stats">
             <div class="tentang-stat-item">
-                <strong>5</strong>
+                <strong>6</strong>
                 <span>Wisma Tersedia</span>
             </div>
             <div class="tentang-stat-item">

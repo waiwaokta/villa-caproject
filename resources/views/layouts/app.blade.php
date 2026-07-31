@@ -21,7 +21,8 @@
     <div class="site">
         <nav class="nav">
             <a href="/" class="nav-brand">
-                <i class="ti ti-building-community"></i> WISMA PLN
+                <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="nav-brand-img"> {{-- DIUBAH — class khusus nav, bukan pakai footer-logo-img --}}
+                <span class="nav-brand-text">Wisma PLN</span> {{-- DITAMBAHKAN — bungkus teks --}}
             </a>
             <div class="nav-links">
                 <a href="{{ route('wisma.search') }}">WISMA</a>
@@ -51,21 +52,22 @@
                     {{-- KIRI — Brand, deskripsi, social media --}}
                     <div class="footer-col footer-col-brand">
                         <a href="/" class="footer-logo">
-                            <i class="ti ti-building-community"></i> WISMA PLN
+                            <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="footer-logo-img">
+                            <span class="footer-logo-text">Wisma PLN</span>
                         </a>
                         <p class="footer-desc">
                             Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.
                         </p>
                         <div class="footer-address">
                             <i class="ti ti-map-pin"></i>
-                            <span>Jl. Contoh Alamat No. 123, Surabaya, Jawa Timur, Indonesia</span>
+                            <span>Jl. Embong Trengguli No.19-21, Embong Kaliasin, Kec. Genteng, Surabaya, Jawa Timur 60271</span>
                         </div>
 
                         <p class="footer-social-label">Ikuti kami di sosial media</p>
                         <div class="footer-social">
-                            <a href="#" target="_blank" rel="noopener" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
-                            <a href="#" target="_blank" rel="noopener" aria-label="X"><i class="ti ti-brand-x"></i></a>
-                            <a href="#" target="_blank" rel="noopener" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+                            <a href="https://www.instagram.com/plndistribusijatim/" target="_blank" rel="noopener" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+                            <a href="https://x.com/plndisjatim" target="_blank" rel="noopener" aria-label="X"><i class="ti ti-brand-x"></i></a>
+                            <a href="https://www.facebook.com/p/PLN-Distribusi-Jawa-Timur-100064407082737/?locale=id_ID" target="_blank" rel="noopener" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
                         </div>
                     </div>
 

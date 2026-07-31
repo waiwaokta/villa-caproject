@@ -15,6 +15,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
+use Filament\Notifications\Notification;
+use App\Services\FonnteService;
+use Illuminate\Support\Facades\Log;
 
 
 class BookingsTable
@@ -128,7 +131,24 @@ class BookingsTable
                     ->requiresConfirmation()
                     ->modalHeading('Setujui Booking')
                     ->modalDescription(fn(Model $record) => "Setujui booking {$record->bookingID} atas nama {$record->guest_name}?")
-                    ->action(fn(Model $record) => $record->update(['status' => 'approved'])),
+                    ->action(function (Model $record) {
+                        $record->update(['status' => 'approved']);
+
+                        try {
+                            app(FonnteService::class)->sendApproved($record);
+                        } catch (\Throwable $e) {
+                            Log::error('WA approve gagal (dari tabel)', [
+                                'bookingID' => $record->bookingID,
+                                'error'     => $e->getMessage(),
+                            ]);
+                        }
+
+                        Notification::make()
+                            ->title('Booking disetujui')
+                            ->body('Notifikasi WhatsApp telah dikirim ke tamu.')
+                            ->success()
+                            ->send();
+                    }),
 
                 Action::make('reject')
                     ->label('Tolak')
@@ -143,10 +163,27 @@ class BookingsTable
                             ->required()
                             ->placeholder('Tulis alasan penolakan...'),
                     ])
-                    ->action(fn(array $data, Model $record) => $record->update([
-                        'status'      => 'rejected',
-                        'reject_desc' => $data['reject_desc'],
-                    ])),
+                    ->action(function (array $data, Model $record) {
+                            $record->update([
+                                'status'      => 'rejected',
+                                'reject_desc' => $data['reject_desc'],
+                            ]);
+
+                            try {
+                                app(FonnteService::class)->sendRejected($record);
+                            } catch (\Throwable $e) {
+                                Log::error('WA reject gagal (dari tabel)', [
+                                    'bookingID' => $record->bookingID,
+                                    'error'     => $e->getMessage(),
+                                ]);
+                            }
+
+                            Notification::make()
+                                ->title('Booking ditolak')
+                                ->body('Notifikasi WhatsApp telah dikirim ke tamu.')
+                                ->danger()
+                                ->send();
+                        }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

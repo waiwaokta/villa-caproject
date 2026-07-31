@@ -15,6 +15,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use App\Services\ImageOptimizerService;
+use Filament\Support\RawJs;
 
 class WismaForm
 {
@@ -108,6 +109,7 @@ class WismaForm
                                     'pln'  => 'Pegawai / Pensiunan PLN',
                                     'umum' => 'Umum',
                                 ])
+                                ->default('pln')
                                 ->required(),
                             Select::make('day_type')
                                 ->label('Tipe Hari')
@@ -117,11 +119,19 @@ class WismaForm
                                     'weekend' => 'Sabtu & Minggu',
                                     'holiday' => 'Libur Panjang',
                                 ])
+                                ->default('weekday')
                                 ->required(),
                             TextInput::make('price')
                                 ->label('Harga (Rp)')
-                                ->numeric()
                                 ->prefix('Rp')
+                                ->mask(RawJs::make('$money($input, \',\', \'.\', 2)'))
+                                ->dehydrateStateUsing(function ($state) {
+                                    if ($state === null || $state === '') return 0;
+                                    $clean = str_replace('.', '', $state);
+                                    $clean = str_replace(',', '.', $clean);
+                                    return (float) $clean;
+                                })
+                                ->formatStateUsing(fn ($state) => $state == 0 ? null : number_format($state, 2, ',', '.'))
                                 ->required(),
                         ])
                         ->columns(3)
