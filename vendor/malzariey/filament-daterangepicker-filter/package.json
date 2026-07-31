@@ -1,0 +1,39 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev:styles": "npx @tailwindcss/cli -i resources/css/filament-daterangepicker.css -o dist/filament-daterangepicker.css --watch",
+        "dev:scripts": "node bin/build.js --dev",
+        "dev:publish-css": "node bin/publish-css.js",
+        "build:styles": "npx @tailwindcss/cli -i resources/css/filament-daterangepicker.css -o dist/filament-daterangepicker.css --minify",
+        "build:scripts": "node bin/build.js",
+        "build:publish": "node bin/publish-css.js --once",
+        "dev": "npm-run-all --parallel dev:*",
+        "build": "npm-run-all build:*",
+        "prettier": "npx prettier --write .",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
+    },
+    "devDependencies": {
+        "@awcodes/filament-plugin-purge": "^1.1.2",
+        "@tailwindcss/cli": "^4.0.0",
+        "@tailwindcss/postcss": "^4.0.0",
+        "@testing-library/dom": "^10.4.1",
+        "@vue/test-utils": "^2.4.6",
+        "esbuild": "^0.25.4",
+        "happy-dom": "^20.1.0",
+        "jsdom": "^27.4.0",
+        "npm-run-all": "^4.1.5",
+        "postcss": "^8.5.3",
+        "prettier-plugin-blade": "^1.6.19",
+        "prettier-plugin-tailwindcss": "^0.6.0",
+        "tailwindcss": "^4.0.0",
+        "vitest": "^4.0.16"
+    },
+    "dependencies": {
+        "@floating-ui/dom": "^1.6.12",
+        "dayjs": "^1.11.13",
+        "imask": "^7.6.1"
+    }
+}

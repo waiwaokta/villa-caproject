@@ -1,0 +1,818 @@
+/**
+ * Filament DateRangePicker Styles
+ * 
+ * Tailwind v4 CSS-native configuration.
+ * Uses Filament's fi-* naming convention for consistency with v4.
+ * All colors use CSS custom properties for theme compatibility.
+ */
+
+@import 'tailwindcss';
+@source '../../resources/views/**/*.blade.php';
+@source '../../src/**/*.php';
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Theme configuration - extends Tailwind with Filament's color system */
+@theme {
+    /* Primary colors - default to blue, can be overridden by Filament theme */
+    --color-primary-50: var(--primary-50, var(--fi-primary-50, #eff6ff));
+    --color-primary-100: var(--primary-100, var(--fi-primary-100, #dbeafe));
+    --color-primary-200: var(--primary-200, var(--fi-primary-200, #bfdbfe));
+    --color-primary-300: var(--primary-300, var(--fi-primary-300, #93c5fd));
+    --color-primary-400: var(--primary-400, var(--fi-primary-400, #60a5fa));
+    --color-primary-500: var(--primary-500, var(--fi-primary-500, #3b82f6));
+    --color-primary-600: var(--primary-600, var(--fi-primary-600, #2563eb));
+    --color-primary-700: var(--primary-700, var(--fi-primary-700, #1d4ed8));
+    --color-primary-800: var(--primary-800, var(--fi-primary-800, #1e40af));
+    --color-primary-900: var(--primary-900, var(--fi-primary-900, #1e3a8a));
+    --color-primary-950: var(--primary-950, var(--fi-primary-950, #172554));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Dropdown Container
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-dropdown {
+    @apply fixed z-[9999];
+    @apply bg-white dark:bg-gray-900;
+    @apply rounded-xl shadow-xl;
+    @apply border border-gray-200 dark:border-white/10;
+    @apply ring-1 ring-gray-950/5 dark:ring-white/10;
+    @apply p-4;
+    @apply max-w-max;
+}
+
+.fi-daterangepicker-content {
+    @apply flex flex-col;
+}
+
+/* Top section: ranges + calendars in a row */
+.fi-daterangepicker-top {
+    @apply flex gap-4;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Preset Ranges Sidebar
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-ranges {
+    @apply border-e border-gray-200 dark:border-white/10;
+    @apply pe-4 me-0 -my-4 py-4;
+    /* Stretch full height */
+    @apply min-w-[160px];
+}
+
+.fi-daterangepicker-ranges ul {
+    @apply space-y-1;
+    @apply m-0 p-0;
+    @apply list-none;
+}
+
+.fi-daterangepicker-range-btn {
+    @apply w-full px-3 py-2;
+    @apply text-start text-sm;
+    @apply rounded-lg;
+    @apply text-gray-700 dark:text-gray-200;
+    @apply hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer;
+}
+
+.fi-daterangepicker-range-btn.fi-active {
+    @apply bg-primary-500 text-white;
+    @apply hover:bg-primary-600;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Calendars Container
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-calendars {
+    @apply flex gap-4;
+}
+
+.fi-daterangepicker-calendars.fi-has-ranges {
+    @apply ps-0;
+}
+
+.fi-daterangepicker-calendar {
+    @apply min-w-[252px];
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Calendar Header
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-header {
+    @apply flex items-center justify-between;
+    @apply mb-3 px-1;
+}
+
+.fi-daterangepicker-nav-btn {
+    @apply p-1.5;
+    @apply rounded-lg;
+    @apply text-gray-400 dark:text-gray-500;
+    @apply hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply hover:text-gray-500 dark:hover:text-gray-400;
+    @apply transition-colors duration-150;
+    @apply cursor-pointer;
+}
+
+.fi-daterangepicker-month-year {
+    @apply flex items-center gap-1;
+}
+
+.fi-daterangepicker-month-label {
+    @apply text-sm font-semibold;
+    @apply text-gray-950 dark:text-white;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Dropdowns (Month/Year Select)
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-select {
+    @apply block;
+    @apply rounded-lg shadow-sm;
+    @apply border-none;
+    @apply text-sm;
+    @apply text-gray-950 dark:text-white;
+    @apply bg-white dark:bg-white/5;
+    @apply ring-1 ring-inset ring-gray-950/10 dark:ring-white/20;
+    @apply focus:ring-2 focus:ring-primary-600 dark:focus:ring-primary-500;
+    @apply py-1 px-2;
+    @apply cursor-pointer;
+}
+
+.fi-daterangepicker-select option {
+    @apply bg-white dark:bg-gray-900;
+    @apply text-gray-950 dark:text-white;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Weekday Headers
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-weekdays {
+    @apply grid grid-cols-7 gap-0;
+    @apply mb-1;
+}
+
+.fi-daterangepicker-weekdays:has(.fi-daterangepicker-week-label) {
+    @apply grid-cols-8;
+}
+
+.fi-daterangepicker-week-label {
+    @apply text-xs font-medium;
+    @apply text-gray-400 dark:text-gray-500;
+    @apply flex items-center justify-center;
+    @apply w-9 h-8;
+}
+
+.fi-daterangepicker-weekday {
+    @apply text-xs font-medium;
+    @apply text-gray-500 dark:text-gray-400;
+    @apply flex items-center justify-center;
+    @apply w-9 h-8;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Day Grid
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-days {
+    @apply flex flex-col;
+}
+
+.fi-daterangepicker-week {
+    @apply grid grid-cols-7 gap-0;
+    @apply m-0 p-0;
+}
+
+.fi-daterangepicker-week+.fi-daterangepicker-week {
+    @apply -mt-0.5;
+}
+
+.fi-daterangepicker-week:has(.fi-daterangepicker-week-number) {
+    @apply grid-cols-8;
+}
+
+.fi-daterangepicker-week-number {
+    @apply text-xs;
+    @apply text-gray-400 dark:text-gray-500;
+    @apply flex items-center justify-center;
+    @apply w-9 h-9;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Day Cells
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-day {
+    @apply w-9 h-9;
+    @apply text-sm;
+    @apply flex items-center justify-center;
+    @apply rounded-lg;
+    @apply text-gray-950 dark:text-white;
+    @apply hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply transition-colors duration-75;
+    @apply cursor-pointer;
+    @apply relative;
+}
+
+/* Off month (previous/next month days) */
+.fi-daterangepicker-day.fi-off-month {
+    @apply text-gray-400 dark:text-gray-600;
+}
+
+/* Today indicator */
+/* Today indicator */
+.fi-daterangepicker-day.fi-today {
+    @apply font-bold;
+    @apply text-primary-600;
+    @apply !shadow-none !ring-0 !border-none !outline-none;
+}
+
+/* Force removal of focus ring on today even when focused */
+.fi-daterangepicker-day.fi-today.fi-focused {
+    @apply !ring-0 !ring-offset-0 !shadow-none !outline-none;
+}
+
+.dark .fi-daterangepicker-day.fi-today {
+    @apply text-primary-400;
+}
+
+/* Force specific style for Today when In Range (and not selected) to maintain visibility */
+/* Force specific style for Today when In Range (and not selected) to maintain visibility */
+.fi-daterangepicker-day.fi-in-range.fi-today:not(.fi-selected) {
+    @apply text-primary-600;
+    @apply dark:text-primary-400;
+    @apply font-bold;
+}
+
+/* Ensure bold persists even when selected */
+.fi-daterangepicker-day.fi-selected.fi-today {
+    @apply font-bold;
+}
+
+/* Today indicator in off-month (ghost) */
+.fi-daterangepicker-day.fi-off-month.fi-today {
+    @apply bg-transparent text-primary-400;
+    @apply !ring-0 !shadow-none;
+    @apply opacity-50;
+}
+
+.dark .fi-daterangepicker-day.fi-off-month.fi-today {
+    @apply bg-transparent text-primary-500;
+    @apply opacity-50;
+}
+
+/* Selected (start or end) */
+.fi-daterangepicker-day.fi-selected {
+    @apply bg-primary-500 text-white;
+    @apply hover:bg-primary-600;
+    @apply font-semibold;
+    @apply relative z-10;
+}
+
+/* In range (between start and end) */
+.fi-daterangepicker-day.fi-in-range {
+    @apply bg-primary-50 dark:bg-primary-500/10;
+    @apply rounded-none;
+    @apply relative;
+}
+
+/* Start of range */
+.fi-daterangepicker-day.fi-start {
+    @apply rounded-s-lg rounded-e-none;
+}
+
+.fi-daterangepicker-day.fi-start.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+/* End of range */
+.fi-daterangepicker-day.fi-end {
+    @apply rounded-e-lg rounded-s-none;
+}
+
+.fi-daterangepicker-day.fi-end.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+/* Start and End same day */
+.fi-daterangepicker-day.fi-start.fi-end {
+    @apply rounded-lg;
+}
+
+/* Disabled */
+.fi-daterangepicker-day.fi-disabled {
+    @apply opacity-40;
+    @apply cursor-not-allowed;
+    @apply line-through;
+}
+
+.fi-daterangepicker-day.fi-disabled:hover {
+    @apply bg-transparent dark:bg-transparent;
+}
+
+/* Keyboard focus */
+.fi-daterangepicker-day.fi-focused {
+    @apply ring-2 ring-primary-500;
+    @apply ring-offset-1 ring-offset-white dark:ring-offset-gray-900;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Month Picker Grid
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-month-grid {
+    @apply grid grid-cols-3 gap-2;
+    @apply pt-2;
+}
+
+.fi-daterangepicker-month-cell {
+    @apply px-3 py-3;
+    @apply text-sm font-medium;
+    @apply rounded-lg;
+    @apply text-gray-950 dark:text-white;
+    @apply hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply transition-colors duration-75;
+    @apply cursor-pointer;
+}
+
+.fi-daterangepicker-month-cell.fi-current {
+    @apply font-semibold;
+    @apply ring-1 ring-inset ring-primary-500;
+}
+
+.fi-daterangepicker-month-cell.fi-selected {
+    @apply bg-primary-500 text-white;
+    @apply hover:bg-primary-600;
+}
+
+.fi-daterangepicker-month-cell.fi-in-range {
+    @apply bg-primary-50 dark:bg-primary-500/10;
+    @apply rounded-none;
+}
+
+.fi-daterangepicker-month-cell.fi-start {
+    @apply rounded-s-lg rounded-e-none;
+}
+
+.fi-daterangepicker-month-cell.fi-start.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+.fi-daterangepicker-month-cell.fi-end {
+    @apply rounded-e-lg rounded-s-none;
+}
+
+.fi-daterangepicker-month-cell.fi-end.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+.fi-daterangepicker-month-cell.fi-start.fi-end {
+    @apply rounded-lg;
+}
+
+.fi-daterangepicker-month-cell.fi-disabled {
+    @apply opacity-40;
+    @apply cursor-not-allowed;
+}
+
+.fi-daterangepicker-month-cell.fi-disabled:hover {
+    @apply bg-transparent dark:bg-transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Year Picker Grid
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-year-grid {
+    @apply grid grid-cols-3 gap-2;
+    @apply pt-2;
+}
+
+.fi-daterangepicker-year-cell {
+    @apply px-3 py-3;
+    @apply text-sm font-medium;
+    @apply rounded-lg;
+    @apply text-gray-950 dark:text-white;
+    @apply hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply transition-colors duration-75;
+    @apply cursor-pointer;
+}
+
+.fi-daterangepicker-year-cell.fi-out-decade {
+    @apply text-gray-400 dark:text-gray-600;
+}
+
+.fi-daterangepicker-year-cell.fi-current {
+    @apply font-semibold;
+    @apply ring-1 ring-inset ring-primary-500;
+}
+
+.fi-daterangepicker-year-cell.fi-selected {
+    @apply bg-primary-500 text-white;
+    @apply hover:bg-primary-600;
+}
+
+.fi-daterangepicker-year-cell.fi-in-range {
+    @apply bg-primary-50 dark:bg-primary-500/10;
+    @apply rounded-none;
+}
+
+.fi-daterangepicker-year-cell.fi-start {
+    @apply rounded-s-lg rounded-e-none;
+}
+
+.fi-daterangepicker-year-cell.fi-start.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+.fi-daterangepicker-year-cell.fi-end {
+    @apply rounded-e-lg rounded-s-none;
+}
+
+.fi-daterangepicker-year-cell.fi-end.fi-selected {
+    @apply bg-primary-500 text-white;
+}
+
+.fi-daterangepicker-year-cell.fi-start.fi-end {
+    @apply rounded-lg;
+}
+
+.fi-daterangepicker-year-cell.fi-disabled {
+    @apply opacity-40;
+    @apply cursor-not-allowed;
+}
+
+.fi-daterangepicker-year-cell.fi-disabled:hover {
+    @apply bg-transparent dark:bg-transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Time Picker
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-time {
+    @apply border-t border-gray-200 dark:border-white/10;
+    @apply mt-4 pt-4;
+}
+
+.fi-daterangepicker-time-row {
+    @apply flex gap-6;
+}
+
+.fi-daterangepicker-time-col {
+    @apply flex-1;
+}
+
+.fi-daterangepicker-time-label {
+    @apply block text-xs font-bold uppercase tracking-wide;
+    @apply text-gray-500 dark:text-gray-400;
+    @apply mb-2;
+}
+
+.fi-daterangepicker-time-inputs {
+    @apply flex items-center gap-1.5;
+}
+
+.fi-daterangepicker-time-separator {
+    @apply text-gray-400 dark:text-gray-500;
+    @apply text-sm font-semibold;
+    @apply mx-1 self-center;
+}
+
+.fi-daterangepicker-select.fi-time {
+    @apply w-18;
+    @apply text-center;
+    @apply bg-gray-50 dark:bg-white/5;
+    @apply border border-gray-300 dark:border-white/10;
+}
+
+.fi-daterangepicker-select.fi-ampm {
+    @apply w-22;
+    @apply ms-2;
+    @apply bg-gray-50 dark:bg-white/5;
+    @apply border border-gray-300 dark:border-white/10;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Action Buttons
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-actions {
+    @apply flex items-center justify-end gap-3;
+    @apply border-t border-gray-200 dark:border-white/10;
+    @apply mt-4 pt-4;
+    @apply bg-gray-50/50 dark:bg-white/5;
+    @apply -mx-4 -mb-4 p-4;
+    /* Bleed to edges */
+    @apply rounded-b-xl;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RTL Support
+   
+   When the document direction is RTL, the calendar dropdown
+   inherits RTL direction naturally. We apply additional
+   RTL-specific layout adjustments here.
+   ───────────────────────────────────────────────────────────── */
+
+/* Rotate navigation arrows in RTL so they point the correct direction */
+[dir="rtl"] .fi-daterangepicker-nav-btn {
+    transform: scaleX(-1);
+}
+
+/* Reverse grid flow for month/year pickers in RTL */
+[dir="rtl"] .fi-daterangepicker-month-grid,
+[dir="rtl"] .fi-daterangepicker-year-grid {
+    direction: rtl;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Responsive (Tablet - md breakpoint)
+   ───────────────────────────────────────────────────────────── */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .fi-daterangepicker-dropdown {
+        @apply max-w-[calc(100vw-2rem)];
+    }
+
+    /* Keep calendars side by side on tablet */
+    .fi-daterangepicker-calendars {
+        @apply flex-row gap-3;
+    }
+
+    .fi-daterangepicker-calendar {
+        @apply min-w-[230px];
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Responsive (Mobile - sm breakpoint)
+   ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+    .fi-daterangepicker-dropdown {
+        /* Full-width on mobile with proper margins */
+        left: 1rem !important;
+        right: 1rem !important;
+        max-width: none !important;
+        width: auto !important;
+        @apply overflow-y-auto max-h-[85vh];
+        /* Enhanced shadow for mobile */
+        @apply shadow-2xl;
+    }
+
+    .fi-daterangepicker-content {
+        @apply flex-col;
+    }
+
+    .fi-daterangepicker-top {
+        @apply flex-col;
+    }
+
+    /* Ranges at top on mobile, horizontal scroll */
+    .fi-daterangepicker-ranges {
+        @apply border-e-0 border-b;
+        @apply pe-0 pb-3 me-0 mb-3;
+        @apply w-full min-w-0;
+        @apply -mx-4 px-4 -mt-4 pt-4;
+        /* Horizontal scroll for many presets */
+        @apply overflow-x-auto;
+        /* Fade effect at edges */
+        mask-image: linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+    }
+
+    [dir="rtl"] .fi-daterangepicker-ranges {
+        mask-image: linear-gradient(to left, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+    }
+
+    .fi-daterangepicker-ranges ul {
+        @apply flex flex-nowrap gap-2;
+        @apply pb-1;
+        /* Room for scrollbar */
+    }
+
+    .fi-daterangepicker-range-btn {
+        @apply inline-flex w-auto whitespace-nowrap;
+        @apply px-4 py-2.5;
+        /* Larger touch targets */
+        @apply min-h-[44px];
+    }
+
+    /* Stack calendars vertically on mobile */
+    .fi-daterangepicker-calendars {
+        @apply flex-col gap-4;
+    }
+
+    .fi-daterangepicker-calendar {
+        @apply min-w-full;
+    }
+
+    /* Larger day cells for touch - full width to avoid gaps */
+    .fi-daterangepicker-day {
+        @apply w-full h-10;
+        @apply text-base;
+    }
+
+    /* Mobile gap fix removed to match desktop style */
+
+    .fi-daterangepicker-weekday {
+        @apply w-full h-9;
+    }
+
+    .fi-daterangepicker-week-number,
+    .fi-daterangepicker-week-label {
+        @apply w-full h-10;
+    }
+
+    /* Time picker full width on mobile */
+    .fi-daterangepicker-time-row {
+        @apply flex-col gap-6;
+    }
+
+    .fi-daterangepicker-time-inputs {
+        @apply grid grid-cols-3 gap-2;
+        @apply w-full;
+    }
+
+    .fi-daterangepicker-select.fi-time,
+    .fi-daterangepicker-select.fi-ampm {
+        @apply !w-full;
+        @apply flex-1;
+        @apply min-w-0;
+        @apply h-10;
+        /* Touch target size */
+    }
+
+    /* Hide separators in grid layout if needed, or adjust */
+    .fi-daterangepicker-time-separator {
+        @apply hidden;
+        /* or @apply place-self-center */
+    }
+
+    /* Full-width buttons on mobile for easy tapping */
+    .fi-daterangepicker-actions {
+        @apply flex-col sm:flex-row;
+        @apply gap-2;
+        /* Sticky footer */
+        @apply sticky bottom-0 left-0 right-0;
+        @apply bg-white dark:bg-gray-900;
+        @apply border-t border-gray-200 dark:border-white/10;
+        @apply z-10;
+    }
+
+    .fi-daterangepicker-actions>* {
+        @apply w-full sm:w-auto;
+        @apply justify-center;
+        /* Larger touch targets */
+        @apply min-h-[48px];
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Time Picker Input Enhancements
+   ───────────────────────────────────────────────────────────── */
+
+/* Remove browser spin buttons */
+.fi-daterangepicker-select.fi-time,
+.fi-daterangepicker-select.fi-ampm {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Add custom dropdown arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.25rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em 1.25em;
+    padding-right: 1.75rem;
+}
+
+[dir="rtl"] .fi-daterangepicker-select.fi-time,
+[dir="rtl"] .fi-daterangepicker-select.fi-ampm {
+    background-position: left 0.25rem center;
+    padding-right: 0;
+    padding-left: 1.75rem;
+}
+
+/* Dark mode dropdown arrow */
+.dark .fi-daterangepicker-select.fi-time,
+.dark .fi-daterangepicker-select.fi-ampm {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Selection Display Indicator
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-selection-preview {
+    @apply flex items-center gap-2;
+    /* Inline layout: Push to left */
+    @apply me-auto;
+    /* Remove heavy styling */
+    @apply p-0 m-0;
+    @apply bg-transparent border-0;
+    @apply text-sm font-medium text-gray-500 dark:text-gray-400;
+}
+
+.fi-daterangepicker-selection-preview-arrow {
+    @apply text-primary-400 dark:text-primary-500;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Visual Polish Enhancements
+   ───────────────────────────────────────────────────────────── */
+
+/* Smooth transitions for all interactive elements */
+.fi-daterangepicker-dropdown * {
+    @apply transition-colors duration-100;
+}
+
+/* Focus visible outlines for accessibility */
+.fi-daterangepicker-day:focus-visible,
+.fi-daterangepicker-month-cell:focus-visible,
+.fi-daterangepicker-year-cell:focus-visible,
+.fi-daterangepicker-range-btn:focus-visible,
+.fi-daterangepicker-nav-btn:focus-visible,
+.fi-daterangepicker-select:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+    @apply ring-offset-white dark:ring-offset-gray-900;
+}
+
+/* Active state for buttons */
+.fi-daterangepicker-day:active:not(.fi-disabled),
+.fi-daterangepicker-month-cell:active:not(.fi-disabled),
+.fi-daterangepicker-year-cell:active:not(.fi-disabled),
+.fi-daterangepicker-range-btn:active,
+.fi-daterangepicker-nav-btn:active {
+    @apply scale-95;
+    @apply transition-transform duration-75;
+}
+
+/* Hover states with subtle scale */
+.fi-daterangepicker-nav-btn:hover {
+    @apply scale-105;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Animations
+   ───────────────────────────────────────────────────────────── */
+
+.fi-daterangepicker-dropdown[x-cloak] {
+    display: none !important;
+}
+
+/* Smooth dropdown animation override for better feel */
+.fi-daterangepicker-dropdown {
+    transform-origin: top center;
+}
+
+/* When drops up, transform from bottom */
+.fi-daterangepicker-dropdown[data-drops="up"] {
+    transform-origin: bottom center;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Print Styles
+   ───────────────────────────────────────────────────────────── */
+
+@media print {
+    .fi-daterangepicker-dropdown {
+        display: none !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   High Contrast Mode Support
+   ───────────────────────────────────────────────────────────── */
+
+@media (prefers-contrast: high) {
+
+    .fi-daterangepicker-day.fi-selected,
+    .fi-daterangepicker-month-cell.fi-selected,
+    .fi-daterangepicker-year-cell.fi-selected {
+        @apply border-2 border-current;
+    }
+
+    .fi-daterangepicker-day.fi-in-range,
+    .fi-daterangepicker-month-cell.fi-in-range,
+    .fi-daterangepicker-year-cell.fi-in-range {
+        @apply border border-dashed border-primary-500;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Reduced Motion Support
+   ───────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .fi-daterangepicker-dropdown,
+    .fi-daterangepicker-dropdown * {
+        transition: none !important;
+        animation: none !important;
+    }
+}

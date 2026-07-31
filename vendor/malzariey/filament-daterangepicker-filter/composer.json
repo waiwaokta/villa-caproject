@@ -1,0 +1,63 @@
+{
+    "name": "malzariey/filament-daterangepicker-filter",
+    "description": "This package uses daterangepciker library to filter date by a range or predefined date ranges (Today , Yesterday ...etc)",
+    "keywords": [
+        "Malzariey",
+        "laravel",
+        "filament-daterangepicker-filter"
+    ],
+    "homepage": "https://github.com/malzariey/filament-daterangepicker-filter",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Majid Al-Zariey",
+            "email": "malzariey@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "filament/filament": "^4.0|^5.0",
+        "spatie/laravel-package-tools": "^1.16.4",
+        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Malzariey\\FilamentDaterangepickerFilter\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Malzariey\\FilamentDaterangepickerFilter\\Tests\\": "tests",
+            "Workbench\\App\\": "workbench/app/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test-coverage": "pest --coverage"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Malzariey\\FilamentDaterangepickerFilter\\FilamentDaterangepickerFilterServiceProvider"
+            ],
+            "aliases": {
+                "FilamentDaterangepickerFilter": "Malzariey\\FilamentDaterangepickerFilter\\Facades\\FilamentDaterangepickerFilter"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
