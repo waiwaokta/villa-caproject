@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             // ->favicon(asset('images/favicon.ico'))
             ->font('Public Sans')
             ->id('admin')
-            ->path('atmint')
+            ->path('kelolawismapln')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(Login::class)
             ->colors([

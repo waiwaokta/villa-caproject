@@ -14,7 +14,7 @@
     <meta property="og:description" content="Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.">
     <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:type" content="website"
+    <meta property="og:type" content="website">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 
