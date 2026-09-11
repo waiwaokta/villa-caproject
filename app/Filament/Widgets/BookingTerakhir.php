@@ -79,7 +79,7 @@ class BookingTerakhir extends BaseWidget
             ->emptyStateActions([
                 Action::make('laporan')
                     ->label('Lihat Laporan')
-                    ->url('/admin/laporan-pemasukan')
+                    ->url('/kelolawismapln/laporan-pemasukan')
                     ->icon('heroicon-m-chart-bar')
                     ->button(),
             ]);
