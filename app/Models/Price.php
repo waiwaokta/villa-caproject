@@ -16,7 +16,7 @@ class Price extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'wismaID', 'user_type', 'day_type', 'price'
+        'villaID', 'day_type', 'price'
     ];
 
     protected $casts = [
@@ -33,8 +33,8 @@ class Price extends Model
         });
     }
 
-    public function wisma()
+    public function villa()
     {
-        return $this->belongsTo(Wisma::class, 'wismaID', 'wismaID');
+        return $this->belongsTo(Villa::class, 'villaID', 'villaID');
     }
 }

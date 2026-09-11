@@ -28,7 +28,7 @@ class CekBookingController extends Controller
         $booking = Booking::with(['wisma:wismaID,name,location'])
             ->select([
                 'bookingID',
-                'wismaID',
+                'villaID',
                 'check_in',
                 'check_out',
                 'total_nights',

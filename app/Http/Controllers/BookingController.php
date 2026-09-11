@@ -6,11 +6,11 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Document;
 use App\Models\Price;
-use App\Models\Wisma;
+use App\Models\Villa;
 use App\Services\DayTypeResolver;
 use App\Services\FonnteService;
 use App\Services\HolidayService;
-use App\Services\MaintenanceService; // ditambahkan
+use App\Services\MaintenanceService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
@@ -23,24 +23,24 @@ class BookingController extends Controller
     public function __construct(
         private HolidayService $holidayService,
         private DayTypeResolver $dayTypeResolver,
-        private MaintenanceService $maintenanceService // ditambahkan
+        private MaintenanceService $maintenanceService
     ) {}
 
-    public function create(string $wismaID, Request $request)
+    public function create(string $villaID, Request $request)
     {
-        $wisma = Wisma::with(['prices'])
-            ->where('wismaID', $wismaID)
+        $villa = Villa::with(['prices'])
+            ->where('villaID', $villaID)
             ->where('is_active', true)
             ->firstOrFail();
 
         $prefillCheckIn  = $request->query('check_in');
         $prefillCheckOut = $request->query('check_out');
 
-        return view('booking.form', compact('wisma', 'prefillCheckIn', 'prefillCheckOut'));
+        return view('booking.form', compact('villa', 'prefillCheckIn', 'prefillCheckOut'));
     }
     public function store(StoreBookingRequest $request)
     {
-        $wisma = Wisma::where('wismaID', $request->wismaID)
+        $villa = Villa::where('villaID', $request->villaID)
             ->where('is_active', true)
             ->firstOrFail();
 
@@ -52,9 +52,9 @@ class BookingController extends Controller
             return back()->withErrors(['check_out' => 'Minimal menginap 1 malam.']);
         }
 
-        // ⚠️ AVAILABILITY CHECK — cek tanggal sudah di-booking orang lain atau belum
+        // AVAILABILITY CHECK — cek tanggal sudah di-booking orang lain atau belum
         // pending DAN approved sama-sama lock tanggal, rejected dianggap available
-        $isOverlap = Booking::where('wismaID', $wisma->wismaID)
+        $isOverlap = Booking::where('villaID', $villa->villaID)
             ->whereIn('status', ['pending', 'approved'])
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->where('check_in', '<', $checkOut)
@@ -68,59 +68,42 @@ class BookingController extends Controller
             ])->withInput();
         }
 
-        // ⚠️ MAINTENANCE CHECK — cek wisma sedang di-maintenance di rentang tanggal ini
-        if ($this->maintenanceService->isWismaBlocked($wisma->wismaID, $checkIn, $checkOut)) { // ditambahkan
-            return back()->withErrors([ // ditambahkan
-                'check_in' => 'Wisma sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.', // ditambahkan
-            ])->withInput(); // ditambahkan
+        // MAINTENANCE CHECK — cek villa sedang di-maintenance di rentang tanggal ini
+        if ($this->maintenanceService->isVillaBlocked($villa->villaID, $checkIn, $checkOut)) {
+            return back()->withErrors([
+                'check_in' => 'Villa sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.',
+            ])->withInput();
         }
 
         // Hitung total price PER MALAM berdasarkan klasifikasi hari masing-masing
         $totalPrice = $this->calculateTotalPrice(
-            $wisma->wismaID,
-            $request->user_type,
+            $villa->villaID,
             $checkIn,
             $checkOut
-        );
+        ); // keterangan: parameter user_type dihapus, tidak ada lagi pembedaan tipe tamu
 
         
-        $booking = DB::transaction(function () use ($request, $wisma, $nights, $totalPrice,) {
+        $booking = DB::transaction(function () use ($request, $villa, $nights, $totalPrice,) {
 
         $booking = Booking::create([
             'user_id'      => Auth::id(),
-            'wismaID'      => $wisma->wismaID,
+            'villaID'      => $villa->villaID,
             'check_in'     => $request->check_in,
             'check_out'    => $request->check_out,
             'total_nights' => $nights,
             'total_price'  => $totalPrice,
-            'user_type'    => $request->user_type,
-            'booking_type' => $request->booking_type,
             'guest_name'   => $request->guest_name,
             'guest_phone'  => $request->guest_phone,
-            'guest_ktp'    => $request->guest_ktp,
-            'employee_id'  => $request->employee_id,
-            'inst_name'    => $request->inst_name,
-            'inst_npwp'    => $request->inst_npwp,
             'status'       => 'pending',
-        ]);
+        ]); // keterangan: user_type, booking_type, guest_ktp, employee_id, inst_name, inst_npwp dihapus, tidak lagi relevan
 
         $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
 
         if ($request->hasFile('doc_ktp')) {
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
         }
+        // keterangan: logic upload npwp, id_pln, dan ktp_pln dihapus seluruhnya
 
-        if ($request->hasFile('doc_npwp')) {
-            $this->uploadDocument($booking->bookingID, 'npwp', $request->file('doc_npwp'));
-        }
-
-        if ($request->hasFile('doc_id_pln')) {
-            $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
-        }
-
-        if ($request->hasFile('doc_ktp_pln')) {
-            $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp_pln'));
-        }
         return $booking;
     });
 
@@ -132,11 +115,10 @@ class BookingController extends Controller
     // Private helpers
     // ---------------------------------------------------------------
 
-    private function calculateTotalPrice(string $wismaID, string $userType, Carbon $checkIn, Carbon $checkOut): float
+    private function calculateTotalPrice(string $villaID, Carbon $checkIn, Carbon $checkOut): float
     {
-        $prices = Price::where('wismaID', $wismaID)
-            ->where('user_type', $userType)
-            ->get()
+        $prices = Price::where('villaID', $villaID)
+            ->get() // keterangan: filter where('user_type', ...) dihapus
             ->keyBy('day_type');
 
         $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
@@ -149,7 +131,7 @@ class BookingController extends Controller
             $dayType = $this->dayTypeResolver->resolve($date, $holidayDates);
 
             if (!isset($prices[$dayType])) {
-                throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk wisma ini.");
+                throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk villa ini.");
             }
 
             $total += (float) $prices[$dayType]->price;
@@ -174,8 +156,8 @@ class BookingController extends Controller
 
     public function confirm(string $bookingID)
     {
-        $booking = Booking::with('wisma:wismaID,name')
-            ->select(['bookingID', 'wismaID', 'check_in', 'check_out', 'guest_name'])
+        $booking = Booking::with('villa:villaID,name')
+            ->select(['bookingID', 'villaID', 'check_in', 'check_out', 'guest_name'])
             ->where('bookingID', $bookingID)
             ->firstOrFail();
 

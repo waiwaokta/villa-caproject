@@ -27,13 +27,13 @@ class Facility extends Model
         });
     }
 
-    public function wismas()
+    public function villas()
     {
         return $this->belongsToMany(
-            Wisma::class,
-            'wisma_facility',
+            Villa::class,
+            'villa_facility',
             'facilityID',
-            'wismaID'
+            'villaID'
         );
     }
 }

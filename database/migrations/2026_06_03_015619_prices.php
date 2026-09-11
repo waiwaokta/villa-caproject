@@ -10,13 +10,12 @@ return new class extends Migration
     {
         Schema::create('prices', function (Blueprint $table) {
             $table->uuid('priceID')->primary();
-            $table->uuid('wismaID');
-            $table->enum('user_type', ['pln', 'umum']);
+            $table->uuid('villaID');
             $table->enum('day_type', ['weekday', 'weekend', 'holiday']);
             $table->decimal('price', 15, 2);
             $table->timestamps();
 
-            $table->foreign('wismaID')->references('wismaID')->on('wismas')->onDelete('cascade');
+            $table->foreign('villaID')->references('villaID')->on('villas')->onDelete('cascade');
         });
     }
 

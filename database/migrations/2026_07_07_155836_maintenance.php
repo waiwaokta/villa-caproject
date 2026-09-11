@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('maintenance', function (Blueprint $table) {
             $table->uuid('maintenanceID')->primary();
-            $table->uuid('wismaID')->nullable(); 
+            $table->uuid('villaID')->nullable(); 
             $table->date('date');
             $table->string('reason', 255)->nullable();
             $table->timestamps();
 
-            $table->foreign('wismaID')->references('wismaID')->on('wismas')->onDelete('cascade');
-            $table->unique(['wismaID', 'date']); 
+            $table->foreign('villaID')->references('villaID')->on('villas')->onDelete('cascade');
+            $table->unique(['villaID', 'date']); 
         });
     }
 

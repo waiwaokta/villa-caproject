@@ -47,14 +47,13 @@ class FonnteService
             . "Ada tamu baru yang melakukan booking dan menunggu persetujuan Anda.\n\n"
             . "━━━━━━━━━━━━━━━━━\n"
             . "*Kode Booking* : {$booking->bookingID}\n"
-            . "*Wisma*        : {$booking->wisma->name}\n"
+            . "*Villa*        : {$booking->villa->name}\n"
             . "*Nama Tamu*    : {$booking->guest_name}\n"
             . "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y') . "\n"
             . "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y') . "\n"
-            . "*Status Tamu*  : " . ucfirst($booking->user_type) . "\n"
             . "━━━━━━━━━━━━━━━━━\n\n"
             . "Silakan cek dan proses di panel admin.\n\n"
-            . "_Wisma PLN - Layanan Penginapan Terpercaya_";
+            . "_Layanan Penginapan Terpercaya_";
     }
 
     public function send(string $phone, string $message): bool
@@ -126,11 +125,11 @@ class FonnteService
         return implode("\n", [
             "Halo *{$booking->guest_name}*!",
             "",
-            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada *Wisma PLN*. Kami dengan senang hati menginformasikan bahwa booking Anda telah *DISETUJUI*.",
+            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada kami. Kami dengan senang hati menginformasikan bahwa booking Anda telah *DISETUJUI*.",
             "",
             "Berikut detail booking Anda:",
             "━━━━━━━━━━━━━━━━━",
-            "*Wisma*         : {$booking->wisma->name}",
+            "*Villa*         : {$booking->villa->name}",
             "*Kode Booking*  : {$booking->bookingID}",
             "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y') . " (mulai pukul 14:00)",
             "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y') . " (sebelum pukul 12:00)",
@@ -142,7 +141,7 @@ class FonnteService
             "",
             "Atas perhatian dan kepercayaan Anda, kami ucapkan terima kasih. Semoga perjalanan Anda menyenangkan.",
             "",
-            "_Wisma PLN - Layanan Penginapan Terpercaya_",
+            "_Layanan Penginapan Terpercaya_",
         ]);
     }
 
@@ -151,11 +150,11 @@ class FonnteService
         return implode("\n", [
             "Halo *{$booking->guest_name}*!",
             "",
-            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada *Wisma PLN*. Setelah melalui proses peninjauan, kami mohon maaf menginformasikan bahwa booking Anda *DITOLAK*.",
+            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada kami. Setelah melalui proses peninjauan, kami mohon maaf menginformasikan bahwa booking Anda *DITOLAK*.",
             "",
             "Berikut detail booking Anda:",
             "━━━━━━━━━━━━━━━━━",
-            "*Wisma*         : {$booking->wisma->name}",
+            "*Villa*         : {$booking->villa->name}",
             "*Kode Booking*  : {$booking->bookingID}",
             "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y'),
             "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y'),
@@ -170,7 +169,7 @@ class FonnteService
             "",
             "Atas perhatian dan pengertian Anda, kami ucapkan terima kasih.",
             "",
-            "_Wisma PLN - Layanan Penginapan Terpercaya_",
+            "_Layanan Penginapan Terpercaya_",
         ]);
     }
 }

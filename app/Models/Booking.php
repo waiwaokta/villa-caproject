@@ -17,10 +17,9 @@ class Booking extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'user_id', 'wismaID', 'check_in', 'check_out',
-        'total_nights', 'total_price', 'user_type', 'booking_type',
-        'guest_name', 'guest_phone', 'guest_ktp',
-        'employee_id', 'inst_name', 'inst_npwp',
+        'user_id', 'villaID', 'check_in', 'check_out',
+        'total_nights', 'total_price',
+        'guest_name', 'guest_phone',
         'status', 'reject_desc'
     ];
 
@@ -35,8 +34,8 @@ class Booking extends Model
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->bookingID)) {
-                // Format WPL-YYYY-XXXXXX
-                $model->bookingID = 'WPL-' . date('Y') . '-' . strtoupper(Str::random(6));
+                // Format BK-YYYY-XXXXXX
+                $model->bookingID = 'BK-' . date('Y') . '-' . strtoupper(Str::random(6));
             }
         });
     }
@@ -46,9 +45,9 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function wisma()
+    public function villa()
     {
-        return $this->belongsTo(Wisma::class, 'wismaID', 'wismaID');
+        return $this->belongsTo(Villa::class, 'villaID', 'villaID');
     }
 
     public function documents()

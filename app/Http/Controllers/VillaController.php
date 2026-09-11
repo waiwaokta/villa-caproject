@@ -1,44 +1,44 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Booking;
-use App\Models\Wisma;
+use App\Models\Villa;
 use App\Models\Maintenance;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
-class WismaController extends Controller
+class VillaController extends Controller
 {
-    public function show(string $wismaID, Request $request) 
+    public function show(string $villaID, Request $request)
     {
-        $wisma = Wisma::with(['wismaPhotos', 'prices', 'facilities'])
-            ->where('wismaID', $wismaID)
+        $villa = Villa::with(['villaPhotos', 'prices', 'facilities'])
+            ->where('villaID', $villaID)
             ->where('is_active', true)
-            ->has('wismaPhotos')
+            ->has('villaPhotos')
             ->firstOrFail();
-        $availability = $this->getAvailability($wismaID);
+        $availability = $this->getAvailability($villaID);
 
         $prefillCheckIn  = $request->query('check_in'); 
         $prefillCheckOut = $request->query('check_out'); 
 
-        return view('wisma.show', compact('wisma', 'availability', 'prefillCheckIn', 'prefillCheckOut')); 
+        return view('villa.show', compact('villa', 'availability', 'prefillCheckIn', 'prefillCheckOut'));
     }
     public function search(Request $request)
     {
         $checkIn  = $request->filled('check_in') ? Carbon::parse($request->check_in) : Carbon::today();
         $checkOut = $request->filled('check_out') ? Carbon::parse($request->check_out) : Carbon::tomorrow();
 
-        // Cek dulu apakah ada maintenance block yang berlaku untuk SEMUA wisma di rentang ini
-        $isGlobalBlocked = Maintenance::whereNull('wismaID') 
+        // Cek dulu apakah ada maintenance block yang berlaku untuk SEMUA villa di rentang ini
+        $isGlobalBlocked = Maintenance::whereNull('villaID')
             ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
             ->exists();
 
-        $wismas = Wisma::with(['primaryPhoto', 'prices'])
+        $villas = Villa::with(['primaryPhoto', 'prices'])
             ->where('is_active', true)
-            ->has('wismaPhotos')
+            ->has('villaPhotos')
             ->when($request->filled('lokasi'), function ($q) use ($request) {
                 $q->where('location', 'like', '%' . $request->lokasi . '%');
             })
-            ->when(!$isGlobalBlocked, function ($q) use ($checkIn, $checkOut) { // skip filter maintenance kalau sudah pasti semua wisma diblok (hasil kosong)
+            ->when(!$isGlobalBlocked, function ($q) use ($checkIn, $checkOut) { // skip filter maintenance kalau sudah pasti semua villa diblok (hasil kosong)
                 $q->whereDoesntHave('bookings', function ($q2) use ($checkIn, $checkOut) {
                         $q2->whereIn('status', ['pending', 'approved'])
                         ->where('check_in', '<', $checkOut)
@@ -52,24 +52,24 @@ class WismaController extends Controller
             })
             ->get();
 
-        $lokasi = Wisma::where('is_active', true)
-            ->has('wismaPhotos')
+        $lokasi = Villa::where('is_active', true)
+            ->has('villaPhotos')
             ->whereNotNull('location')
             ->distinct()
             ->pluck('location');
 
         $rekomendasi = collect();
-            if ($wismas->isEmpty()) {
-                $rekomendasi = Wisma::with(['primaryPhoto', 'prices'])
+            if ($villas->isEmpty()) {
+                $rekomendasi = Villa::with(['primaryPhoto', 'prices'])
                     ->where('is_active', true)
-                    ->has('wismaPhotos')
+                    ->has('villaPhotos')
                     ->inRandomOrder()
                     ->limit(8)
                     ->get();
             }
 
-        return view('wisma.wisma', [
-            'wismas'    => $wismas,
+        return view('villa.villa', [
+            'villas'    => $villas,
             'lokasi'    => $lokasi,
             'checkIn'   => $checkIn->toDateString(),
             'checkOut'  => $checkOut->toDateString(),
@@ -78,9 +78,9 @@ class WismaController extends Controller
             'sudahSearch' => $request->filled('check_in') || $request->filled('lokasi'),
         ]);
     }
-    private function getAvailability(string $wismaID): array
+    private function getAvailability(string $villaID): array
         {
-            $bookings = Booking::where('wismaID', $wismaID)
+            $bookings = Booking::where('villaID', $villaID)
                 ->whereIn('status', ['pending', 'approved'])
                 ->where('check_out', '>=', Carbon::today())
                 ->get(['check_in', 'check_out']);
@@ -94,10 +94,10 @@ class WismaController extends Controller
                 }
             }
 
-            // ditambahkan — gabungkan tanggal maintenance (khusus wisma ini + yang berlaku semua wisma)
-            $maintenanceDates = Maintenance::where(function ($q) use ($wismaID) {
-                    $q->where('wismaID', $wismaID)
-                    ->orWhereNull('wismaID');
+            // gabungkan tanggal maintenance (khusus villa ini + yang berlaku semua villa)
+            $maintenanceDates = Maintenance::where(function ($q) use ($villaID) {
+                    $q->where('villaID', $villaID)
+                    ->orWhereNull('villaID');
                 })
                 ->where('date', '>=', Carbon::today())
                 ->pluck('date');

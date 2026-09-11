@@ -8,24 +8,24 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('wisma_facility', function (Blueprint $table) {
-            $table->uuid('wismaID');
+        Schema::create('villa_facility', function (Blueprint $table) {
+            $table->uuid('villaID');
             $table->uuid('facilityID');
 
-            $table->foreign('wismaID')
-                ->references('wismaID')->on('wismas')
+            $table->foreign('villaID')
+                ->references('villaID')->on('villas')
                 ->onDelete('cascade');
 
             $table->foreign('facilityID')
                 ->references('facilityID')->on('facilities')
                 ->onDelete('cascade');
 
-            $table->primary(['wismaID', 'facilityID']);
+            $table->primary(['villaID', 'facilityID']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('wisma_facility');
+        Schema::dropIfExists('villa_facility');
     }
 };

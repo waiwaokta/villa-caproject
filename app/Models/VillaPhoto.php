@@ -6,17 +6,17 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class WismaPhoto extends Model
+class VillaPhoto extends Model
 {
     use HasFactory;
 
-    protected $table = 'wisma_photos';
+    protected $table = 'villa_photos';
     protected $primaryKey = 'photoID';
     protected $keyType = 'string';
     public $incrementing = false;
 
     protected $fillable = [
-        'wismaID', 'file_path', 'is_primary', 'order'
+        'villaID', 'file_path', 'is_primary', 'order'
     ];
 
     protected $casts = [
@@ -33,8 +33,8 @@ class WismaPhoto extends Model
         });
     }
 
-    public function wisma()
+    public function villa()
     {
-        return $this->belongsTo(Wisma::class, 'wismaID', 'wismaID');
+        return $this->belongsTo(Villa::class, 'villaID', 'villaID');
     }
 }
