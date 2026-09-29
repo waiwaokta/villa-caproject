@@ -1,26 +1,26 @@
 @extends('layouts.app')
 
-@section('title', $wisma->name . ' - Wisma PLN')
+@section('title', $villa->name . ' - Villa')
 
 @section('content')
 
 <div class="wisma-detail">
 
     {{-- GALERI FOTO --}}
-    <div class="gallery" data-total="{{ $wisma->wismaPhotos->count() }}">
+    <div class="gallery" data-total="{{ $villa->villaPhotos->count() }}">
         <div class="gallery-main">
             <img id="galleryMainImg"
-                src="{{ route('dokumen.foto', $wisma->primaryPhoto->photoID) }}"
-                alt="{{ $wisma->name }}">
+                src="{{ route('dokumen.foto', $villa->primaryPhoto->photoID) }}"
+                alt="{{ $villa->name }}">
         </div>
-        @if($wisma->wismaPhotos->count() > 1)
+        @if($villa->villaPhotos->count() > 1)
             <div class="gallery-thumbs">
-                @foreach($wisma->wismaPhotos as $photo)
+                @foreach($villa->villaPhotos as $photo)
                     <img
                         class="gallery-thumb {{ $photo->is_primary ? 'active' : '' }}"
                         src="{{ route('dokumen.foto', $photo->photoID) }}"
                         data-full="{{ route('dokumen.foto', $photo->photoID) }}"
-                        alt="{{ $wisma->name }}">
+                        alt="{{ $villa->name }}">
                 @endforeach
             </div>
         @endif
@@ -31,41 +31,41 @@
 
             {{-- INFO DASAR --}}
             <div class="wisma-header">
-                @if($wisma->location)
+                @if($villa->location)
                     <div class="wisma-badge">
                         <i class="ti ti-map-pin" style="font-size:12px"></i>
-                        {{ $wisma->location }}
+                        {{ $villa->location }}
                     </div>
                 @endif
-                <h1>{{ $wisma->name }}</h1>
-                @if($wisma->address)
+                <h1>{{ $villa->name }}</h1>
+                @if($villa->address)
                     <p class="wisma-address">
                         <i class="ti ti-map-2" style="font-size:13px"></i>
-                        {{ $wisma->address }}
+                        {{ $villa->address }}
                     </p>
                 @endif
                 <div class="wisma-meta-row">
-                    @if($wisma->capacity)
-                        <span><i class="ti ti-users"></i> Kapasitas {{ $wisma->capacity }} orang</span>
+                    @if($villa->capacity)
+                        <span><i class="ti ti-users"></i> Kapasitas {{ $villa->capacity }} orang</span>
                     @endif
                     <span><i class="ti ti-clock-check"></i> Check-in 14:00</span>
                     <span><i class="ti ti-clock-pause"></i> Check-out 12:00</span>
                 </div>
             </div>
 
-            @if($wisma->desc)
+            @if($villa->desc)
                 <div class="wisma-section">
-                    <h2>Tentang wisma ini</h2>
-                    <p class="wisma-desc">{{ $wisma->desc }}</p>
+                    <h2>Tentang villa ini</h2>
+                    <p class="wisma-desc">{{ $villa->desc }}</p>
                 </div>
             @endif
 
             {{-- FASILITAS --}}
-            @if($wisma->facilities->count() > 0)
+            @if($villa->facilities->count() > 0)
                 <div class="wisma-section">
                     <h2>Fasilitas</h2>
                     <div class="facility-grid">
-                        @foreach($wisma->facilities as $facility)
+                        @foreach($villa->facilities as $facility)
                         <div class="facility-item">
                             <x-dynamic-component :component="$facility->icon"/>
                             <span>{{ $facility->name }}</span>
@@ -125,24 +125,21 @@
                 <div class="price-table">
                     <div class="price-row price-row-header">
                         <span></span>
-                        <span>PLN</span>
-                        <span>Umum</span>
+                        <span>Harga</span>
                     </div>
                     @foreach(['weekday' => 'Senin–Jumat', 'weekend' => 'Sabtu–Minggu', 'holiday' => 'Libur Panjang'] as $type => $label)
                         @php
-                            $pln  = $wisma->prices->where('day_type', $type)->where('user_type', 'pln')->first();
-                            $umum = $wisma->prices->where('day_type', $type)->where('user_type', 'umum')->first();
+                            $harga = $villa->prices->where('day_type', $type)->first();
                         @endphp
                         <div class="price-row">
                             <span class="price-label">{{ $label }}</span>
-                            <span class="price-value">{{ $pln ? 'Rp ' . number_format($pln->price, 0, ',', '.') : '-' }}</span>
-                            <span class="price-value">{{ $umum ? 'Rp ' . number_format($umum->price, 0, ',', '.') : '-' }}</span>
+                            <span class="price-value">{{ $harga ? 'Rp ' . number_format($harga->price, 0, ',', '.') : '-' }}</span>
                         </div>
                     @endforeach
                 </div>
                 <p class="price-note">* Harga per malam</p>
 
-                <a href="/booking/{{ $wisma->wismaID }}?check_in={{ $prefillCheckIn }}&check_out={{ $prefillCheckOut }}" class="btn-book-now">
+                <a href="/booking/{{ $villa->villaID }}?check_in={{ $prefillCheckIn }}&check_out={{ $prefillCheckOut }}" class="btn-book-now">
                     <i class="ti ti-calendar-plus"></i> Booking Sekarang
                 </a>
             </div>
@@ -159,7 +156,7 @@
         <button class="lightbox-btn-prev" id="lightboxPrev">
             <i class="ti ti-chevron-left"></i>
         </button>
-        <img src="" alt="Foto Wisma" id="lightboxImg">
+        <img src="" alt="Foto Villa" id="lightboxImg">
         <button class="lightbox-btn-next" id="lightboxNext">
             <i class="ti ti-chevron-right"></i>
         </button>

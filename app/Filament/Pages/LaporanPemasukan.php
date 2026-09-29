@@ -3,7 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Booking;
-use App\Models\Wisma;
+use App\Models\Villa;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -28,7 +28,7 @@ class LaporanPemasukan extends Page implements HasSchemas
     protected static ?int $navigationSort = 3;
 
     // Filter state
-    public ?string $wisma_id = null;
+    public ?string $villa_id = null;
     public ?string $bulan = null;
     public ?string $tahun = null;
 
@@ -41,10 +41,10 @@ class LaporanPemasukan extends Page implements HasSchemas
     public function filterForm(Schema $schema): Schema
     {
         return $schema->schema([
-            Select::make('wisma_id')
-                ->label('Wisma')
-                ->options(['' => 'Semua Wisma'] + Wisma::pluck('name', 'wismaID')->toArray())
-                ->placeholder('Semua Wisma')
+            Select::make('villa_id')
+                ->label('Villa')
+                ->options(['' => 'Semua Villa'] + Villa::pluck('name', 'villaID')->toArray())
+                ->placeholder('Semua Villa')
                 ->selectablePlaceholder(false)
                 ->live(),
 
@@ -71,11 +71,11 @@ class LaporanPemasukan extends Page implements HasSchemas
 
     public function getBookings()
     {
-        $query = Booking::with('wisma')
+        $query = Booking::with('villa')
             ->where('status', 'approved');
 
-        if ($this->wisma_id) {
-            $query->where('wismaID', $this->wisma_id);
+        if ($this->villa_id) {
+            $query->where('villaID', $this->villa_id);
         }
 
         if ($this->bulan && $this->tahun) {

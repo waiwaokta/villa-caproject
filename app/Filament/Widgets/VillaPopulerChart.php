@@ -3,12 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Booking;
-use App\Models\Wisma;
+use App\Models\Villa;
 use Filament\Widgets\ChartWidget;
 
-class WismaPopulerChart extends ChartWidget
+class VillaPopulerChart extends ChartWidget
 {
-    protected ?string $heading = 'Wisma Terpopuler';
+    protected ?string $heading = 'Villa Terpopuler';
     protected static ?int $sort = 3;
     protected int|string|array $columnSpan = '1';
 
@@ -26,7 +26,7 @@ class WismaPopulerChart extends ChartWidget
 
     protected function getData(): array
     {
-        $wismas = Wisma::all();
+        $villas = Villa::all();
         $labels = [];
         $data   = [];
         $colors = [];
@@ -36,12 +36,12 @@ class WismaPopulerChart extends ChartWidget
         //     '#6366f1', '#ec4899', '#14b8a6', '#f97316',
         // ];
 
-        foreach ($wismas as $i => $wisma) {
-            $labels[] = $wisma->name;
+        foreach ($villas as $i => $villa) {
+            $labels[] = $villa->name;
             // $colors[] = $baseColors[$i % count($baseColors)];
 
             $query = Booking::where('status', 'approved')
-                ->where('wismaID', $wisma->wismaID);
+                ->where('villaID', $villa->villaID);
 
             if ($this->filter === 'bulan') {
                 $query->whereMonth('check_in', now()->month)

@@ -3,11 +3,11 @@
 :root {
     --cream: #FAFAF8;
     --cream2: #F2F2EF;
-    --blue: #185FA5;
-    --blue-dark: #0C447C;
-    --blue-deeper: #042C53;
-    --blue-deepest: #042141;
-    --blue-light: #85B7EB;
+    --blue: #18a59e;
+    --blue-dark: #0c7c6f;
+    --blue-deeper: #045346;
+    --blue-deepest: #043e41;
+    --blue-light: #85ebd2;
     --blue-lighter: #B5D4F4;
     --blue-accent: #00A3AD;
     --text: #1a1a18;
@@ -44,7 +44,7 @@ a { text-decoration: none; color: inherit; }
     position: sticky;
     top: var(--nav-height);
     z-index: 90;
-    background: rgba(2, 26, 54, 0.85);
+    background: rgba(2, 52, 54, 0.85);
     border-bottom: 1px solid rgba(255,255,255,0.05);
     overflow: hidden;
     white-space: nowrap;
@@ -86,7 +86,7 @@ a { text-decoration: none; color: inherit; }
 
 /* NAV */
 .nav {
-    background: rgba(12, 68, 124, 0.97);
+    background: var(--blue-deeper);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 14px 40px;
@@ -373,7 +373,7 @@ a { text-decoration: none; color: inherit; }
 
 .hero-section-wrap {
     background: linear-gradient(180deg,
-        #0a3a6e 0%, #103a63 20%, #0e5490 40%, #00A3AD 55%, #0e5490 70%, #042C53 85%, #021a36 100%
+        var(--blue-deepest) 0%, var(--blue) 60%, var(--blue-deepest) 100%
     );
     background-size: 250% 250%; 
     animation: heroGradientMove 10s ease-in-out infinite;

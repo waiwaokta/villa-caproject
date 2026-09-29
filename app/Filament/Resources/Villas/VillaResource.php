@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Resources\Wismas;
+namespace App\Filament\Resources\Villas;
 
-use App\Filament\Resources\Wismas\Pages\CreateWisma;
-use App\Filament\Resources\Wismas\Pages\EditWisma;
-use App\Filament\Resources\Wismas\Pages\ListWismas;
-use App\Filament\Resources\Wismas\Pages\ViewWisma;
-use App\Filament\Resources\Wismas\Schemas\WismaForm;
-use App\Filament\Resources\Wismas\Schemas\WismaInfolist;
-use App\Filament\Resources\Wismas\Tables\WismasTable;
-use App\Models\Wisma;
+use App\Filament\Resources\Villas\Pages\CreateVilla;
+use App\Filament\Resources\Villas\Pages\EditVilla;
+use App\Filament\Resources\Villas\Pages\ListVillas;
+use App\Filament\Resources\Villas\Pages\ViewVilla;
+use App\Filament\Resources\Villas\Schemas\VillaForm;
+use App\Filament\Resources\Villas\Schemas\VillaInfolist;
+use App\Filament\Resources\Villas\Tables\VillasTable;
+use App\Models\Villa;
 use BackedEnum;
 use UnitEnum;
 use Filament\Resources\Resource;
@@ -19,17 +19,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class WismaResource extends Resource
+class VillaResource extends Resource
 {
-    protected static ?string $model = Wisma::class;
+    protected static ?string $model = Villa::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Home;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+    protected static string | UnitEnum | null $navigationGroup = 'Villa';
 
-    protected static ?string $navigationLabel = 'Daftar Wisma';
+    protected static ?string $navigationLabel = 'Daftar Villa';
 
-    protected static ?string $pluralModelLabel = 'Daftar Wisma';
+    protected static ?string $pluralModelLabel = 'Daftar Villa';
 
     protected static ?int $navigationSort = 2;
 
@@ -37,17 +37,17 @@ class WismaResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return WismaForm::configure($schema);
+        return VillaForm::configure($schema);
     }
 
     public static function infolist(Schema $schema): Schema
     {
-        return WismaInfolist::configure($schema);
+        return VillaInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return WismasTable::configure($table);
+        return VillasTable::configure($table);
     }
 
     public static function getRelations(): array
@@ -60,10 +60,10 @@ class WismaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListWismas::route('/'),
-            'create' => CreateWisma::route('/create'),
-            'view' => ViewWisma::route('/{record}'),
-            'edit' => EditWisma::route('/{record}/edit'),
+            'index' => ListVillas::route('/'),
+            'create' => CreateVilla::route('/create'),
+            'view' => ViewVilla::route('/{record}'),
+            'edit' => EditVilla::route('/{record}/edit'),
         ];
     }
 

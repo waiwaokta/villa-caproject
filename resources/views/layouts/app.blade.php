@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Wisma PLN')</title>
+    <title>@yield('title', 'NginapYuk')</title>
 
     {{-- Favicon --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Open Graph Meta (preview pas link di-share ke WA/Telegram/dll) --}}
-    <meta property="og:title" content="@yield('title', 'Wisma PLN')">
+    <meta property="og:title" content="@yield('title', 'NginapYuk')">
     <meta property="og:description" content="Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.">
     <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -32,10 +32,10 @@
         <nav class="nav">
             <a href="/" class="nav-brand">
                 <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="nav-brand-img"> {{-- DIUBAH — class khusus nav, bukan pakai footer-logo-img --}}
-                <span class="nav-brand-text">Wisma PLN</span> {{-- DITAMBAHKAN — bungkus teks --}}
+                <span class="nav-brand-text">NginapYuk</span> {{-- DITAMBAHKAN — bungkus teks --}}
             </a>
             <div class="nav-links">
-                <a href="{{ route('wisma.search') }}">WISMA</a>
+                <a href="{{ route('villa.search') }}">VILLA</a>
                 <a href="{{ route('tentang') }}">TENTANG</a>
                 <a href="{{ route('kontak') }}">KONTAK</a>
             </div>
@@ -45,7 +45,7 @@
             </button>
         </nav>
         <div class="nav-mobile-menu">
-            <a href="{{ route('wisma.search') }}">WISMA</a>
+            <a href="{{ route('villa.search') }}">WISMA</a>
             <a href="{{ route('tentang') }}">TENTANG</a>
             <a href="{{ route('kontak') }}">KONTAK</a>
             <a href="/cek-booking">CEK BOOKING</a>
@@ -63,7 +63,7 @@
                     <div class="footer-col footer-col-brand">
                         <a href="/" class="footer-logo">
                             <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="footer-logo-img">
-                            <span class="footer-logo-text">Wisma PLN</span>
+                            <span class="footer-logo-text">NginapYuk</span>
                         </a>
                         <p class="footer-desc">
                             Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.
@@ -84,7 +84,7 @@
                     {{-- TENGAH-KANAN — 2 kolom link --}}
                     <div class="footer-col">
                         <p class="footer-col-title">WISMA</p>
-                        <a href="{{ route('wisma.search') }}">Wisma</a>
+                        <a href="{{ route('villa.search') }}">Villa</a>
                         <a href="{{ route('booking.cek') }}">Cek Booking</a>
                     </div>
 

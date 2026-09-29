@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Pages;
+namespace App\Filament\Resources\Villas\Pages;
 
-use App\Filament\Resources\Wismas\WismaResource;
+use App\Filament\Resources\Villas\VillaResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditWisma extends EditRecord
+class EditVilla extends EditRecord
 {
-    protected static string $resource = WismaResource::class;
+    protected static string $resource = VillaResource::class;
 
     protected function getHeaderActions(): array
     {

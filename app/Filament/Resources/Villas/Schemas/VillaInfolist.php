@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Schemas;
+namespace App\Filament\Resources\Villas\Schemas;
 
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
@@ -12,7 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Schemas\Components\Grid;
 
-class WismaInfolist
+class VillaInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -20,13 +20,13 @@ class WismaInfolist
             ->columns(3)
             ->schema([
 
-                Section::make('Informasi Wisma')
+                Section::make('Informasi Villa')
                     ->icon('heroicon-o-home')
                     ->columnSpan(2)
                     ->columns(2)
                     ->schema([
                         TextEntry::make('name')
-                            ->label('Nama Wisma')
+                            ->label('Nama Villa')
                             ->weight(FontWeight::Bold),
                         TextEntry::make('location')
                             ->label('Lokasi / Daerah'),
@@ -46,11 +46,11 @@ class WismaInfolist
                             ->columnSpanFull(),
                     ]),
 
-                Section::make('Foto Wisma')
+                Section::make('Foto Villa')
                     ->icon('heroicon-o-photo')
                     ->columnSpan(1)
                     ->schema([
-                        RepeatableEntry::make('wismaPhotos')
+                        RepeatableEntry::make('villaPhotos')
                             ->hiddenLabel()
                             ->schema([
                                 ImageEntry::make('file_path')
@@ -83,19 +83,6 @@ class WismaInfolist
                         RepeatableEntry::make('prices')
                             ->hiddenLabel()
                             ->schema([
-                                TextEntry::make('user_type')
-                                    ->label('Status Pengguna')
-                                    ->badge()
-                                    ->color(fn(string $state): string => match($state) {
-                                        'pln'  => 'info',
-                                        'umum' => 'success',
-                                        default => 'gray',
-                                    })
-                                    ->formatStateUsing(fn($state) => match($state) {
-                                        'pln'  => 'PLN',
-                                        'umum' => 'Umum',
-                                        default => $state,
-                                    }),
                                 TextEntry::make('day_type')
                                     ->label('Tipe Hari')
                                     ->badge()

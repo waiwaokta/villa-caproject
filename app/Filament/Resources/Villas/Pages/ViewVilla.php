@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Pages;
+namespace App\Filament\Resources\Villas\Pages;
 
-use App\Filament\Resources\Wismas\WismaResource;
+use App\Filament\Resources\Villas\VillaResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 
-class ViewWisma extends ViewRecord
+class ViewVilla extends ViewRecord
 {
-    protected static string $resource = WismaResource::class;
+    protected static string $resource = VillaResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -23,7 +23,7 @@ class ViewWisma extends ViewRecord
                     $this->record->update(['is_active' => !$this->record->is_active]);
 
                     Notification::make()
-                        ->title($this->record->is_active ? 'Wisma sekarang tampil di web' : 'Wisma disembunyikan dari web')
+                        ->title($this->record->is_active ? 'Villa sekarang tampil di web' : 'Villa disembunyikan dari web')
                         ->success()
                         ->send();
 

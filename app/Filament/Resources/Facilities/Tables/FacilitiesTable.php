@@ -32,10 +32,10 @@ class FacilitiesTable
                     ->label('Icon')
                     ->medium(),
 
-                TextColumn::make('wismas_count')
+                TextColumn::make('villas_count')
                     ->label('Dipakai di')
-                    ->counts('wismas')
-                    ->suffix(' wisma')
+                    ->counts('villas')
+                    ->suffix(' villa')
                     ->badge()
                     ->color('info'),
             ])
@@ -52,7 +52,7 @@ class FacilitiesTable
             ])
              ->emptyStateIcon('heroicon-o-Sparkles')
             ->emptyStateHeading('Belum ada Fasilitas yang Terdaftar')
-            ->emptyStateDescription('Fasilitas Wisma akan muncul di sini setelah ditambahkan.');
+            ->emptyStateDescription('Fasilitas Villa akan muncul di sini setelah ditambahkan.');
         //     ->emptyStateActions([
         //     Action::make('create')
         //         ->label('Buat Wisma Baru')

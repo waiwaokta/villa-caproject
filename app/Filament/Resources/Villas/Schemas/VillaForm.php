@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Schemas;
+namespace App\Filament\Resources\Villas\Schemas;
 
 use App\Models\Facility;
 use Filament\Forms\Components\CheckboxList;
@@ -17,18 +17,18 @@ use Filament\Support\Icons\Heroicon;
 use App\Services\ImageOptimizerService;
 use Filament\Support\RawJs;
 
-class WismaForm
+class VillaForm
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema->schema([
             Wizard::make([
-                Step::make('Informasi Wisma')
+                Step::make('Informasi Villa')
                 ->icon(Heroicon::InformationCircle)
-                ->description('Lengkapi informasi dasar wisma')
+                ->description('Lengkapi informasi dasar villa')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama Wisma')
+                            ->label('Nama Villa')
                             ->required()
                             ->maxLength(100),
                         TextInput::make('location')
@@ -54,18 +54,18 @@ class WismaForm
                             ->maxLength(2000)
                             ->columnSpanFull(),
                     ]),
-                Step::make('Foto Wisma')
+                Step::make('Foto Villa')
                     ->icon(Heroicon::Photo)
-                    ->description('Unggah dan atur foto - foto wisma')
+                    ->description('Unggah dan atur foto - foto villa')
                     ->schema([
-                        Repeater::make('wismaPhotos')
+                        Repeater::make('villaPhotos')
                             ->hiddenlabel()
                             ->relationship()
                             ->schema([
                                 FileUpload::make('file_path')
                                     ->label('Foto')
                                     ->image()
-                                    ->directory('wisma-photos')
+                                    ->directory('villa-photos')
                                     ->required()
                                     ->saveUploadedFileUsing(function ($file) { // DITAMBAHKAN — otomatis resize + compress + convert ke WebP sebelum disimpan
                                         return app(ImageOptimizerService::class)->optimize($file);
@@ -84,7 +84,7 @@ class WismaForm
                     ]),
                 Step::make('Fasilitas')
                     ->icon(Heroicon::Sparkles)
-                    ->description('Pilih fasilitas yang tersedia di wisma ini')
+                    ->description('Pilih fasilitas yang tersedia di villa ini')
                     ->schema([
                         CheckboxList::make('facilities')
                             ->hiddenLabel()
@@ -96,21 +96,12 @@ class WismaForm
                     ]),
                 Step::make('Daftar Harga')
                     ->icon(Heroicon::CurrencyDollar)
-                    ->description('Atur daftar harga untuk wisma')
+                    ->description('Atur daftar harga untuk villa')
                     ->schema([
                         Repeater::make('prices')
                         ->hiddenlabel()
                         ->relationship()
                         ->schema([
-                            Select::make('user_type')
-                                ->label('Status Pengguna')
-                                ->selectablePlaceholder(false)
-                                ->options([
-                                    'pln'  => 'Pegawai / Pensiunan PLN',
-                                    'umum' => 'Umum',
-                                ])
-                                ->default('pln')
-                                ->required(),
                             Select::make('day_type')
                                 ->label('Tipe Hari')
                                 ->selectablePlaceholder(false)

@@ -4,7 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Holiday;
 use App\Models\Maintenance;
-use App\Models\Wisma;
+use App\Models\Villa;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Filament\Actions\Action;
@@ -22,27 +22,27 @@ use Illuminate\Validation\ValidationException;
 use UnitEnum;
 use BackedEnum;
 
-class KalenderWisma extends Page
+class KalenderVilla extends Page
 {
     protected static string| BackedEnum |null $navigationIcon = Heroicon::OutlinedCalendarDays;
 
-    protected static ?string $navigationLabel = 'Kalender Wisma';
+    protected static ?string $navigationLabel = 'Kalender Villa';
 
-    protected static ?string $title = 'Kalender Wisma';
+    protected static ?string $title = 'Kalender Villa';
 
-    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+    protected static string | UnitEnum | null $navigationGroup = 'Villa';
 
-    protected static ?string $pluralModelLabel = 'Kalender Wisma';
+    protected static ?string $pluralModelLabel = 'Kalender Villa';
 
     protected static ?int $navigationSort = 3;
 
-    protected string $view = 'filament.pages.kalender-wisma';
+    protected string $view = 'filament.pages.kalender-villa';
 
     public int $bulan;
     public int $tahun;
     public ?array $currentEditArguments = null;
 
-    public ?array $prevWismaIds = null;
+    public ?array $prevVillaIds = null;
 
     public function mount(): void
     {
@@ -56,7 +56,7 @@ class KalenderWisma extends Page
         $end   = $start->copy()->endOfMonth();
 
         $holidays = Holiday::whereBetween('date', [$start->toDateString(), $end->toDateString()])->get();
-        $maintenance = Maintenance::with('wisma')
+        $maintenance = Maintenance::with('villa')
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->get();
 
@@ -75,9 +75,9 @@ class KalenderWisma extends Page
             $dateKey = Carbon::parse($item->date)->toDateString();
             $events[$dateKey][] = [
                 'type'          => 'maintenance',
-                'label'         => $item->wisma ? $item->wisma->name : 'Semua Wisma',
+                'label'         => $item->villa ? $item->villa->name : 'Semua Villa',
                 'reason'        => $item->reason,
-                'wismaID'       => $item->wismaID,
+                'villaID'       => $item->villaID,
                 'maintenanceID' => $item->maintenanceID,
             ];
         }
@@ -113,7 +113,7 @@ class KalenderWisma extends Page
         $this->mountAction('tambahEvent', ['tanggal' => $tanggal]);
     }
 
-    public function openEditEventModal(string $type, string $tanggal, ?string $wismaID = null): void
+    public function openEditEventModal(string $type, string $tanggal, ?string $villaID = null): void
     {
         // DITAMBAHKAN — guard server-side, sama seperti openAddEventModal
         if (Carbon::parse($tanggal)->lt(Carbon::today())) {
@@ -124,11 +124,11 @@ class KalenderWisma extends Page
             return;
         }
 
-        [$rangeStart, $rangeEnd, $name] = $this->resolveEventRange($type, $tanggal, $wismaID);
+        [$rangeStart, $rangeEnd, $name] = $this->resolveEventRange($type, $tanggal, $villaID);
 
         $this->currentEditArguments = [
             'type'         => $type,
-            'wismaID'      => $wismaID,
+            'villaID'      => $villaID,
             'rangeStart'   => $rangeStart,
             'rangeEnd'     => $rangeEnd,
             'originalName' => $name,
@@ -139,9 +139,9 @@ class KalenderWisma extends Page
 
     /**
      * Rekonstruksi rentang tanggal asli dari 1 tanggal yang diklik —
-     * cek mundur & maju selama nama/wisma sama dan tanggal berdekatan.
+     * cek mundur & maju selama nama/villa sama dan tanggal berdekatan.
      */
-    private function resolveEventRange(string $type, string $tanggal, ?string $wismaID): array
+    private function resolveEventRange(string $type, string $tanggal, ?string $villaID): array
     {
         $clicked = Carbon::parse($tanggal);
 
@@ -166,19 +166,19 @@ class KalenderWisma extends Page
         }
 
         // maintenance
-        $current = Maintenance::where('date', $tanggal)->where('wismaID', $wismaID)->first();
+        $current = Maintenance::where('date', $tanggal)->where('villaID', $villaID)->first();
         if (!$current) {
             return [$tanggal, $tanggal, ''];
         }
         $reason = $current->reason;
 
         $start = $clicked->copy();
-        while (Maintenance::where('date', $start->copy()->subDay()->toDateString())->where('wismaID', $wismaID)->exists()) {
+        while (Maintenance::where('date', $start->copy()->subDay()->toDateString())->where('villaID', $villaID)->exists()) {
             $start->subDay();
         }
 
         $end = $clicked->copy();
-        while (Maintenance::where('date', $end->copy()->addDay()->toDateString())->where('wismaID', $wismaID)->exists()) {
+        while (Maintenance::where('date', $end->copy()->addDay()->toDateString())->where('villaID', $villaID)->exists()) {
             $end->addDay();
         }
 
@@ -195,7 +195,7 @@ class KalenderWisma extends Page
                 ->fillForm(fn (array $arguments): array => [
                     'date_start' => $arguments['tanggal'] ?? now()->toDateString(),
                 ])
-                ->afterFormFilled(fn () => $this->prevWismaIds = []) // DITAMBAHKAN
+                ->afterFormFilled(fn () => $this->prevVillaIds = []) // DITAMBAHKAN
                 ->action(function (array $data) {
                     $this->handleCreateEvent($data);
                 }),
@@ -205,18 +205,18 @@ class KalenderWisma extends Page
                 ->modalHeading('Edit Event Kalender')
                 ->schema($this->eventFormSchema())
                 ->fillForm(function (array $arguments): array {
-                        $wismaIds = $arguments['wismaID']
-                        ? [$arguments['wismaID']]
-                        : array_merge(['__all__'], Wisma::where('is_active', true)->pluck('wismaID')->toArray());
+                        $villaIds = $arguments['villaID']
+                        ? [$arguments['villaID']]
+                        : array_merge(['__all__'], Villa::where('is_active', true)->pluck('villaID')->toArray());
 
-                    $this->prevWismaIds = $wismaIds;
+                    $this->prevVillaIds = $villaIds;
                     return [
                         'jenis'        => $arguments['type'],
                         'name'         => $arguments['type'] === 'holiday' ? $arguments['originalName'] : null,
                         'reason'       => $arguments['type'] === 'maintenance' ? $arguments['originalName'] : null,
-                        'wisma_ids' => $arguments['wismaID']
-                            ? [$arguments['wismaID']]
-                            : array_merge(['__all__'], Wisma::where('is_active', true)->pluck('wismaID')->toArray()),
+                        'villa_ids' => $arguments['villaID']
+                            ? [$arguments['villaID']]
+                            : array_merge(['__all__'], Villa::where('is_active', true)->pluck('villaID')->toArray()),
                         'date_start'   => $arguments['rangeStart'],
                         'date_end'     => $arguments['rangeStart'] === $arguments['rangeEnd'] ? null : $arguments['rangeEnd'],
                     ];
@@ -244,7 +244,7 @@ class KalenderWisma extends Page
                 ->label('Jenis Event')
                 ->options([
                     'holiday'     => 'Libur Nasional',
-                    'maintenance' => 'Maintenance Wisma',
+                    'maintenance' => 'Maintenance Villa',
                 ])
                 ->default('holiday')
                 ->reactive()
@@ -256,13 +256,13 @@ class KalenderWisma extends Page
                 ->maxLength(255)
                 ->visible(fn (Get $get) => $get('jenis') === 'holiday'),
 
-            CheckboxList::make('wisma_ids')
+            CheckboxList::make('villa_ids')
                 ->label('Berlaku Untuk')
-                ->options(fn () => collect(['__all__' => 'Semua Wisma'])
-                    ->merge(Wisma::where('is_active', true)->pluck('name', 'wismaID')))
+                ->options(fn () => collect(['__all__' => 'Semua Villa'])
+                    ->merge(Villa::where('is_active', true)->pluck('name', 'villaID')))
                 ->reactive()
                 ->afterStateUpdated(function ($state, callable $set) {
-                    $this->syncWismaCheckboxes($state ?? [], $set);
+                    $this->syncVillaCheckboxes($state ?? [], $set);
                 })
                 ->visible(fn (Get $get) => $get('jenis') === 'maintenance')
                 ->required(fn (Get $get) => $get('jenis') === 'maintenance'),
@@ -298,8 +298,8 @@ class KalenderWisma extends Page
             return;
         }
 
-        $wismaIDs = $this->resolveWismaIDs($data);
-        $this->insertMaintenance($period, $wismaIDs, $data['reason'] ?? null);
+        $villaIDs = $this->resolveVillaIDs($data);
+        $this->insertMaintenance($period, $villaIDs, $data['reason'] ?? null);
         Notification::make()->title('Maintenance berhasil ditambahkan')->success()->send();
     }
 
@@ -316,8 +316,8 @@ class KalenderWisma extends Page
                 return;
             }
 
-            $wismaIDs = $this->resolveWismaIDs($data);
-            $this->insertMaintenance($newPeriod, $wismaIDs, $data['reason'] ?? null);
+            $villaIDs = $this->resolveVillaIDs($data);
+            $this->insertMaintenance($newPeriod, $villaIDs, $data['reason'] ?? null);
         });
 
         Notification::make()->title('Event berhasil diperbarui')->success()->send();
@@ -340,7 +340,7 @@ class KalenderWisma extends Page
         }
 
         Maintenance::whereIn('date', $period)
-            ->where('wismaID', $arguments['wismaID'])
+            ->where('villaID', $arguments['villaID'])
             ->delete();
     }
 
@@ -367,22 +367,22 @@ class KalenderWisma extends Page
         }
     }
 
-    private function resolveWismaIDs(array $data): array
+    private function resolveVillaIDs(array $data): array
     {
-        $selected = array_values(array_diff($data['wisma_ids'] ?? [], ['__all__'])); // DIUBAH — buang pseudo-option
+        $selected = array_values(array_diff($data['villa_ids'] ?? [], ['__all__'])); // DIUBAH — buang pseudo-option
 
         if (empty($selected)) {
             throw ValidationException::withMessages([
-                'wisma_ids' => 'Pilih minimal 1 wisma.',
+                'villa_ids' => 'Pilih minimal 1 villa.',
             ]);
         }
 
-        $allWismaIDs = Wisma::where('is_active', true)->pluck('wismaID')->toArray(); // DITAMBAHKAN
+        $allVillaIDs = Villa::where('is_active', true)->pluck('villaID')->toArray(); // DITAMBAHKAN
         $selectedSorted = $selected; sort($selectedSorted);
-        $allSorted = $allWismaIDs; sort($allSorted);
+        $allSorted = $allVillaIDs; sort($allSorted);
 
         if ($selectedSorted === $allSorted && count($allSorted) > 0) { // DITAMBAHKAN
-            return [null]; // tetap konsisten: null = berlaku untuk semua wisma di DB
+            return [null]; // tetap konsisten: null = berlaku untuk semua villa di DB
         }
 
         return $selected;
@@ -400,13 +400,13 @@ class KalenderWisma extends Page
         });
     }
 
-    private function insertMaintenance($period, array $wismaIDs, ?string $reason): void
+    private function insertMaintenance($period, array $villaIDs, ?string $reason): void
     {
-        DB::transaction(function () use ($period, $wismaIDs, $reason) {
-            foreach ($wismaIDs as $wismaID) {
+        DB::transaction(function () use ($period, $villaIDs, $reason) {
+            foreach ($villaIDs as $villaID) {
                 foreach ($period as $date) {
                     Maintenance::firstOrCreate(
-                        ['wismaID' => $wismaID, 'date' => $date],
+                        ['villaID' => $villaID, 'date' => $date],
                         ['reason' => $reason]
                     );
                 }
@@ -415,81 +415,81 @@ class KalenderWisma extends Page
     }
 
         /**
-     * Sinkronisasi checkbox "Semua Wisma" dengan checkbox wisma individual.
+     * Sinkronisasi checkbox "Semua Villa" dengan checkbox villa individual.
      * Aturan:
-     * - Toggle "Semua Wisma" sendiri -> semua individual ikut centang/uncheck.
-     * - Semua individual dicentang manual satu-satu -> "Semua Wisma" ikut nyala.
-     * - Salah satu individual di-uncheck -> "Semua Wisma" ikut mati.
+     * - Toggle "Semua Villa" sendiri -> semua individual ikut centang/uncheck.
+     * - Semua individual dicentang manual satu-satu -> "Semua Villa" ikut nyala.
+     * - Salah satu individual di-uncheck -> "Semua Villa" ikut mati.
      */
-    private function syncWismaCheckboxes(array $newSelection, callable $set): void
+    private function syncVillaCheckboxes(array $newSelection, callable $set): void
     {
-        $allWismaIDs = Wisma::where('is_active', true)->pluck('wismaID')->toArray();
-        $previousSelection = $this->prevWismaIds ?? [];
+        $allVillaIDs = Villa::where('is_active', true)->pluck('villaID')->toArray();
+        $previousSelection = $this->prevVillaIds ?? [];
 
-        $toggledAllWismaDirectly = $this->wasAllWismaToggledDirectly($previousSelection, $newSelection);
+        $toggledAllVillaDirectly = $this->wasAllVillaToggledDirectly($previousSelection, $newSelection);
 
-        if ($toggledAllWismaDirectly) {
+        if ($toggledAllVillaDirectly) {
             $nowChecked = in_array('__all__', $newSelection);
             $result = $nowChecked
-                ? $this->checkAllWisma($allWismaIDs)
+                ? $this->checkAllVilla($allVillaIDs)
                 : []; // uncheck semua
         } else {
-            $result = $this->syncBasedOnIndividualCheckboxes($newSelection, $allWismaIDs);
+            $result = $this->syncBasedOnIndividualCheckboxes($newSelection, $allVillaIDs);
         }
 
-        $set('wisma_ids', $result);
-        $this->prevWismaIds = $result;
+        $set('villa_ids', $result);
+        $this->prevVillaIds = $result;
     }
 
     /**
-     * True kalau yang berubah HANYA status "Semua Wisma", sedangkan
+     * True kalau yang berubah HANYA status "Semua Villa", sedangkan
      * checkbox-checkbox individual di bawahnya tidak ikut berubah sama sekali.
      */
-    private function wasAllWismaToggledDirectly(array $previousSelection, array $newSelection): bool
+    private function wasAllVillaToggledDirectly(array $previousSelection, array $newSelection): bool
     {
         $wasAllChecked = in_array('__all__', $previousSelection);
         $isAllCheckedNow = in_array('__all__', $newSelection);
 
-        $previousIndividualIDs = $this->extractIndividualWismaIDs($previousSelection);
-        $newIndividualIDs = $this->extractIndividualWismaIDs($newSelection);
+        $previousIndividualIDs = $this->extractIndividualVillaIDs($previousSelection);
+        $newIndividualIDs = $this->extractIndividualVillaIDs($newSelection);
 
-        $onlyAllWismaChanged = $wasAllChecked !== $isAllCheckedNow;
-        $individualCheckboxesUnchanged = $this->sameWismaIDs($previousIndividualIDs, $newIndividualIDs);
+        $onlyAllVillaChanged = $wasAllChecked !== $isAllCheckedNow;
+        $individualCheckboxesUnchanged = $this->sameVillaIDs($previousIndividualIDs, $newIndividualIDs);
 
-        return $onlyAllWismaChanged && $individualCheckboxesUnchanged;
+        return $onlyAllVillaChanged && $individualCheckboxesUnchanged;
     }
 
     /**
-     * Cek checkbox individual: kalau semua wisma aktif sudah tercentang manual,
-     * ikutkan "Semua Wisma" ke dalam hasil. Kalau belum lengkap, "Semua Wisma" dilepas.
+     * Cek checkbox individual: kalau semua villa aktif sudah tercentang manual,
+     * ikutkan "Semua Villa" ke dalam hasil. Kalau belum lengkap, "Semua Villa" dilepas.
      */
-    private function syncBasedOnIndividualCheckboxes(array $newSelection, array $allWismaIDs): array
+    private function syncBasedOnIndividualCheckboxes(array $newSelection, array $allVillaIDs): array
     {
-        $selectedIndividualIDs = $this->extractIndividualWismaIDs($newSelection);
-        $allWismaAreChecked = $this->sameWismaIDs($selectedIndividualIDs, $allWismaIDs) && count($allWismaIDs) > 0;
+        $selectedIndividualIDs = $this->extractIndividualVillaIDs($newSelection);
+        $allVillaAreChecked = $this->sameVillaIDs($selectedIndividualIDs, $allVillaIDs) && count($allVillaIDs) > 0;
 
-        return $allWismaAreChecked
+        return $allVillaAreChecked
             ? array_merge(['__all__'], $selectedIndividualIDs)
             : $selectedIndividualIDs;
     }
 
-    private function checkAllWisma(array $allWismaIDs): array
+    private function checkAllVilla(array $allVillaIDs): array
     {
-        return array_merge(['__all__'], $allWismaIDs);
+        return array_merge(['__all__'], $allVillaIDs);
     }
 
-    /** Buang opsi semu "__all__", sisakan wismaID asli saja. */
-    private function extractIndividualWismaIDs(array $selection): array
+    /** Buang opsi semu "__all__", sisakan villaID asli saja. */
+    private function extractIndividualVillaIDs(array $selection): array
     {
         return array_values(array_diff($selection, ['__all__']));
     }
 
     /**
-     * Bandingkan 2 kumpulan wismaID tanpa peduli urutan.
+     * Bandingkan 2 kumpulan villaID tanpa peduli urutan.
      * Pakai json_encode (bukan ===) karena perbandingan array PHP
      * gagal match kalau index/urutan beda walau isinya sama.
      */
-    private function sameWismaIDs(array $a, array $b): bool
+    private function sameVillaIDs(array $a, array $b): bool
     {
         sort($a);
         sort($b);

@@ -27,7 +27,7 @@ class BookingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentCheck;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+    protected static string | UnitEnum | null $navigationGroup = 'Villa';
 
     protected static ?string $navigationLabel = 'Daftar Booking';
 

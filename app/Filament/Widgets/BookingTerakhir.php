@@ -21,7 +21,7 @@ class BookingTerakhir extends BaseWidget
     {
         return $table
             ->query(fn() => Booking::query()
-                ->with('wisma')
+                ->with('villa')
                 ->latest('created_at')
                 ->limit(5)
             )
@@ -32,8 +32,8 @@ class BookingTerakhir extends BaseWidget
                     ->fontFamily('mono')
                     ->copyable(),
 
-                TextColumn::make('wisma.name')
-                    ->label('Wisma'),
+                TextColumn::make('villa.name')
+                    ->label('Villa'),
 
                 TextColumn::make('guest_name')
                     ->label('Nama Tamu'),
@@ -79,7 +79,7 @@ class BookingTerakhir extends BaseWidget
             ->emptyStateActions([
                 Action::make('laporan')
                     ->label('Lihat Laporan')
-                    ->url('/kelolawismapln/laporan-pemasukan')
+                    ->url('/adminpage/laporan-pemasukan')
                     ->icon('heroicon-m-chart-bar')
                     ->button(),
             ]);

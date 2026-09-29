@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Pages;
+namespace App\Filament\Resources\Villas\Pages;
 
-use App\Filament\Resources\Wismas\WismaResource;
+use App\Filament\Resources\Villas\VillaResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListWismas extends ListRecords
+class ListVillas extends ListRecords
 {
-    protected static string $resource = WismaResource::class;
+    protected static string $resource = VillaResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus')
-                ->label('Buat Wisma'),
+                ->label('Buat Villa'),
         ];
     }
 }

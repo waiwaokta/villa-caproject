@@ -4,28 +4,28 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\WismaController;
+use App\Http\Controllers\VillaController;
 use App\Http\Controllers\Api\EstimatePriceController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CekBookingController;
 
 // Beranda
-Route::get('/', [BerandaController::class, 'index'])->name('beranda'); // DIHAPUS — duplikat redirect('/admin') yang lama, sekarang cuma 1 definisi '/'
+Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
-// Detail Wisma
-Route::get('/wisma/{wismaID}', [WismaController::class, 'show'])
-    ->name('wisma.show');
+// Detail villa
+Route::get('/villa/{villaID}', [VillaController::class, 'show'])
+    ->name('villa.show');
 
-// Foto wisma — public
+// Foto villa — public
 Route::get('/foto/{photoID}', [BerandaController::class, 'foto'])
     ->name('dokumen.foto');
 
-// Cari wisma
-Route::get('/cari', [WismaController::class, 'search'])
-    ->name('wisma.search');
+// Cari villa
+Route::get('/cari', [VillaController::class, 'search'])
+    ->name('villa.search');
 
 // Booking — form & submit
-Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
+Route::get('/booking/{villaID}', [BookingController::class, 'create'])
     ->name('booking.create');
 
 Route::post('/booking', [BookingController::class, 'store'])

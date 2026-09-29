@@ -29,8 +29,8 @@ class BookingInfolist
                             ->copyable()
                             ->fontFamily('mono'),
 
-                        TextEntry::make('wisma.name')
-                            ->label('Wisma'),
+                        TextEntry::make('villa.name')
+                            ->label('Villa'),
 
                         TextEntry::make('check_in')
                             ->label('Check-in')
@@ -48,30 +48,6 @@ class BookingInfolist
                             ->label('Total Harga')
                             ->money('IDR')
                             ->weight(FontWeight::Bold),
-
-                        TextEntry::make('user_type')
-                            ->label('Tipe Pengguna')
-                            ->badge()
-                            ->formatStateUsing(fn($state) => match($state) {
-                                'pln'  => 'PLN',
-                                'umum' => 'Umum',
-                                default => $state,
-                            })
-                            ->color(fn($state) => match($state) {
-                                'pln'  => 'info',
-                                'umum' => 'success',
-                                default => 'gray',
-                            }),
-
-                        TextEntry::make('booking_type')
-                            ->label('Tipe Booking')
-                            ->badge()
-                            ->formatStateUsing(fn($state) => match($state) {
-                                'perorangan' => 'Perorangan',
-                                'instansi'   => 'Instansi',
-                                default      => $state,
-                            })
-                            ->color('gray'),
                     ]),
 
                 // KANAN — Data Tamu
@@ -85,24 +61,6 @@ class BookingInfolist
 
                         TextEntry::make('guest_phone')
                             ->label('No. HP'),
-
-                        TextEntry::make('guest_ktp')
-                            ->label('NIK KTP'),
-
-                        TextEntry::make('employee_id')
-                            ->label('ID Pegawai PLN')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->user_type === 'pln'),
-
-                        TextEntry::make('inst_name')
-                            ->label('Nama Instansi')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->booking_type === 'instansi'),
-
-                        TextEntry::make('inst_npwp')
-                            ->label('NPWP Instansi')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->booking_type === 'instansi'),
 
                         TextEntry::make('created_at')
                             ->label('Tgl Booking')
@@ -124,15 +82,11 @@ class BookingInfolist
                                     ->formatStateUsing(fn($state) => match($state) {
                                         'ktp'         => 'KTP',
                                         'bukti_bayar' => 'Bukti Bayar',
-                                        'id_pln'      => 'ID PLN',
-                                        'npwp'        => 'NPWP',
                                         default       => $state,
                                     })
                                     ->color(fn($state) => match($state) {
                                         'ktp'         => 'info',
                                         'bukti_bayar' => 'success',
-                                        'id_pln'      => 'warning',
-                                        'npwp'        => 'gray',
                                         default       => 'gray',
                                     }),
 

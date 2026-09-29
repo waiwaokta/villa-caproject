@@ -33,8 +33,8 @@ class BookingsTable
                 //     ->fontFamily('mono')
                 //     ->weight(\Filament\Support\Enums\FontWeight::Bold),
 
-                TextColumn::make('wisma.name')
-                    ->label('Wisma')
+                TextColumn::make('villa.name')
+                    ->label('Villa')
                     ->weight(FontWeight::Bold)
                     ->searchable()
                     ->sortable(),
@@ -69,20 +69,6 @@ class BookingsTable
                     ->money('IDR', locale: 'id')
                     ->sortable(),
 
-                TextColumn::make('user_type')
-                    ->label('Tipe Tamu')
-                    ->badge()
-                    ->formatStateUsing(fn($state) => match($state) {
-                        'pln'  => 'PLN',
-                        'umum' => 'Umum',
-                        default => $state,
-                    })
-                    ->color(fn($state) => match($state) {
-                        'pln'  => 'info',
-                        'umum' => 'success',
-                        default => 'gray',
-                    }),
-
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -112,12 +98,6 @@ class BookingsTable
                         'pending'  => 'Menunggu',
                         'approved' => 'Disetujui',
                         'rejected' => 'Ditolak',
-                    ]),
-                SelectFilter::make('user_type')
-                    ->label('Tipe Pengguna')
-                    ->options([
-                        'pln'  => 'PLN',
-                        'umum' => 'Umum',
                     ]),
                 TrashedFilter::make(),
             ])

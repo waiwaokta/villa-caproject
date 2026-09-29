@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Wismas\Tables;
+namespace App\Filament\Resources\Villas\Tables;
 
-use App\Filament\Resources\Wismas\WismaResource;
+use App\Filament\Resources\Villas\VillaResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Action;
@@ -12,14 +12,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
-class WismasTable
+class VillasTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama Wisma')
+                    ->label('Nama Villa')
                     ->searchable()
                     ->sortable(),
 
@@ -60,12 +60,12 @@ class WismasTable
                 ]),
             ])
             ->emptyStateIcon('heroicon-o-home')
-            ->emptyStateHeading('Belum ada Wisma')
-            ->emptyStateDescription('Wisma baru akan muncul di sini setelah ditambahkan.')
+            ->emptyStateHeading('Belum ada Villa')
+            ->emptyStateDescription('Villa baru akan muncul di sini setelah ditambahkan.')
             ->emptyStateActions([
             Action::make('create')
-                ->label('Buat Wisma Baru')
-                ->url(fn (): string => WismaResource::getUrl('create'))
+                ->label('Buat Villa Baru')
+                ->url(fn (): string => VillaResource::getUrl('create'))
                 ->icon('heroicon-m-plus')
                 ->button(),
         ]);

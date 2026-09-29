@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Wisma PLN - Penginapan Resmi PLN')
+@section('title', 'Villa - Penginapan Nyaman untuk Liburan Anda')
 
 @push('styles')
 @endpush
@@ -23,8 +23,8 @@
     {{-- HERO + SLIDER --}}
     <div class="hero-slider-block">
         <div class="hero">
-            <h1>Temukan <span>Wisma PLN</span><br>untuk liburan Anda</h1>
-            <p>Tersedia di berbagai destinasi — harga spesial untuk pegawai & pensiunan PLN</p>
+            <h1>Temukan <span>Villa Impian</span><br>untuk liburan Anda</h1>
+            <p>Tersedia di berbagai destinasi dengan harga yang transparan</p>
             <div class="search-box">
                 <div class="sf">
                     <label>Lokasi</label>
@@ -51,20 +51,19 @@
             </div>
         </div>
 
-        <div class="fw-slider-header" id="wisma">
+        <div class="fw-slider-header" id="villa">
             <div>
-                <h2>Wisma tersedia</h2>
-                <p>Geser untuk melihat semua wisma yang tersedia</p>
+                <h2>Villa tersedia</h2>
+                <p>Geser untuk melihat semua villa yang tersedia</p>
             </div>
         </div>
 
-        <div class="fw-wrap" id="fwWrap" data-total="{{ count($wismas) }}">
+        <div class="fw-wrap" id="fwWrap" data-total="{{ count($villas) }}">
             <div class="fw-track" id="fwTrack">
-                @foreach($wismas as $wisma)
+                @foreach($villas as $villa)
                     @php
-                        $foto = $wisma->primaryPhoto;
-                        $hargaPln = $wisma->prices
-                            ->where('user_type', 'pln')
+                        $foto = $villa->primaryPhoto;
+                        $harga = $villa->prices
                             ->where('day_type', 'weekday')
                             ->first();
                     @endphp
@@ -73,7 +72,7 @@
                             @if($foto)
                                 <img class="fw-bg-img"
                                     src="{{ route('dokumen.foto', $foto->photoID) }}"
-                                    alt="{{ $wisma->name }}"
+                                    alt="{{ $villa->name }}"
                                     loading="lazy">
                             @else
                                 <div class="fw-bg-fill">
@@ -83,41 +82,41 @@
                             <div class="fw-top-fade"></div>
                             <div class="fw-overlay"></div>
                             <div class="fw-content">
-                                @if($wisma->location)
+                                @if($villa->location)
                                     <div class="fw-badge">
                                         <i class="ti ti-map-pin" style="font-size:11px"></i>
-                                        {{ $wisma->location }}
+                                        {{ $villa->location }}
                                     </div>
                                 @endif
-                                <h3 class="fw-title">{{ $wisma->name }}</h3>
-                                @if($wisma->desc)
-                                    <p class="fw-desc">{{ Str::limit($wisma->desc, 110) }}</p>
+                                <h3 class="fw-title">{{ $villa->name }}</h3>
+                                @if($villa->desc)
+                                    <p class="fw-desc">{{ Str::limit($villa->desc, 110) }}</p>
                                 @endif
                                 <div class="fw-meta">
-                                    @if($wisma->capacity)
+                                    @if($villa->capacity)
                                         <span>
                                             <i class="ti ti-users" style="font-size:13px"></i>
-                                            Kapasitas {{ $wisma->capacity }} orang
+                                            Kapasitas {{ $villa->capacity }} orang
                                         </span>
                                     @endif
-                                    @if($wisma->location)
+                                    @if($villa->location)
                                         <span>
                                             <i class="ti ti-map-pin" style="font-size:13px"></i>
-                                            {{ $wisma->location }}
+                                            {{ $villa->location }}
                                         </span>
                                     @endif
                                 </div>
                                 <div class="fw-actions">
-                                    <a href="/booking/{{ $wisma->wismaID }}" class="fw-btn-book">
+                                    <a href="/booking/{{ $villa->villaID }}" class="fw-btn-book">
                                         <i class="ti ti-calendar-plus"></i> Pesan sekarang
                                     </a>
-                                    <a href="/wisma/{{ $wisma->wismaID }}" class="fw-btn-detail">
+                                    <a href="/villa/{{ $villa->villaID }}" class="fw-btn-detail">
                                         Lihat detail
                                     </a>
-                                    @if($hargaPln)
+                                    @if($harga)
                                         <div class="fw-price">
-                                            <span class="fw-price-label">Mulai dari (PLN)</span>
-                                            <strong>Rp {{ number_format($hargaPln->price, 0, ',', '.') }}</strong>
+                                            <span class="fw-price-label">Mulai dari</span>
+                                            <strong>Rp {{ number_format($harga->price, 0, ',', '.') }}</strong>
                                             <span class="fw-price-sub">/ malam</span>
                                         </div>
                                     @endif
@@ -127,7 +126,7 @@
                     </div>
                 @endforeach
             </div>
-            <div class="fw-counter" id="fwCounter">1 / {{ count($wismas) }}</div>
+            <div class="fw-counter" id="fwCounter">1 / {{ count($villas) }}</div>
             <div class="fw-dots" id="fwDots"></div>
         </div>
     </div>
@@ -135,22 +134,22 @@
     <div class="slider-bottom-fade"></div>
 
 
-    {{-- KENAPA PILIH WISMA PLN --}}
+    {{-- KENAPA PILIH KAMI --}}
     <div class="section" id="tentang">
         <div class="section-header">
-            <h2>Kenapa pilih wisma PLN?</h2>
+            <h2>Kenapa pilih kami?</h2>
             <p>Fasilitas terpercaya dengan harga yang transparan</p>
         </div>
         <div class="why-grid">
             <div class="why-card">
                 <div class="why-icon"><i class="ti ti-shield-check"></i></div>
-                <p class="why-title">Terpercaya & resmi</p>
-                <p class="why-desc">Dikelola langsung oleh PT PLN (Persero). Fasilitas terawat dan terjamin kualitasnya.</p>
+                <p class="why-title">Terpercaya & aman</p>
+                <p class="why-desc">Fasilitas terawat dan terjamin kualitasnya untuk kenyamanan Anda.</p>
             </div>
             <div class="why-card">
                 <div class="why-icon"><i class="ti ti-tag"></i></div>
-                <p class="why-title">Harga spesial PLN</p>
-                <p class="why-desc">Tarif khusus untuk pegawai dan pensiunan PLN. Lebih hemat dibanding tarif umum.</p>
+                <p class="why-title">Harga transparan</p>
+                <p class="why-desc">Harga sudah menyesuaikan tipe hari, tidak ada biaya tersembunyi.</p>
             </div>
             <div class="why-card">
                 <div class="why-icon"><i class="ti ti-map-2"></i></div>
@@ -165,12 +164,12 @@
             <div class="why-card">
                 <div class="why-icon"><i class="ti ti-home-2"></i></div>
                 <p class="why-title">Fasilitas lengkap</p>
-                <p class="why-desc">Ruang keluarga, dapur, parkir luas, dan lingkungan bersih di setiap wisma.</p>
+                <p class="why-desc">Ruang keluarga, dapur, parkir luas, dan lingkungan bersih di setiap villa.</p>
             </div>
             <div class="why-card">
                 <div class="why-icon"><i class="ti ti-headset"></i></div>
                 <p class="why-title">Dukungan admin</p>
-                <p class="why-desc">Tim admin siap membantu proses booking dan konfirmasi ketersediaan wisma.</p>
+                <p class="why-desc">Tim admin siap membantu proses booking dan konfirmasi ketersediaan villa.</p>
             </div>
         </div>
     </div>
@@ -186,7 +185,7 @@
         <div class="steps-wrap">
             <div class="step">
                 <div class="step-num">1</div>
-                <p class="step-title">Cari wisma</p>
+                <p class="step-title">Cari villa</p>
                 <p class="step-desc">Filter berdasarkan lokasi dan tanggal yang diinginkan</p>
             </div>
             <div class="step">
@@ -213,19 +212,19 @@
     <div class="section" id="kontak">
         <div class="section-header">
             <h2>Kata mereka</h2>
-            <p>Pengalaman tamu yang telah menginap di wisma PLN</p>
+            <p>Pengalaman tamu yang telah menginap di villa kami</p>
         </div>
         <div class="testi-grid">
             <div class="testi-card">
                 <div class="testi-stars">
                     @for($i = 0; $i < 5; $i++)<i class="ti ti-star-filled"></i>@endfor
                 </div>
-                <p class="testi-text">"Wisma PLN tempatnya bersih, udaranya sejuk. Cocok banget buat liburan keluarga. Pasti balik lagi!"</p>
+                <p class="testi-text">"Villanya bersih, udaranya sejuk. Cocok banget buat liburan keluarga. Pasti balik lagi!"</p>
                 <div class="testi-user">
                     <div class="testi-avatar">AR</div>
                     <div>
                         <p class="testi-name">Agus Riyanto</p>
-                        <p class="testi-sub">Pegawai PLN</p>
+                        <p class="testi-sub">Tamu</p>
                     </div>
                 </div>
             </div>
@@ -238,7 +237,7 @@
                     <div class="testi-avatar">SW</div>
                     <div>
                         <p class="testi-name">Siti Wahyuni</p>
-                        <p class="testi-sub">Umum</p>
+                        <p class="testi-sub">Tamu</p>
                     </div>
                 </div>
             </div>
@@ -246,12 +245,12 @@
                 <div class="testi-stars">
                     @for($i = 0; $i < 5; $i++)<i class="ti ti-star-filled"></i>@endfor
                 </div>
-                <p class="testi-text">"Harga PLN jauh lebih terjangkau. Fasilitas lengkap, tempatnya nyaman. Recommended buat keluarga!"</p>
+                <p class="testi-text">"Harganya jelas sejak awal, fasilitas lengkap, tempatnya nyaman. Recommended buat keluarga!"</p>
                 <div class="testi-user">
                     <div class="testi-avatar">DP</div>
                     <div>
                         <p class="testi-name">Dwi Prasetyo</p>
-                        <p class="testi-sub">Pensiunan PLN</p>
+                        <p class="testi-sub">Tamu</p>
                     </div>
                 </div>
             </div>

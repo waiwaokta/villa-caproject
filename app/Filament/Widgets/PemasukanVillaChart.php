@@ -3,18 +3,18 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Booking;
-use App\Models\Wisma;
+use App\Models\Villa;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\ChartWidget\Concerns\HasFiltersSchema;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
-class PemasukanWismaChart extends ChartWidget
+class PemasukanVillaChart extends ChartWidget
 {
     use HasFiltersSchema;
 
-    protected ?string $heading = 'Pemasukan / Wisma';
+    protected ?string $heading = 'Pemasukan / Villa';
     protected static ?int $sort = 3;
     protected int|string|array $columnSpan = '1';
     protected ?string $maxHeight = '400px';
@@ -65,7 +65,7 @@ class PemasukanWismaChart extends ChartWidget
         $tahun = $this->filters['tahun'] ?? now()->year; // DIUBAH — dari $this->filter, sekarang dari $this->filters['tahun']
         $bulan = $this->filters['bulan'] ?? '';
 
-        $wismas = Wisma::orderBy('name')->pluck('name', 'wismaID');
+        $villas = Villa::orderBy('name')->pluck('name', 'villaID');
 
         $query = Booking::where('status', 'approved')
             ->whereYear('check_in', $tahun);
@@ -74,17 +74,17 @@ class PemasukanWismaChart extends ChartWidget
             $query->whereMonth('check_in', $bulan);
         }
 
-        $pemasukanPerWisma = $query
-            ->selectRaw('wismaID, SUM(total_price) as total')
-            ->groupBy('wismaID')
-            ->pluck('total', 'wismaID');
+        $pemasukanPerVilla = $query
+            ->selectRaw('villaID, SUM(total_price) as total')
+            ->groupBy('villaID')
+            ->pluck('total', 'villaID');
 
         $labels = [];
         $data   = [];
 
-        foreach ($wismas as $wismaID => $name) {
+        foreach ($villas as $villaID => $name) {
             $labels[] = $name;
-            $data[]   = (float) ($pemasukanPerWisma[$wismaID] ?? 0);
+            $data[]   = (float) ($pemasukanPerVilla[$villaID] ?? 0);
         }
 
         return [

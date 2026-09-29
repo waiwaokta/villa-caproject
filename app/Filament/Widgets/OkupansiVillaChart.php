@@ -3,14 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Booking;
-use App\Models\Wisma;
+use App\Models\Villa;
 use Carbon\Carbon;
 use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
 
-class OkupansiWismaChart extends ChartWidget
+class OkupansiVillaChart extends ChartWidget
 {
-    protected ?string $heading = 'Tingkat Okupansi Wisma';
+    protected ?string $heading = 'Tingkat Okupansi Villa';
     protected static ?int $sort = 4; // taruh setelah widget lain, sesuaikan urutan
     protected ?string $maxHeight = '400px';
     protected int | string | array $columnSpan = 1;
@@ -31,14 +31,14 @@ class OkupansiWismaChart extends ChartWidget
         [$start, $end] = $this->resolvePeriod();
         $totalHariPeriode = $start->diffInDays($end) + 1;
 
-        $wismaList = Wisma::where('is_active', true)->get();
+        $villaList = Villa::where('is_active', true)->get();
 
         $labels = [];
         $persentase = [];
 
-        foreach ($wismaList as $wisma) {
+        foreach ($villaList as $villa) {
             // hitung total night terpakai dari booking approved yang overlap dengan periode
-            $bookedNights = Booking::where('wismaID', $wisma->wismaID)
+            $bookedNights = Booking::where('villaID', $villa->villaID)
                 ->where('status', 'approved')
                 ->where('check_in', '<=', $end)
                 ->where('check_out', '>=', $start)
@@ -51,7 +51,7 @@ class OkupansiWismaChart extends ChartWidget
                     return max(0, $effectiveStart->diffInDays($effectiveEnd));
                 });
 
-            $labels[] = $wisma->name;
+            $labels[] = $villa->name;
             $persentase[] = $totalHariPeriode > 0
                 ? round(($bookedNights / $totalHariPeriode) * 100, 1)
                 : 0;

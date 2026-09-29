@@ -28,12 +28,12 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
-            ->brandName('Booking Wisma PLN')
+            ->brandName('Kelola NginapYuk')
             // ->brandLogo(fn () => view('filament.brand'))
             // ->favicon(asset('images/favicon.ico'))
             ->font('Public Sans')
             ->id('admin')
-            ->path('kelolawismapln')
+            ->path('adminpage')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(Login::class)
             ->colors([

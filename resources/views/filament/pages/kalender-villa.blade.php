@@ -84,11 +84,11 @@
                             </div>
                         @else
                             @php
-                                $wismaIdParam = $event['wismaID'] ? "'" . $event['wismaID'] . "'" : 'null';
+                                $villaIdParam = $event['villaID'] ? "'" . $event['villaID'] . "'" : 'null';
                             @endphp
                             <div
                                 @if(!$isPast)
-                                    wire:click.stop="openEditEventModal('maintenance', '{{ $dateStr }}', {{ $wismaIdParam }})"
+                                    wire:click.stop="openEditEventModal('maintenance', '{{ $dateStr }}', {{ $villaIdParam }})"
                                 @endif
                                 @class([
                                     'rounded px-1 py-0.5 mb-1 truncate',
@@ -107,7 +107,7 @@
 
         <div class="flex gap-4 mt-4 text-xs text-gray-500">
             <span>🔴 Libur Nasional</span>
-            <span>🟡 Maintenance Wisma</span>
+            <span>🟡 Maintenance Villa</span>
         </div>
     </div>
 </x-filament-panels::page>
