@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cek Booking - Wisma PLN')
+@section('title', 'Cek Booking - NginapYuk')
 
 @section('content')
 
@@ -83,12 +83,12 @@
                     <strong>{{ $booking->guest_name }}</strong>
                 </div>
                 <div class="cekbooking-info-item">
-                    <span>Wisma</span>
-                    <strong>{{ $booking->wisma->name ?? '-' }}</strong>
+                    <span>Villa</span>
+                    <strong>{{ $booking->villa->name ?? '-' }}</strong>
                 </div>
                 <div class="cekbooking-info-item">
                     <span>Lokasi</span>
-                    <strong>{{ $booking->wisma->location ?? '-' }}</strong>
+                    <strong>{{ $booking->villa->location ?? '-' }}</strong>
                 </div>
                 <div class="cekbooking-info-item">
                     <span>Check-in</span>
@@ -151,7 +151,7 @@
                         </div>
                         <div class="timeline-content">
                             <p class="timeline-title">Booking Telah Disetujui</p>
-                            <p class="timeline-desc">Selamat! Booking Anda telah disetujui oleh tim kami. Terima kasih telah memilih Wisma PLN, kami tunggu kedatangan Anda.</p>
+                            <p class="timeline-desc">Selamat! Booking Anda telah disetujui oleh tim kami. Terima kasih telah memilih villa kami di NginapYuk, kami tunggu kedatangan Anda.</p>
                             <p class="timeline-date">{{ \Carbon\Carbon::parse($booking->updated_at)->translatedFormat('d F Y, H:i') }} WIB</p>
                         </div>
                     </div>

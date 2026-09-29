@@ -7,13 +7,13 @@
 
 @section('content')
 
-<div class="wisma-page">
-    <div class="wisma-page-header">
+<div class="villa-page">
+    <div class="villa-page-header">
         <h1>Cari Villa</h1>
         <p>Pilih lokasi dan tanggal untuk melihat villa yang tersedia</p>
     </div>
 
-    <form class="search-box wisma-box-standalone" method="GET" action="{{ route('villa.search') }}">
+    <form class="search-box villa-box-standalone" method="GET" action="{{ route('villa.search') }}">
         <div class="sf">
             <label>Lokasi</label>
             <select name="lokasi">
@@ -38,19 +38,19 @@
         </button>
     </form>
 
-    <div class="wisma-result-info">
+    <div class="villa-result-info">
         <p>{{ count($villas) }} villa tersedia untuk tanggal {{ \Carbon\Carbon::parse($checkIn)->translatedFormat('d M Y') }} — {{ \Carbon\Carbon::parse($checkOut)->translatedFormat('d M Y') }}</p>
     </div>
 
     @if($villas->isEmpty())
-        <div class="wisma-empty">
+        <div class="villa-empty">
             <i class="ti ti-calendar-off"></i>
             <p>Villa tidak tersedia untuk tanggal dan lokasi yang dipilih.</p>
-            <p class="wisma-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
+            <p class="villa-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
         </div>
         @if ($rekomendasi->isNotEmpty())
-            <div class="wisma-rekomendasi">
-                <p class="wisma-rekomendasi-label">Villa Lain yang Tersedia</p>
+            <div class="villa-rekomendasi">
+                <p class="villa-rekomendasi-label">Villa Lain yang Tersedia</p>
 
                 <div class="ticker-card-wrap">
                     <div class="ticker-card-track" id="rekomendasiTrack">
@@ -80,42 +80,42 @@
             </div>
         @endif
     @else
-        <div class="wisma-result-list">
+        <div class="villa-result-list">
             @foreach($villas as $villa)
                 @php
                     $foto = $villa->primaryPhoto;
                     $harga = $villa->prices->where('day_type', 'weekday')->first();
                     $urlDetail = route('villa.show', $villa->villaID) . '?check_in=' . $checkIn . '&check_out=' . $checkOut;
                 @endphp
-                <div class="wisma-card" data-href="{{ $urlDetail }}">
-                    <div class="wisma-card-img">
+                <div class="villa-card" data-href="{{ $urlDetail }}">
+                    <div class="villa-card-img">
                         @if($foto)
                             <img src="{{ route('dokumen.foto', $foto->photoID) }}" alt="{{ $villa->name }}" loading="lazy">
                         @else
-                            <div class="wisma-card-img-fill">
+                            <div class="villa-card-img-fill">
                                 <i class="ti ti-home-2"></i>
                             </div>
                         @endif
                     </div>
-                    <div class="wisma-card-body">
-                        <h3 class="wisma-card-title">{{ $villa->name }}</h3>
+                    <div class="villa-card-body">
+                        <h3 class="villa-card-title">{{ $villa->name }}</h3>
                         @if($villa->location)
-                            <p class="wisma-card-location">
+                            <p class="villa-card-location">
                                 <i class="ti ti-map-pin"></i> {{ $villa->location }}
                             </p>
                         @endif
                         @if($villa->desc)
-                            <p class="wisma-card-desc">{{ Str::limit($villa->desc, 120) }}</p>
+                            <p class="villa-card-desc">{{ Str::limit($villa->desc, 120) }}</p>
                         @endif
-                        <div class="wisma-card-footer">
+                        <div class="villa-card-footer">
                             @if($harga)
-                                <div class="wisma-card-price">
+                                <div class="villa-card-price">
                                     <span>Mulai dari</span>
                                     <strong>Rp {{ number_format($harga->price, 0, ',', '.') }}</strong>
                                     <span>/ malam</span>
                                 </div>
                             @endif
-                           <a href="{{ route('booking.create', $villa->villaID) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}" class="wisma-card-btn" data-stop-card-click="1">Pesan sekarang</a>
+                           <a href="{{ route('booking.create', $villa->villaID) }}?check_in={{ $checkIn }}&check_out={{ $checkOut }}" class="villa-card-btn" data-stop-card-click="1">Pesan sekarang</a>
                         </div>
                     </div>
                 </div>

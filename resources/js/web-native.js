@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initSliderWisma();
+    initSliderVilla();
     initSearchFilter();
     initNavHamburger();
     initGallery();
@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initAvailabilityCalendar();
     initBookingForm();
     initStatTicker();
-    initWismaCardClick();
-    initWismaSearchDateGuard();
-    initTickerCardWisma();
+    initVillaCardClick();
+    initVillaSearchDateGuard();
+    initTickerCardVilla();
 });
 
     function getTodayLocal() {
@@ -32,9 +32,9 @@ function initStatTicker() {
 }
 
     // ============================================
-    // SLIDER WISMA — beranda
+    // SLIDER VILLA — beranda
     // ============================================
-    function initSliderWisma() {
+    function initSliderVilla() {
     const fwWrap = document.getElementById('fwWrap');
     if (!fwWrap) return; // halaman ini tidak punya slider, skip
 
@@ -147,11 +147,11 @@ function initSearchFilter() {
 }
 
 // ============================================
-// VALIDASI TANGGAL — form cari wisma (/cari)
+// VALIDASI TANGGAL — form cari villa (/cari)
 // ============================================
-function initWismaSearchDateGuard() {
-    const form = document.querySelector('.wisma-box-standalone');
-    if (!form) return; // halaman ini tidak punya form cari wisma, skip
+function initVillaSearchDateGuard() {
+    const form = document.querySelector('.villa-box-standalone');
+    if (!form) return; // halaman ini tidak punya form cari villa, skip
 
     const checkinInput  = form.querySelector('[name="check_in"]');
     const checkoutInput = form.querySelector('[name="check_out"]');
@@ -189,7 +189,7 @@ function initNavHamburger() {
 }
 
 // ============================================
-// GALERI FOTO — detail wisma
+// GALERI FOTO — detail villa
 // ============================================
 function initGallery() {
     const thumbs = document.querySelectorAll('.gallery-thumb');
@@ -206,7 +206,7 @@ function initGallery() {
 }
 
 // ============================================
-// KALENDER AVAILABILITY — detail wisma
+// KALENDER AVAILABILITY — detail villa
 // ============================================
 function initAvailabilityCalendar() {
     const wrap = document.getElementById('calendarWrap');
@@ -319,7 +319,7 @@ function initAvailabilityCalendar() {
 }
 
 // ============================================
-// LIGHTBOX GALERI — detail wisma
+// LIGHTBOX GALERI — detail villa
 // ============================================
 function initLightbox() {
     const overlay     = document.getElementById('lightboxOverlay');
@@ -425,63 +425,18 @@ function initLightbox() {
 }
 
 // ============================================
-// FORM BOOKING — show/hide field dinamis + estimasi harga
+// FORM BOOKING — estimasi harga
 // ============================================
 function initBookingForm() {
     const form = document.getElementById('bookingForm');
     if (!form) return;
-
-    const userTypeRadios    = document.querySelectorAll('input[name="user_type"]');
-    const bookingTypeRadios = document.querySelectorAll('input[name="booking_type"]');
-    const bookingTypeWrap   = document.getElementById('bookingTypeWrap');
-    const employeeIdWrap    = document.getElementById('employeeIdWrap');
-    const instansiWrap      = document.getElementById('instansiWrap');
-    const docKtpWrap        = document.getElementById('docKtpWrap');
-    const docNpwpWrap       = document.getElementById('docNpwpWrap');
-    const docIdPlnWrap      = document.getElementById('docIdPlnWrap');
-    const docPlnKtpNpwpWrap = document.getElementById('docPlnKtpNpwpWrap');
-
-    function getUserType() {
-        return document.querySelector('input[name="user_type"]:checked')?.value;
-    }
-    function getBookingType() {
-        return document.querySelector('input[name="booking_type"]:checked')?.value;
-    }
-
-    function updateFieldVisibility() {
-        const userType    = getUserType();
-        const bookingType = getBookingType();
-        const isPln       = userType === 'pln';
-        const isInstansi  = !isPln && bookingType === 'instansi';
-
-        bookingTypeWrap.style.display = isPln ? 'none' : 'grid';
-        employeeIdWrap.style.display = isPln ? 'block' : 'none';
-        instansiWrap.style.display = isInstansi ? 'block' : 'none';
-
-        docKtpWrap.style.display        = isPln ? 'none' : 'block';
-        docNpwpWrap.style.display       = isInstansi ? 'block' : 'none';
-        docIdPlnWrap.style.display      = isPln ? 'block' : 'none';
-        docPlnKtpNpwpWrap.style.display = isPln ? 'block' : 'none';
-
-        document.querySelector('[name="doc_ktp"]').required = !isPln;
-        document.querySelector('[name="doc_npwp"]').required = isInstansi;
-        document.querySelector('[name="doc_id_pln"]').required = isPln;
-    }
-
-    userTypeRadios.forEach(r => r.addEventListener('change', () => {
-        updateFieldVisibility();
-        fetchEstimate();
-    }));
-    bookingTypeRadios.forEach(r => r.addEventListener('change', updateFieldVisibility));
-
-    updateFieldVisibility();
 
     // ============================================
     // ESTIMASI HARGA — real-time via AJAX
     // ============================================
     const checkInInput  = document.getElementById('inputCheckIn');
     const checkOutInput = document.getElementById('inputCheckOut');
-    const wismaID       = document.querySelector('[name="wismaID"]').value;
+    const villaID       = document.querySelector('[name="villaID"]').value;
 
     function syncCheckOutFromCheckIn() {
         const todayStr = getTodayLocal();
@@ -520,7 +475,6 @@ function initBookingForm() {
     async function fetchEstimate() {
         const checkIn  = checkInInput.value;
         const checkOut = checkOutInput.value;
-        const userType = getUserType();
 
         const placeholder = document.getElementById('estimateLoading');
         const content      = document.getElementById('estimateContent');
@@ -533,7 +487,7 @@ function initBookingForm() {
         }
 
         try {
-            const params = new URLSearchParams({ wismaID, user_type: userType, check_in: checkIn, check_out: checkOut });
+            const params = new URLSearchParams({ villaID, check_in: checkIn, check_out: checkOut });
             const res = await fetch('/api/estimate-price?' + params.toString());
             const data = await res.json();
 
@@ -563,35 +517,14 @@ function initBookingForm() {
             console.error('Gagal memuat estimasi harga', err);
         }
     }
-
-    // // Kalau tanggal sudah terisi otomatis dari prefill (misal dari halaman /cari), langsung fetch estimasi tanpa perlu user pilih ulang
-    // checkInInput.addEventListener('change', () => {
-    //     const todayStr = getTodayLocal();
-    //     const selected = checkInInput.value;
-
-    //     if (selected < todayStr) {
-    //         checkInInput.value = todayStr;
-    //     }
-
-    //     const nextDay = new Date(checkInInput.value + 'T00:00:00');
-    //     nextDay.setDate(nextDay.getDate() + 1);
-    //     const y = nextDay.getFullYear();
-    //     const m = String(nextDay.getMonth() + 1).padStart(2, '0');
-    //     const d = String(nextDay.getDate()).padStart(2, '0');
-    //     const nextDayStr = `${y}-${m}-${d}`;
-
-    //     checkOutInput.min = nextDayStr;
-    //     checkOutInput.value = nextDayStr;
-    //     fetchEstimate();
-    // });
 }
 
 // ============================================
-// CARD WISMA — halaman /cari, klik card ke detail
+// CARD VILLA — halaman /cari, klik card ke detail
 // ============================================
-function initWismaCardClick() {
-    const cards = document.querySelectorAll('.wisma-card');
-    if (!cards.length) return; // halaman ini tidak punya wisma-card, skip
+function initVillaCardClick() {
+    const cards = document.querySelectorAll('.villa-card');
+    if (!cards.length) return; // halaman ini tidak punya villa-card, skip
 
     cards.forEach(card => {
         card.style.cursor = 'pointer';
@@ -603,9 +536,9 @@ function initWismaCardClick() {
 }
 
 // ============================================
-// TICKER KARTU REKOMENDASI WISMA — halaman /cari
+// TICKER KARTU REKOMENDASI VILLA — halaman /cari
 // ============================================
-function initTickerCardWisma() {
+function initTickerCardVilla() {
     const track = document.getElementById('rekomendasiTrack');
     if (!track) return;
 

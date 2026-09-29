@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="wisma-detail">
+<div class="villa-detail">
 
     {{-- GALERI FOTO --}}
     <div class="gallery" data-total="{{ $villa->villaPhotos->count() }}">
@@ -26,25 +26,25 @@
         @endif
     </div>
 
-    <div class="wisma-detail-body">
-        <div class="wisma-detail-main">
+    <div class="villa-detail-body">
+        <div class="villa-detail-main">
 
             {{-- INFO DASAR --}}
-            <div class="wisma-header">
+            <div class="villa-header">
                 @if($villa->location)
-                    <div class="wisma-badge">
+                    <div class="villa-badge">
                         <i class="ti ti-map-pin" style="font-size:12px"></i>
                         {{ $villa->location }}
                     </div>
                 @endif
                 <h1>{{ $villa->name }}</h1>
                 @if($villa->address)
-                    <p class="wisma-address">
+                    <p class="villa-address">
                         <i class="ti ti-map-2" style="font-size:13px"></i>
                         {{ $villa->address }}
                     </p>
                 @endif
-                <div class="wisma-meta-row">
+                <div class="villa-meta-row">
                     @if($villa->capacity)
                         <span><i class="ti ti-users"></i> Kapasitas {{ $villa->capacity }} orang</span>
                     @endif
@@ -54,15 +54,15 @@
             </div>
 
             @if($villa->desc)
-                <div class="wisma-section">
+                <div class="villa-section">
                     <h2>Tentang villa ini</h2>
-                    <p class="wisma-desc">{{ $villa->desc }}</p>
+                    <p class="villa-desc">{{ $villa->desc }}</p>
                 </div>
             @endif
 
             {{-- FASILITAS --}}
             @if($villa->facilities->count() > 0)
-                <div class="wisma-section">
+                <div class="villa-section">
                     <h2>Fasilitas</h2>
                     <div class="facility-grid">
                         @foreach($villa->facilities as $facility)
@@ -76,7 +76,7 @@
             @endif
 
             {{-- KALENDER AVAILABILITY --}}
-            <div class="wisma-section">
+            <div class="villa-section">
                 <h2>Ketersediaan</h2>
                 <p class="section-sub">Tanggal berwarna merah artinya sudah dibooking</p>
 
@@ -119,7 +119,7 @@
         </div>
 
         {{-- SIDEBAR HARGA + CTA --}}
-        <div class="wisma-sidebar">
+        <div class="villa-sidebar">
             <div class="price-card">
                 <h3>Daftar Harga</h3>
                 <div class="price-table">

@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Price;
-use App\Models\Wisma;
+use App\Models\Villa;
 use App\Services\DayTypeResolver; 
 use App\Services\HolidayService; 
 use App\Services\MaintenanceService; 
@@ -21,8 +21,7 @@ class EstimatePriceController extends Controller
     public function calculate(Request $request)
     {
         $request->validate([
-            'wismaID'   => 'required|string|exists:wismas,wismaID',
-            'user_type' => 'required|in:pln,umum',
+            'villaID'   => 'required|string|exists:villas,villaID',
             'check_in'  => 'required|date',
             'check_out' => 'required|date|after:check_in',
         ]);
@@ -34,12 +33,12 @@ class EstimatePriceController extends Controller
         }
 
         // ⚠️ MAINTENANCE CHECK 
-        if ($this->maintenanceService->isWismaBlocked($request->wismaID, $checkIn, $checkOut)) {
-            return response()->json(['error' => 'Wisma dalam masa pemeliharaan pada tanggal yang dipilih.'], 422);
+        if ($this->maintenanceService->isVillaBlocked($request->villaID, $checkIn, $checkOut)) {
+            return response()->json(['error' => 'Villa dalam masa pemeliharaan pada tanggal yang dipilih.'], 422);
         }
 
         // ⚠️ AVAILABILITY CHECK — ditambahkan, cek overlap booking lain
-        $isOverlap = Booking::where('wismaID', $request->wismaID)
+        $isOverlap = Booking::where('villaID', $request->villaID)
             ->whereIn('status', ['pending', 'approved'])
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->where('check_in', '<', $checkOut)
@@ -51,8 +50,7 @@ class EstimatePriceController extends Controller
             return response()->json(['error' => 'Tanggal yang dipilih sudah dibooking.'], 422);
         }
 
-        $prices = Price::where('wismaID', $request->wismaID)
-            ->where('user_type', $request->user_type)
+        $prices = Price::where('villaID', $request->villaID)
             ->get()
             ->keyBy('day_type');
         $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
@@ -65,7 +63,7 @@ class EstimatePriceController extends Controller
             $dayType = $this->dayTypeResolver->resolve($date, $holidayDates);
             if (!isset($prices[$dayType])) {
                 return response()->json([
-                    'error' => "Harga untuk wisma ini belum lengkap (tipe hari: {$dayType})."
+                    'error' => "Harga untuk villa ini belum lengkap (tipe hari: {$dayType})."
                 ], 422);
             }
             $price = (float) $prices[$dayType]->price;

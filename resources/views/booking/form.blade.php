@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Booking - ' . $wisma->name . ' - Wisma PLN')
+@section('title', 'Booking - ' . $villa->name . ' - NginapYuk')
 
 @section('content')
 
 <div class="booking-page">
 
     <div class="booking-header">
-        <a href="/wisma/{{ $wisma->wismaID }}" class="back-link">
-            <i class="ti ti-arrow-left"></i> Kembali ke detail wisma
+        <a href="/villa/{{ $villa->villaID }}" class="back-link">
+            <i class="ti ti-arrow-left"></i> Kembali ke detail villa
         </a>
-        <h1>Booking {{ $wisma->name }}</h1>
+        <h1>Booking {{ $villa->name }}</h1>
         <p>Lengkapi data di bawah untuk melanjutkan booking</p>
     </div>
 
@@ -26,7 +26,7 @@
     </div>
 @endif
         @csrf
-        <input type="hidden" name="wismaID" value="{{ $wisma->wismaID }}">
+        <input type="hidden" name="villaID" value="{{ $villa->villaID }}">
 
         <div class="booking-grid">
             <div class="booking-main">
@@ -48,48 +48,9 @@
                     <div id="dateError" class="form-error" style="display:none;"></div>
                 </div>
 
-                {{-- STEP 2: STATUS PENGGUNA --}}
+                {{-- STEP 2: DATA TAMU --}}
                 <div class="form-section">
-                    <h2><span class="step-badge">2</span> Status Pemesan</h2>
-                    <div class="radio-group">
-                        <label class="radio-card">
-                            <input type="radio" name="user_type" value="umum" checked>
-                            <div class="radio-card-content">
-                                <i class="ti ti-user"></i>
-                                <span>Umum</span>
-                            </div>
-                        </label>
-                        <label class="radio-card">
-                            <input type="radio" name="user_type" value="pln">
-                            <div class="radio-card-content">
-                                <i class="ti ti-id-badge-2"></i>
-                                <span>Pegawai / Pensiunan PLN</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    {{-- Hanya muncul kalau user_type = umum --}}
-                    <div id="bookingTypeWrap" class="radio-group" style="margin-top:14px;">
-                        <label class="radio-card">
-                            <input type="radio" name="booking_type" value="perorangan" checked>
-                            <div class="radio-card-content">
-                                <i class="ti ti-user-circle"></i>
-                                <span>Perorangan</span>
-                            </div>
-                        </label>
-                        <label class="radio-card">
-                            <input type="radio" name="booking_type" value="instansi">
-                            <div class="radio-card-content">
-                                <i class="ti ti-building"></i>
-                                <span>Instansi</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                {{-- STEP 3: DATA TAMU --}}
-                <div class="form-section">
-                    <h2><span class="step-badge">3</span> Data Pemesan</h2>
+                    <h2><span class="step-badge">2</span> Data Pemesan</h2>
                     <div class="form-group">
                         <label>Nama Lengkap</label>
                         <input type="text" name="guest_name" required maxlength="255" placeholder="Nama sesuai KTP">
@@ -99,76 +60,11 @@
                             <label>No. WhatsApp Aktif</label>
                             <input type="text" name="guest_phone" required maxlength="15" placeholder="08123456789">
                         </div>
-                        <div class="form-group">
-                            <label>NIK KTP</label>
-                            <input type="text" name="guest_ktp" required maxlength="16" placeholder="16 digit NIK">
+                        <div class="form-group" id="docKtpWrap"> {{-- DIUBAH: dipindah ke sebelah WhatsApp, Step 3 dihapus --}}
+                            <label>Foto/Scan KTP</label>
+                            <input type="file" name="doc_ktp" accept=".jpg,.jpeg,.png" required> {{-- DIUBAH: tambah required, hanya gambar --}}
+                            <p class="form-hint">Format JPG atau PNG. Maks 2MB.</p> {{-- DIUBAH: PDF dihapus --}}
                         </div>
-                    </div>
-
-                    {{-- Hanya muncul kalau user_type = pln --}}
-                    <div id="employeeIdWrap" class="form-group" style="display:none;">
-                        <label>ID Pegawai / Pensiunan PLN</label>
-                        <input type="text" name="employee_id" maxlength="20" placeholder="Nomor ID pegawai">
-                    </div>
-
-                    {{-- Hanya muncul kalau booking_type = instansi --}}
-                    <div id="instansiWrap" style="display:none;">
-                        <div class="form-group">
-                            <label>Nama Instansi</label>
-                            <input type="text" name="inst_name" maxlength="255" placeholder="Nama perusahaan/instansi">
-                        </div>
-                        <div class="form-group">
-                            <label>NPWP Instansi</label>
-                            <input type="text" name="inst_npwp" maxlength="20" placeholder="Nomor NPWP instansi">
-                        </div>
-                    </div>
-                </div>
-
-                {{-- STEP 4: DOKUMEN --}}
-                <div class="form-section">
-                    <h2><span class="step-badge">4</span> Unggah Dokumen</h2>
-
-                    {{-- Umum: KTP wajib --}}
-                    <div id="docKtpWrap" class="form-group">
-                        <label>Foto/Scan KTP</label>
-                        <input type="file" name="doc_ktp" accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint">Format JPG, PNG, atau PDF. Maks 2MB.</p>
-                    </div>
-
-                    {{-- Umum-Instansi: NPWP wajib --}}
-                    <div id="docNpwpWrap" class="form-group" style="display:none;">
-                        <label>Foto/Scan NPWP Instansi</label>
-                        <input type="file" name="doc_npwp" accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint">Format JPG, PNG, atau PDF. Maks 2MB.</p>
-                    </div>
-
-                    {{-- PLN: ID Card wajib --}}
-                    <div id="docIdPlnWrap" class="form-group" style="display:none;">
-                        <label>Foto/Scan ID Card Pegawai/Pensiunan PLN</label>
-                        <input type="file" name="doc_id_pln" accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint">Format JPG, PNG, atau PDF. Maks 2MB.</p>
-                    </div>
-
-                    {{-- PLN: KTP/NPWP, pilih salah satu — CUMA 1 FIELD --}}
-                    <div id="docPlnKtpNpwpWrap" class="form-group" style="display:none;">
-                        <label>Foto/Scan KTP atau NPWP <span class="optional-tag">(pilih salah satu)</span></label>
-                        <input type="file" name="doc_ktp_pln" accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint"><i class="ti ti-info-circle"></i> Lampirkan KTP atau NPWP, salah satu saja</p>
-                    </div>
-
-                    {{-- Semua: bukti bayar wajib --}}
-                    <div class="form-group">
-                        <label>Bukti Pelunasan Pembayaran</label>
-
-                        <div class="rekening-info"> {{-- DITAMBAHKAN — box info rekening tujuan transfer --}}
-                            <p class="rekening-info-label">Transfer ke rekening berikut</p>
-                            <p class="rekening-info-bank">Bank BNI</p>
-                            <p class="rekening-info-nomor">9884879520205002</p>
-                            <p class="rekening-info-nama">a.n. General Affair UID Jatim</p>
-                        </div>
-
-                        <input type="file" name="doc_bukti_bayar" required accept=".jpg,.jpeg,.png,.pdf">
-                        <p class="form-hint">Setelah transfer, unggah bukti pembayaran di atas.</p>
                     </div>
                 </div>
             </div>

@@ -125,7 +125,7 @@ class VillaForm
                                 ->formatStateUsing(fn ($state) => $state == 0 ? null : number_format($state, 2, ',', '.'))
                                 ->required(),
                         ])
-                        ->columns(3)
+                        ->columns(2)
                         ->addActionLabel('+ Tambah harga')
                         ->defaultItems(1),
                     ]),

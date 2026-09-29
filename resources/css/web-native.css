@@ -829,9 +829,9 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ============================================
-   DETAIL WISMA
+   DETAIL VILLA
    ============================================ */
-.wisma-detail { background: var(--cream); }
+.villa-detail { background: var(--cream); }
 
 .gallery {
     position: relative; /* tambah, supaya jadi reference buat absolute children */
@@ -870,7 +870,7 @@ a { text-decoration: none; color: inherit; }
 .gallery-thumb:hover { opacity: 0.85; }
 .gallery-thumb.active { opacity: 1; border-color: var(--blue-accent); }
 
-.wisma-detail-body {
+.villa-detail-body {
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 40px;
@@ -879,8 +879,8 @@ a { text-decoration: none; color: inherit; }
     margin: 0 auto;
 }
 
-.wisma-header { margin-bottom: 28px; }
-.wisma-badge {
+.villa-header { margin-bottom: 28px; }
+.villa-badge {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -892,13 +892,13 @@ a { text-decoration: none; color: inherit; }
     border-radius: 100px;
     margin-bottom: 12px;
 }
-.wisma-header h1 {
+.villa-header h1 {
     font-size: 26px;
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 8px;
 }
-.wisma-address {
+.villa-address {
     font-size: 13px;
     color: var(--text-secondary);
     display: flex;
@@ -906,8 +906,8 @@ a { text-decoration: none; color: inherit; }
     gap: 6px;
     margin-bottom: 14px;
 }
-.wisma-meta-row { display: flex; gap: 18px; flex-wrap: wrap; }
-.wisma-meta-row span {
+.villa-meta-row { display: flex; gap: 18px; flex-wrap: wrap; }
+.villa-meta-row span {
     font-size: 12px;
     color: var(--text-secondary);
     display: flex;
@@ -916,10 +916,10 @@ a { text-decoration: none; color: inherit; }
     font-weight: 500;
 }
 
-.wisma-section { margin-bottom: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
-.wisma-section h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; }
+.villa-section { margin-bottom: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.villa-section h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; }
 .section-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 16px; }
-.wisma-desc { font-size: 13px; line-height: 1.8; color: #3d3d3a; }
+.villa-desc { font-size: 13px; line-height: 1.8; color: #3d3d3a; }
 
 .facility-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .facility-item {
@@ -1049,7 +1049,7 @@ a { text-decoration: none; color: inherit; }
 .legend-past      { background: transparent; border: 1px solid #ddd; }
 
 /* SIDEBAR */
-.wisma-sidebar { position: relative; }
+.villa-sidebar { position: relative; }
 .price-card {
     background: #fff;
     border: 1px solid var(--border);
@@ -1090,10 +1090,10 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-book-now:hover { opacity: 0.9; }
 
-/* RESPONSIVE — Detail Wisma */
+/* RESPONSIVE — Detail Villa */
 @media (max-width: 968px) {
-    .wisma-detail-body { grid-template-columns: 1fr; }
-    .wisma-sidebar { order: -1; }
+    .villa-detail-body { grid-template-columns: 1fr; }
+    .villa-sidebar { order: -1; }
     .price-card { position: static; }
     .facility-grid { grid-template-columns: repeat(2, 1fr); }
     .calendar-wrap { grid-template-columns: 1fr; }
@@ -1101,8 +1101,8 @@ a { text-decoration: none; color: inherit; }
 
 @media (max-width: 640px) {
     .gallery-main { height: 40vh; min-height: 260px; }
-    .wisma-detail-body { padding: 24px 20px; gap: 24px; }
-    .wisma-header h1 { font-size: 21px; }
+    .villa-detail-body { padding: 24px 20px; gap: 24px; }
+    .villa-header h1 { font-size: 21px; }
     .facility-grid { grid-template-columns: 1fr; }
     .gallery-thumbs { padding: 10px 20px; }
 }
@@ -1723,18 +1723,18 @@ a { text-decoration: none; color: inherit; }
 }
 
 /* ============================================
-   HALAMAN CARI WISMA
+   HALAMAN CARI VILLA
    ============================================ */
-.wisma-page {
+.villa-page {
     max-width: 900px;
     margin: 0 auto;
     padding: 40px 40px 60px;
 }
-.wisma-page-header { margin-bottom: 28px; }
-.wisma-page-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
-.wisma-page-header p { font-size: 13px; color: var(--text-secondary); }
+.villa-page-header { margin-bottom: 28px; }
+.villa-page-header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+.villa-page-header p { font-size: 13px; color: var(--text-secondary); }
 
-.wisma-box-standalone {
+.villa-box-standalone {
     background: #fff;
     border-radius: 16px;
     padding: 20px;
@@ -1746,32 +1746,32 @@ a { text-decoration: none; color: inherit; }
     margin-bottom: 24px;
 }
 
-.wisma-result-info {
+.villa-result-info {
     margin-bottom: 20px;
 }
-.wisma-result-info p {
+.villa-result-info p {
     font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
 }
 
-.wisma-empty {
+.villa-empty {
     text-align: center;
     padding: 60px 20px;
     background: var(--cream2);
     border-radius: 14px;
 }
-.wisma-empty i { font-size: 40px; color: var(--text-secondary); opacity: 0.4; margin-bottom: 12px; display: block; }
-.wisma-empty p { font-size: 14px; color: var(--text); font-weight: 600; }
-.wisma-empty-sub { font-size: 12px; color: var(--text-secondary); font-weight: 400 !important; margin-top: 4px; }
+.villa-empty i { font-size: 40px; color: var(--text-secondary); opacity: 0.4; margin-bottom: 12px; display: block; }
+.villa-empty p { font-size: 14px; color: var(--text); font-weight: 600; }
+.villa-empty-sub { font-size: 12px; color: var(--text-secondary); font-weight: 400 !important; margin-top: 4px; }
 
-.wisma-result-list {
+.villa-result-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.wisma-card {
+.villa-card {
     display: flex;
     background: #fff;
     border: 1px solid var(--border);
@@ -1780,19 +1780,19 @@ a { text-decoration: none; color: inherit; }
     transition: box-shadow .2s, transform .2s;
     color: var(--text);
 }
-.wisma-card:hover {
+.villa-card:hover {
     box-shadow: 0 8px 24px rgba(24,95,165,0.1);
     transform: translateY(-1px);
 }
 
-.wisma-card-img {
+.villa-card-img {
     width: 240px;
     flex-shrink: 0;
     position: relative;
     background: var(--cream2);
 }
-.wisma-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.wisma-card-img-fill {
+.villa-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.villa-card-img-fill {
     width: 100%;
     height: 100%;
     min-height: 160px;
@@ -1801,17 +1801,17 @@ a { text-decoration: none; color: inherit; }
     justify-content: center;
     background: linear-gradient(135deg, #042C53, #0e5490);
 }
-.wisma-card-img-fill i { font-size: 48px; opacity: .15; color: #fff; }
+.villa-card-img-fill i { font-size: 48px; opacity: .15; color: #fff; }
 
-.wisma-card-body {
+.villa-card-body {
     flex: 1;
     padding: 18px 20px;
     display: flex;
     flex-direction: column;
     min-width: 0;
 }
-.wisma-card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
-.wisma-card-location {
+.villa-card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+.villa-card-location {
     font-size: 12px;
     color: var(--text-secondary);
     display: flex;
@@ -1819,15 +1819,15 @@ a { text-decoration: none; color: inherit; }
     gap: 4px;
     margin-bottom: 8px;
 }
-.wisma-card-location i { font-size: 12px; }
-.wisma-card-desc {
+.villa-card-location i { font-size: 12px; }
+.villa-card-desc {
     font-size: 12px;
     color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 14px;
     flex: 1;
 }
-.wisma-card-footer {
+.villa-card-footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -1835,14 +1835,14 @@ a { text-decoration: none; color: inherit; }
     gap: 12px;
     flex-wrap: wrap;
 }
-.wisma-card-price {
+.villa-card-price {
     display: flex;
     flex-direction: column;
     font-size: 11px;
     color: var(--text-secondary);
 }
-.wisma-card-price strong { font-size: 17px; color: var(--blue-dark); font-weight: 700; }
-.wisma-card-btn {
+.villa-card-price strong { font-size: 17px; color: var(--blue-dark); font-weight: 700; }
+.villa-card-btn {
     background: linear-gradient(135deg, var(--blue) 0%, var(--blue-accent) 100%);
     color: #fff;
     font-size: 12px;
@@ -1852,8 +1852,8 @@ a { text-decoration: none; color: inherit; }
     white-space: nowrap;
 }
 
-.wisma-rekomendasi { margin-top: 40px; }
-.wisma-rekomendasi-label {
+.villa-rekomendasi { margin-top: 40px; }
+.villa-rekomendasi-label {
     font-size: 13px;
     font-weight: 700;
     color: var(--text-secondary);
@@ -1948,16 +1948,16 @@ a { text-decoration: none; color: inherit; }
     color: var(--text-secondary);
 }
 
-/* RESPONSIVE — halaman cari wisma, mobile */
+/* RESPONSIVE — halaman cari villa, mobile */
 @media (max-width: 640px) {
-    .wisma-page { padding: 20px; }
-    .wisma-box-standalone { flex-wrap: wrap; padding: 14px; gap:10px; }
-    .wisma-box-standalone .sf { flex: 1 1 45%; }
+    .villa-page { padding: 20px; }
+    .villa-box-standalone { flex-wrap: wrap; padding: 14px; gap:10px; }
+    .villa-box-standalone .sf { flex: 1 1 45%; }
 
-    .wisma-card { flex-direction: column; }
-    .wisma-card-img { width: 100%; height: 180px; }
-    .wisma-card-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .wisma-card-btn { width: 100%; text-align: center; }
+    .villa-card { flex-direction: column; }
+    .villa-card-img { width: 100%; height: 180px; }
+    .villa-card-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .villa-card-btn { width: 100%; text-align: center; }
 }
 
 /* ============================================

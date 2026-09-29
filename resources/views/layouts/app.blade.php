@@ -45,7 +45,7 @@
             </button>
         </nav>
         <div class="nav-mobile-menu">
-            <a href="{{ route('villa.search') }}">WISMA</a>
+            <a href="{{ route('villa.search') }}">VILLA</a>
             <a href="{{ route('tentang') }}">TENTANG</a>
             <a href="{{ route('kontak') }}">KONTAK</a>
             <a href="/cek-booking">CEK BOOKING</a>
@@ -83,7 +83,7 @@
 
                     {{-- TENGAH-KANAN — 2 kolom link --}}
                     <div class="footer-col">
-                        <p class="footer-col-title">WISMA</p>
+                        <p class="footer-col-title">VILLA</p>
                         <a href="{{ route('villa.search') }}">Villa</a>
                         <a href="{{ route('booking.cek') }}">Cek Booking</a>
                     </div>

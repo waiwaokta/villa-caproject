@@ -35,7 +35,7 @@ class FacilitiesTable
                 TextColumn::make('villas_count')
                     ->label('Dipakai di')
                     ->counts('villas')
-                    ->suffix(' villa')
+                    ->suffix(' Villa')
                     ->badge()
                     ->color('info'),
             ])

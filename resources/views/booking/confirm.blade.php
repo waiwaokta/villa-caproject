@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Booking Berhasil - Wisma PLN')
+@section('title', 'Booking Berhasil - NginapYuk')
 
 @section('content')
 
@@ -17,7 +17,7 @@
             <p class="confirm-code-value">{{ $booking->bookingID }}</p>
             <p class="confirm-code-hint">Simpan kode ini untuk mengecek status booking Anda kapan saja.</p>
         </div>
-
+w
         <p class="confirm-note">
             <i class="ti ti-brand-whatsapp"></i>
             Konfirmasi status booking akan dikirimkan melalui WhatsApp ke nomor yang Anda daftarkan atau anda bisa melalukan Cek Status Booking melalui Web.

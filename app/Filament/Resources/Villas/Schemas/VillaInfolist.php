@@ -102,7 +102,7 @@ class VillaInfolist
                                     ->label('Harga')
                                     ->money('IDR', locale: 'id'),
                             ])
-                            ->columns(3)
+                            ->columns(2)
                             ->extraAttributes([
                                 'style' => 'max-height: 280px; overflow-y: auto; padding-right: 4px;'
                             ]),
