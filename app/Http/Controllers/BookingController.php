@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use App\Services\MidtransService;
 use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
@@ -267,5 +268,16 @@ class BookingController extends Controller
             'nights'     => $booking->total_nights,
             'receiptUrl' => $this->signedUrl('booking.receipt', $bookingID, 1440),
         ]);
+    }
+
+    public function receipt(string $bookingID)
+    {
+        $booking = Booking::with('villa')->where('bookingID', $bookingID)->firstOrFail();
+        abort_unless($booking->status === 'approved', 403); // nota hanya untuk booking yang sudah lunas
+
+        $pdf = Pdf::loadView('booking.receipt', ['booking' => $booking])
+            ->setPaper('a5', 'portrait');
+
+        return $pdf->download('Nota-' . $booking->bookingID . '.pdf');
     }
 }

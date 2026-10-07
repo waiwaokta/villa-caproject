@@ -41,7 +41,9 @@ Route::prefix('booking/{bookingID}')->middleware('signed')->group(function () {
     Route::post('cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
     Route::get('status',  [BookingController::class, 'status'])->name('booking.status');
     Route::get('confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
-    Route::get('receipt', [BookingController::class, 'receipt'])->name('booking.receipt');
+    Route::get('receipt', [BookingController::class, 'receipt'])
+    ->middleware('throttle:20,1')
+    ->name('booking.receipt');
 });
 
 // Cek booking — tracking status
