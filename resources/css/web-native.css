@@ -2235,3 +2235,23 @@ a { text-decoration: none; color: inherit; }
     .kontak-page { padding: 24px 20px 60px; }
     .kontak-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================
+   NOTA & KONFIRMASI BOOKING
+   ============================================ */
+
+.nota-card{max-width:720px;margin:2rem auto;background:#fff;border-radius:16px;padding:2rem;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.nota-row{display:flex;justify-content:space-between;gap:1rem;padding:.7rem 0;border-bottom:1px dashed #ddd}
+.nota-row span{color:#666}
+.nota-row strong{text-align:right}
+.nota-ktp{width:140px;border-radius:8px;cursor:zoom-in}
+.nota-total{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:center;margin:1.5rem 0}
+.nota-total strong{display:block;font-size:1.6rem}
+.badge-paid{background:#e6f6ec;color:#1a7f37;padding:.4rem .9rem;border-radius:999px;font-weight:600}
+.qris-placeholder{border:2px dashed #ccc;border-radius:12px;padding:1.5rem;text-align:center;color:#888;margin:.75rem 0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.modal-overlay[hidden]{display:none}
+.modal-box{background:#fff;border-radius:16px;padding:1.5rem;max-width:420px;width:100%}
+.modal-box h3{margin:0 0 .5rem}
+.modal-actions{display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap}
+@media (max-width:600px){.nota-total{grid-template-columns:1fr}}

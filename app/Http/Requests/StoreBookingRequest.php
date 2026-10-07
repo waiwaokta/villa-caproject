@@ -15,70 +15,55 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'guest_name'   => 'required|string|max:255',
-            'guest_phone'  => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
-            'guest_ktp'    => ['required', 'string', 'size:16', 'regex:/^[0-9]+$/'],
+            'villaID'     => 'required|string|exists:villas,villaID',
 
-            'wismaID'      => 'required|string|exists:wismas,wismaID',
-            'user_type'    => 'required|in:pln,umum',
-            'booking_type' => 'required_if:user_type,umum|nullable|in:perorangan,instansi',
+            'guest_name'  => 'required|string|max:255',
+            'guest_phone' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
 
-            'check_in'     => 'required|date|after_or_equal:today',
-            'check_out'    => 'required|date|after:check_in',
+            'check_in'    => 'required|date|after_or_equal:today',
+            'check_out'   => 'required|date|after:check_in',
 
-            'inst_name'    => 'required_if:booking_type,instansi|nullable|string|max:255',
-            'inst_npwp'    => 'required_if:booking_type,instansi|nullable|string|max:20',
-            'employee_id'  => 'required_if:user_type,pln|nullable|string|max:20',
-
-            // Dokumen — bukti bayar wajib SEMUA kombinasi
-            'doc_bukti_bayar' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-
-            // Dokumen — Umum: KTP wajib
-            'doc_ktp' => 'required_if:user_type,umum|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-
-            // Dokumen — Umum-Instansi: NPWP wajib
-            'doc_npwp' => 'required_if:booking_type,instansi|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-
-            // Dokumen — PLN: ID Card wajib
-            'doc_id_pln' => 'required_if:user_type,pln|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
-
-            // Dokumen — PLN: KTP atau NPWP, field terpisah dari Umum
-            'doc_ktp_pln' => 'required_if:user_type,pln|nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            // Dokumen: hanya KTP, bukti bayar datang dari payment gateway
+            'doc_ktp'     => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 
     /**
-     * Validasi tambahan — khusus kasus "KTP ATAU NPWP, minimal salah satu" untuk PLN.
+     * Validasi tambahan: nomor WhatsApp minimal 10 digit (angka saja, tanpa spasi atau tanda).
      */
     public function withValidator(Validator $validator): void
     {
         $validator->after(function ($validator) {
-            if ($this->user_type === 'pln') {
-                $hasKtpPln  = $this->hasFile('doc_ktp_pln');
-                $hasNpwpPln = $this->hasFile('doc_npwp_pln');
+            $digits = preg_replace('/\D/', '', (string) $this->guest_phone);
 
-                if (!$hasKtpPln && !$hasNpwpPln) {
-                    $validator->errors()->add(
-                        'doc_ktp_pln',
-                        'Wajib unggah KTP atau NPWP (pilih salah satu) untuk pegawai/pensiunan PLN.'
-                    );
-                }
+            if (strlen($digits) < 10) {
+                $validator->errors()->add('guest_phone', 'Nomor WhatsApp minimal 10 digit.');
             }
         });
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'villaID'     => 'villa',
+            'guest_name'  => 'nama lengkap',
+            'guest_phone' => 'nomor WhatsApp',
+            'check_in'    => 'tanggal check-in',
+            'check_out'   => 'tanggal check-out',
+            'doc_ktp'     => 'foto KTP',
+        ];
     }
 
     public function messages(): array
     {
         return [
-            'guest_ktp.size'           => 'Nomor KTP harus 16 digit.',
-            'guest_ktp.regex'          => 'Nomor KTP hanya boleh angka.',
-            'guest_phone.regex'        => 'Format nomor telepon tidak valid.',
-            'doc_ktp.required_if'      => 'Foto KTP wajib diunggah.',
-            'doc_npwp.required_if'     => 'Foto NPWP instansi wajib diunggah.',
-            'doc_id_pln.required_if'   => 'ID Card Pegawai/Pensiunan PLN wajib diunggah.',
-            'doc_bukti_bayar.required' => 'Bukti pelunasan wajib diunggah.',
-            'check_in.after_or_equal'  => 'Tanggal check-in tidak boleh sebelum hari ini.',
-            'check_out.after'          => 'Tanggal check-out harus setelah check-in.',
+            'required'                => ':attribute wajib diisi.',
+            'villaID.exists'          => 'Villa tidak ditemukan.',
+            'guest_phone.regex'       => 'Format nomor WhatsApp tidak valid.',
+            'check_in.after_or_equal' => 'Tanggal check-in tidak boleh sebelum hari ini.',
+            'check_out.after'         => 'Tanggal check-out harus setelah check-in.',
+            'doc_ktp.mimes'           => 'Foto KTP harus berformat JPG atau PNG.',
+            'doc_ktp.max'             => 'Ukuran foto KTP maksimal 2MB.',
         ];
     }
 }

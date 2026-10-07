@@ -53,12 +53,5 @@ class FacilitiesTable
              ->emptyStateIcon('heroicon-o-Sparkles')
             ->emptyStateHeading('Belum ada Fasilitas yang Terdaftar')
             ->emptyStateDescription('Fasilitas Villa akan muncul di sini setelah ditambahkan.');
-        //     ->emptyStateActions([
-        //     Action::make('create')
-        //         ->label('Buat Wisma Baru')
-        //         ->url(fn (): string => FacilityResource::getUrl('create'))
-        //         ->icon('heroicon-m-plus')
-        //         ->button(),
-        // ]);
     }
 }

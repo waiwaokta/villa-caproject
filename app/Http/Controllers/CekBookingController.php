@@ -24,8 +24,8 @@ class CekBookingController extends Controller
         // Bersihkan input — user mungkin copy-paste dengan spasi tersisa
         $bookingID = trim($request->booking_code);
 
-        // ⚠️ HANYA select kolom yang AMAN ditampilkan ke publik — TIDAK ambil guest_phone, guest_ktp, employee_id, inst_npwp, atau relasi dokumen
-        $booking = Booking::with(['wisma:wismaID,name,location'])
+        // ⚠️ HANYA select kolom yang AMAN ditampilkan ke publik 
+        $booking = Booking::with(['villa:villaID,name,location'])
             ->select([
                 'bookingID',
                 'villaID',

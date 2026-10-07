@@ -40,7 +40,7 @@ class VillaController extends Controller
             })
             ->when(!$isGlobalBlocked, function ($q) use ($checkIn, $checkOut) { // skip filter maintenance kalau sudah pasti semua villa diblok (hasil kosong)
                 $q->whereDoesntHave('bookings', function ($q2) use ($checkIn, $checkOut) {
-                        $q2->whereIn('status', ['pending', 'approved'])
+                        $q2->locking()
                         ->where('check_in', '<', $checkOut)
                         ->where('check_out', '>', $checkIn);
                     })
@@ -81,7 +81,7 @@ class VillaController extends Controller
     private function getAvailability(string $villaID): array
         {
             $bookings = Booking::where('villaID', $villaID)
-                ->whereIn('status', ['pending', 'approved'])
+                ->locking()
                 ->where('check_out', '>=', Carbon::today())
                 ->get(['check_in', 'check_out']);
             $occupiedDates = [];

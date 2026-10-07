@@ -39,7 +39,7 @@ class EstimatePriceController extends Controller
 
         // ⚠️ AVAILABILITY CHECK — ditambahkan, cek overlap booking lain
         $isOverlap = Booking::where('villaID', $request->villaID)
-            ->whereIn('status', ['pending', 'approved'])
+            ->locking()
             ->where(function ($q) use ($checkIn, $checkOut) {
                 $q->where('check_in', '<', $checkOut)
                   ->where('check_out', '>', $checkIn);

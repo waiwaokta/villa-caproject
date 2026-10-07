@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initVillaCardClick();
     initVillaSearchDateGuard();
     initTickerCardVilla();
+    initNotaPage();
 });
 
     function getTodayLocal() {
@@ -551,4 +552,136 @@ function initTickerCardVilla() {
 
     const original = track.innerHTML;
     track.innerHTML = original.repeat(repeatCount);
+}
+
+// ============================================
+// HALAMAN NOTA — countdown, polling status, konfirmasi keluar halaman
+// ============================================
+function initNotaPage() {
+    const page = document.getElementById('notaPage');
+    if (!page) return; // halaman ini bukan halaman nota, skip
+
+    let expires     = new Date(page.dataset.expires);
+    const statusUrl = page.dataset.statusUrl;
+    const cancelUrl = page.dataset.cancelUrl;
+    const payUrl    = page.dataset.payUrl;
+    const qrUrl     = page.dataset.qrUrl; // terisi kalau halaman di-reload setelah QR dibuat
+    const csrf      = page.dataset.csrf;
+    const cd        = document.getElementById('countdown');
+    const modal     = document.getElementById('leaveModal');
+    const btnPay    = document.getElementById('btnPay');
+    const qrisBox   = document.getElementById('qrisBox');
+    const qrisImg   = document.getElementById('qrisImg');
+    const holder    = document.getElementById('qrisPlaceholder');
+
+    let leaving   = false; // true kalau keluar halaman sudah disetujui, atau pembayaran selesai
+    let target    = null;
+    let pollTimer = null;
+
+    // Countdown batas waktu bayar
+    function tick() {
+        const s = Math.max(0, Math.floor((expires - new Date()) / 1000));
+        cd.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+        if (s === 0) {
+            leaving = true;
+            location.reload();
+        }
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Peringatan bawaan browser: tutup tab, refresh, tombol back
+    window.addEventListener('beforeunload', e => {
+        if (leaving) return;
+        e.preventDefault();
+        e.returnValue = '';
+    });
+
+    // Klik link atau tombol Kembali di dalam situs: tampilkan popup sendiri
+    document.addEventListener('click', e => {
+        const el = e.target.closest('a[href], [data-leave]');
+        if (!el || el.target === '_blank') return; // preview KTP dibuka di tab baru, jangan dicegat
+        const url = el.dataset.leave || el.getAttribute('href');
+        if (!url || url.startsWith('#') || url.startsWith('javascript:')) return;
+        e.preventDefault();
+        target = url;
+        modal.hidden = false;
+    });
+
+    document.getElementById('leaveStay').addEventListener('click', () => {
+        modal.hidden = true;
+    });
+
+    document.getElementById('leaveGo').addEventListener('click', async () => {
+        leaving = true;
+        try {
+            await fetch(cancelUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+            });
+        } catch (err) {
+            console.error('Gagal membatalkan booking', err);
+        }
+        window.location.href = target;
+    });
+
+    // Tampilkan QR dan mulai polling status pembayaran
+    function showQr(url) {
+        qrisImg.src = url;
+        qrisImg.hidden = false;
+        holder.hidden = true;
+        qrisBox.hidden = false;
+        btnPay.hidden = true;
+        if (!pollTimer) pollTimer = setInterval(pollStatus, 4000);
+    }
+
+    // QR hangus: kembali ke tombol Bayar supaya tamu bisa membuat QR baru
+    function resetQr() {
+        clearInterval(pollTimer);
+        pollTimer = null;
+        qrisImg.hidden = true;
+        qrisBox.hidden = true;
+        btnPay.hidden = false;
+        btnPay.disabled = false;
+    }
+
+    async function pollStatus() {
+        try {
+            const res  = await fetch(statusUrl, { headers: { Accept: 'application/json' } });
+            const data = await res.json();
+            if (data.redirect) {
+                leaving = true;
+                window.location.href = data.redirect;
+            } else if (pollTimer && data.qr_active === false) {
+                resetQr();
+            }
+        } catch (err) {
+            console.error('Gagal cek status pembayaran', err);
+        }
+    }
+
+    btnPay.addEventListener('click', async () => {
+        btnPay.disabled = true;
+        qrisBox.hidden = false;
+        holder.hidden = false;
+        holder.textContent = 'Membuat kode QRIS...';
+
+        try {
+            const res  = await fetch(payUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Gagal membuat QRIS.');
+
+            expires = new Date(data.expires_at); // batas waktu diperpanjang sejak QR dibuat
+            showQr(data.qr_url);
+        } catch (err) {
+            console.error('Gagal membuat QRIS', err);
+            holder.textContent = err.message;
+            btnPay.disabled = false;
+        }
+    });
+
+    if (qrUrl) showQr(qrUrl); // halaman di-reload setelah QR dibuat
 }

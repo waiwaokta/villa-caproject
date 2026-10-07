@@ -33,8 +33,16 @@ Route::post('/booking', [BookingController::class, 'store'])
     ->name('booking.store');
 
 // Konfirmasi booking berhasil dikirim — DITAMBAHKAN, sebelumnya tidak ada route untuk confirm.blade.php
-Route::get('/booking/confirm/{bookingID}', [BookingController::class, 'confirm'])
-    ->name('booking.confirm');
+Route::prefix('booking/{bookingID}')->middleware('signed')->group(function () {
+    Route::get('nota',    [BookingController::class, 'nota'])->name('booking.nota');
+    Route::post('pay', [BookingController::class, 'pay'])->name('booking.pay');
+    Route::get('qr',   [BookingController::class, 'qr'])->name('booking.qr');
+    Route::get('ktp',     [BookingController::class, 'ktp'])->name('booking.ktp');
+    Route::post('cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::get('status',  [BookingController::class, 'status'])->name('booking.status');
+    Route::get('confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
+    Route::get('receipt', [BookingController::class, 'receipt'])->name('booking.receipt');
+});
 
 // Cek booking — tracking status
 Route::get('/cek-booking', [CekBookingController::class, 'index'])
