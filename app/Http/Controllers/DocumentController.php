@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreDocumentRequest;
-use App\Models\Booking;
+// use App\Http\Requests\StoreDocumentRequest;
+// use App\Models\Booking;
 use App\Models\Document;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+// use Illuminate\Support\Str;
 
 class DocumentController extends Controller
 {
@@ -16,36 +14,28 @@ class DocumentController extends Controller
      * Upload dokumen saat booking submit.
      * Dipanggil dari BookingController, bukan route langsung.
      */
-    public function store(StoreDocumentRequest $request)
-    {
-        $booking = Booking::findOrFail($request->bookingID);
+    // public function store(StoreDocumentRequest $request)
+    // {
+    //     $booking = Booking::findOrFail($request->bookingID);
 
-        // Ownership check — hanya pemilik booking yang bisa upload
-        if (
-            Auth::check() &&
-            $booking->user_id !== Auth::id()
-        ) {
-            abort(403);
-        }
+    //     $file     = $request->file('file');
+    //     $hash     = Str::random(40);
+    //     $ext      = $file->getClientOriginalExtension();
+    //     $filename = $hash . '.' . $ext;
 
-        $file     = $request->file('file');
-        $hash     = Str::random(40);
-        $ext      = $file->getClientOriginalExtension();
-        $filename = $hash . '.' . $ext;
+    //     // Simpan ke storage/app/private/documents/
+    //     $path = $file->storeAs('documents', $filename, 'private');
 
-        // Simpan ke storage/app/private/documents/
-        $path = $file->storeAs('documents', $filename, 'private');
+    //     $document = Document::create([
+    //         'bookingID' => $request->bookingID,
+    //         'doc_type'  => $request->doc_type,
+    //         'file_path' => $path,
+    //         'is_primary'=> false,
+    //         'order'     => 0,
+    //     ]);
 
-        $document = Document::create([
-            'bookingID' => $request->bookingID,
-            'doc_type'  => $request->doc_type,
-            'file_path' => $path,
-            'is_primary'=> false,
-            'order'     => 0,
-        ]);
-
-        return $document;
-    }
+    //     return $document;
+    // }
 
     /**
      * Serve file secara private — URL langsung TIDAK bisa diakses.

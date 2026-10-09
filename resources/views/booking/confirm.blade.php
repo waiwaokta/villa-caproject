@@ -28,7 +28,7 @@
 
         <p class="confirm-note">
             <i class="ti ti-brand-whatsapp"></i>
-            Konfirmasi juga dikirimkan melalui WhatsApp ke nomor yang Anda daftarkan.
+            Konfirmasi akan dikirim ke WhatsApp Anda. Jika belum masuk, kode booking bisa dipakai pada halaman Cek Booking.
         </p>
 
         <div class="confirm-actions">

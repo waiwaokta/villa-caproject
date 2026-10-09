@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use App\Services\MidtransService;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Http;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -115,7 +116,7 @@ class BookingController extends Controller
     private function calculateTotalPrice(string $villaID, Carbon $checkIn, Carbon $checkOut): float
     {
         $prices = Price::where('villaID', $villaID)
-            ->get() // keterangan: filter where('user_type', ...) dihapus
+            ->get()
             ->keyBy('day_type');
 
         $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
@@ -173,8 +174,8 @@ class BookingController extends Controller
             'ktpUrl'    => $this->signedUrl('booking.ktp', $bookingID),
             'statusUrl' => $this->signedUrl('booking.status', $bookingID),
             'cancelUrl' => $this->signedUrl('booking.cancel', $bookingID),
-            'payUrl'    => $this->signedUrl('booking.pay', $bookingID), // ditambahkan
-            'qrUrl'     => $booking->qris_url ? $this->signedUrl('booking.qr', $bookingID) : null, // ditambahkan, QR muncul lagi kalau halaman di-reload
+            'payUrl'    => $this->signedUrl('booking.pay', $bookingID),
+            'qrUrl'     => $booking->qris_url ? $this->signedUrl('booking.qr', $bookingID) : null,
         ]);
     }
 
@@ -237,7 +238,7 @@ class BookingController extends Controller
     {
         $booking = Booking::where('bookingID', $bookingID)->firstOrFail();
 
-        $midtrans->sync($booking); // cek ke Midtrans, tidak perlu webhook untuk demo lokal
+        $midtrans->sync($booking);
         $booking->refresh();
 
         return response()->json([
@@ -251,8 +252,8 @@ class BookingController extends Controller
     {
         $doc = Document::where('bookingID', $bookingID)->where('doc_type', 'ktp')->firstOrFail();
 
-        /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-        $disk = Storage::disk('local');
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('private');
         abort_unless($disk->exists($doc->file_path), 404);
 
         return $disk->response($doc->file_path);

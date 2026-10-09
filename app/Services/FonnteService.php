@@ -44,15 +44,15 @@ class FonnteService
     private function buildNewBookingMessage(Booking $booking): string
     {
         return "🔔 *Booking Baru Masuk!*\n\n"
-            . "Ada tamu baru yang melakukan booking dan menunggu persetujuan Anda.\n\n"
-            . "━━━━━━━━━━━━━━━━━\n"
+            . "Ada tamu baru yang telah melakukan booking villa.\n\n"
+            . "━━━━━━━━━━━━━━━\n"
             . "*Kode Booking* : {$booking->bookingID}\n"
             . "*Villa*        : {$booking->villa->name}\n"
             . "*Nama Tamu*    : {$booking->guest_name}\n"
             . "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y') . "\n"
             . "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y') . "\n"
-            . "━━━━━━━━━━━━━━━━━\n\n"
-            . "Silakan cek dan proses di panel admin.\n\n"
+            . "━━━━━━━━━━━━━━━\n\n"
+            . "Silakan cek detail di panel admin.\n\n"
             . "_Layanan Penginapan Terpercaya_";
     }
 
@@ -91,16 +91,9 @@ class FonnteService
         }
     }
 
-    public function sendApproved(Booking $booking): bool
+    public function sendPaid(Booking $booking): bool
     {
-        $message = $this->templateApproved($booking);
-        return $this->send($booking->guest_phone, $message);
-    }
-
-    public function sendRejected(Booking $booking): bool
-    {
-        $message = $this->templateRejected($booking);
-        return $this->send($booking->guest_phone, $message);
+        return $this->send($booking->guest_phone, $this->templatePaid($booking));
     }
 
     // ---------------------------------------------------------------
@@ -120,54 +113,25 @@ class FonnteService
         return $phone;
     }
 
-    private function templateApproved(Booking $booking): string
+    private function templatePaid(Booking $booking): string
     {
         return implode("\n", [
             "Halo *{$booking->guest_name}*!",
             "",
-            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada kami. Kami dengan senang hati menginformasikan bahwa booking Anda telah *DISETUJUI*.",
+            "Pembayaran Anda telah kami terima dan booking Anda *TERKONFIRMASI*.",
             "",
             "Berikut detail booking Anda:",
-            "━━━━━━━━━━━━━━━━━",
+            "━━━━━━━━━━━━━━━",
             "*Villa*         : {$booking->villa->name}",
             "*Kode Booking*  : {$booking->bookingID}",
             "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y') . " (mulai pukul 14:00)",
             "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y') . " (sebelum pukul 12:00)",
             "*Lama Menginap* : {$booking->total_nights} malam",
-            "*Tanggal Booking*   : {$booking->created_at->format('d M Y, H:i')}",
-            "━━━━━━━━━━━━━━━━━",
+            "*Total Dibayar* : Rp " . number_format($booking->total_price, 0, ',', '.'),
+            "*Dibayar Pada*  : " . $booking->paid_at->timezone('Asia/Jakarta')->format('d M Y, H:i') . " WIB",
+            "━━━━━━━━━━━━━━━",
             "",
-            "Mohon tunjukkan kode booking Anda kepada petugas saat tiba di lokasi. Pastikan Anda membawa dokumen identitas yang sesuai dengan data yang telah didaftarkan.",
-            "",
-            "Atas perhatian dan kepercayaan Anda, kami ucapkan terima kasih. Semoga perjalanan Anda menyenangkan.",
-            "",
-            "_Layanan Penginapan Terpercaya_",
-        ]);
-    }
-
-    private function templateRejected(Booking $booking): string
-    {
-        return implode("\n", [
-            "Halo *{$booking->guest_name}*!",
-            "",
-            "Terima kasih telah mempercayakan kebutuhan penginapan Anda kepada kami. Setelah melalui proses peninjauan, kami mohon maaf menginformasikan bahwa booking Anda *DITOLAK*.",
-            "",
-            "Berikut detail booking Anda:",
-            "━━━━━━━━━━━━━━━━━",
-            "*Villa*         : {$booking->villa->name}",
-            "*Kode Booking*  : {$booking->bookingID}",
-            "*Check-in*      : " . Carbon::parse($booking->check_in)->format('d M Y'),
-            "*Check-out*     : " . Carbon::parse($booking->check_out)->format('d M Y'),
-            "*Lama Menginap* : {$booking->total_nights} malam",
-            "*Tanggal Booking*   : {$booking->created_at->format('d M Y, H:i')}",
-            "━━━━━━━━━━━━━━━━━",
-            "",
-            "*Alasan Penolakan:*",
-            "_{$booking->reject_desc}_",
-            "",
-            "Anda dapat melakukan booking ulang dengan melengkapi persyaratan yang diperlukan. Apabila ada pertanyaan lebih lanjut, silakan hubungi kami.",
-            "",
-            "Atas perhatian dan pengertian Anda, kami ucapkan terima kasih.",
+            "Simpan kode booking Anda. Status dan nota PDF dapat diunduh kapan saja di halaman Cek Booking.",
             "",
             "_Layanan Penginapan Terpercaya_",
         ]);

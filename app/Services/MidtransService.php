@@ -127,6 +127,20 @@ class MidtransService
             }
         }
 
-        $booking->update(['status' => 'approved', 'paid_at' => now()]);
+        $updated = Booking::where('bookingID', $booking->bookingID)->where('status', 'pending')->update(['status' => 'approved', 'paid_at' => now()]); // atomik, hanya satu request yang menang
+
+        if (!$updated) { return; } // sudah diproses request lain, jangan kirim WA lagi
+
+        $booking->refresh(); // muat ulang status dan paid_at
+
+        app()->terminating(function () use ($booking) { // WA dikirim setelah respons selesai
+            try {
+                $fonnte = app(FonnteService::class); // tidak perlu use, namespace sama
+                $fonnte->sendPaid($booking); // WA konfirmasi ke tamu
+                $fonnte->sendNewBookingAlert($booking); // WA pemberitahuan ke admin
+            } catch (\Throwable $e) {
+                Log::error('WA setelah bayar gagal', ['booking' => $booking->bookingID, 'error' => $e->getMessage()]); // gagal kirim tidak boleh mengganggu pembayaran
+            }
+        });
     }
 }

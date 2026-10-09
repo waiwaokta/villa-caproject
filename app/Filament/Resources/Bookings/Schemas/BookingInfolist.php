@@ -48,6 +48,22 @@ class BookingInfolist
                             ->label('Total Harga')
                             ->money('IDR')
                             ->weight(FontWeight::Bold),
+
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->formatStateUsing(fn($state) => match($state) {
+                                'pending'   => 'Menunggu Pembayaran',
+                                'approved'  => 'Lunas',
+                                'rejected'  => 'Ditolak',
+                                'cancelled' => 'Dibatalkan',
+                                default     => $state,
+                            }), // status booking
+
+                        TextEntry::make('paid_at')
+                            ->label('Waktu Bayar')
+                            ->dateTime('d M Y, H:i', 'Asia/Jakarta')
+                            ->placeholder('-'),
                     ]),
 
                 // KANAN — Data Tamu
@@ -81,12 +97,10 @@ class BookingInfolist
                                     ->badge()
                                     ->formatStateUsing(fn($state) => match($state) {
                                         'ktp'         => 'KTP',
-                                        'bukti_bayar' => 'Bukti Bayar',
                                         default       => $state,
                                     })
                                     ->color(fn($state) => match($state) {
                                         'ktp'         => 'info',
-                                        'bukti_bayar' => 'success',
                                         default       => 'gray',
                                     }),
 

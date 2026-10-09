@@ -55,12 +55,10 @@ Route::post('/cek-booking', [CekBookingController::class, 'cari'])
     ->middleware('throttle:cek-booking')
     ->name('booking.cek.cari');
 
-// Dokumen — private access (DIHAPUS duplikatnya, sekarang cuma 1 block)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dokumen/{documentID}', [DocumentController::class, 'show'])
-        ->middleware('check.document.access');
-    Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy'])
-        ->middleware('role:admin');
+// Dokumen (private access)
+Route::middleware('check.document.access')->group(function () {
+    Route::get('/dokumen/{documentID}', [DocumentController::class, 'show']);
+    Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy']);
 });
 
 // API estimasi harga

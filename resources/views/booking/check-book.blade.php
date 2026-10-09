@@ -7,7 +7,7 @@
 <div class="cekbooking-page">
     <div class="cekbooking-header">
         <h1>Cek Status Booking</h1>
-        <p>Masukkan kode booking Anda untuk melihat status terkini pemesanan.</p>
+        <p>Masukkan kode booking dan nomor WhatsApp yang Anda gunakan saat memesan.</p>
     </div>
 
     {{-- BOX PENCARIAN --}}
@@ -16,7 +16,11 @@
             @csrf
             <div class="form-group" style="margin-bottom:0; flex:1;">
                 <label>Kode Booking</label>
-                <input type="text" name="booking_code" required placeholder="Contoh: 9c3d1a2b-xxxx-xxxx-xxxx-xxxxxxxxxxxx" value="{{ old('booking_code') }}">
+                <input type="text" name="booking_code" required maxlength="50" placeholder="Contoh: BK-2026-ABC123" value="{{ old('booking_code') }}">
+            </div>
+            <div class="form-group" style="margin-bottom:0; flex:1;">
+                <label>No. WhatsApp</label>
+                <input type="text" name="guest_phone" required maxlength="20" placeholder="08123456789" value="{{ old('guest_phone') }}">
             </div>
             <button type="submit" class="btn-cek-booking">
                 <i class="ti ti-search"></i> Cek
@@ -24,7 +28,7 @@
         </form>
         @if ($errors->any())
             <div class="form-error" style="display:block; margin-top:14px;">
-                {{ $errors->first('booking_code') }}
+                {{ $errors->first() }}
             </div>
         @endif
     </div>
@@ -35,17 +39,17 @@
 
             <div class="faq-item">
                 <p class="faq-question">Di mana saya dapat menemukan kode booking?</p>
-                <p class="faq-answer">Kode booking ditampilkan pada halaman konfirmasi setelah form booking berhasil dikirim. Kode yang sama juga tercantum pada pesan konfirmasi yang dikirim melalui WhatsApp.</p>
+                <p class="faq-answer">Kode booking tampil pada halaman nota setelah Anda mengirim form booking, dan tercantum pada nota PDF setelah pembayaran berhasil.</p>
             </div>
 
             <div class="faq-item">
-                <p class="faq-question">Berapa lama proses verifikasi booking?</p>
-                <p class="faq-answer">Proses verifikasi umumnya memakan waktu satu hingga dua hari kerja. Anda dapat memeriksa status terkini kapan saja menggunakan kode booking pada halaman ini.</p>
+                <p class="faq-question">Berapa lama batas waktu pembayaran?</p>
+                <p class="faq-answer">Setelah booking dikirim, tanggal ditahan selama 15 menit untuk menyelesaikan pembayaran QRIS. Jika waktu habis, tanggal dilepas kembali dan Anda perlu memesan ulang.</p>
             </div>
 
             <div class="faq-item">
-                <p class="faq-question">Apa yang terjadi jika booking saya tidak disetujui?</p>
-                <p class="faq-answer">Jika booking tidak disetujui, alasan penolakan akan ditampilkan pada halaman ini. Anda dapat melakukan pemesanan ulang dengan menyesuaikan data sesuai keterangan yang diberikan.</p>
+                <p class="faq-question">Bagaimana jika saya ingin membatalkan booking yang sudah dibayar?</p>
+                <p class="faq-answer">Silakan hubungi tim kami melalui halaman kontak dengan menyebutkan kode booking. Pembatalan dan pengembalian dana ditangani langsung oleh tim kami.</p>
             </div>
 
             <div class="faq-item">
@@ -58,11 +62,14 @@
     @isset($booking)
         @php
             $statusConfig = [
-                'pending'  => ['label' => 'Menunggu Persetujuan', 'icon' => 'ti-clock', 'color' => 'pending'],
-                'approved' => ['label' => 'Disetujui', 'icon' => 'ti-circle-check', 'color' => 'approved'],
-                'rejected' => ['label' => 'Tidak Disetujui', 'icon' => 'ti-circle-x', 'color' => 'rejected'],
+                'pending'   => ['label' => 'Menunggu Pembayaran',    'icon' => 'ti-clock',        'color' => 'pending'],
+                'approved'  => ['label' => 'Lunas',                  'icon' => 'ti-circle-check', 'color' => 'approved'],
+                'cancelled' => ['label' => 'Dibatalkan',             'icon' => 'ti-ban',          'color' => 'rejected'],
+                'expired'   => ['label' => 'Waktu Pembayaran Habis', 'icon' => 'ti-clock-off',    'color' => 'rejected'],
+                'rejected'  => ['label' => 'Tidak Disetujui',        'icon' => 'ti-circle-x',     'color' => 'rejected'],
             ];
-            $current = $statusConfig[$booking->status];
+            $current = $statusConfig[$state] ?? $statusConfig['pending'];
+            $wib     = fn ($d) => \Carbon\Carbon::parse($d)->timezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') . ' WIB';
         @endphp
 
         {{-- BOX RINGKASAN BOOKING --}}
@@ -110,52 +117,72 @@
             <h3>Riwayat Status</h3>
 
             <div class="timeline">
-                {{-- TITIK 1 — selalu ada, booking terkirim --}}
+                {{-- TITIK 1: selalu ada --}}
                 <div class="timeline-item timeline-done">
                     <div class="timeline-dot">
                         <i class="ti ti-send"></i>
                     </div>
                     <div class="timeline-content">
-                        <p class="timeline-title">Booking Berhasil Dikirim</p>
-                        <p class="timeline-desc">Form booking Anda telah kami terima dan tercatat dalam sistem.</p>
-                        <p class="timeline-date">{{ \Carbon\Carbon::parse($booking->created_at)->translatedFormat('d F Y, H:i') }} WIB</p>
+                        <p class="timeline-title">Booking Berhasil Dibuat</p>
+                        <p class="timeline-desc">Booking Anda telah tercatat dalam sistem.</p>
+                        <p class="timeline-date">{{ $wib($booking->created_at) }}</p>
                     </div>
                 </div>
 
-                {{-- TITIK 2 — selalu ada, sedang dipantau --}}
-                <div class="timeline-item timeline-done">
-                    <div class="timeline-dot">
-                        <i class="ti ti-eye"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <p class="timeline-title">Sedang Dipantau Tim Kami</p>
-                        <p class="timeline-desc">Tim kami sedang memverifikasi data dan dokumen booking Anda.</p>
-                    </div>
-                </div>
-
-                {{-- TITIK 3 — kondisional sesuai status akhir --}}
-                @if ($booking->status === 'pending')
+                {{-- TITIK 2: kondisional sesuai status --}}
+                @if ($state === 'pending')
                     <div class="timeline-item timeline-current">
                         <div class="timeline-dot timeline-dot-pending">
                             <i class="ti ti-clock"></i>
                         </div>
                         <div class="timeline-content">
-                            <p class="timeline-title">Menunggu Keputusan</p>
-                            <p class="timeline-desc">Booking Anda masih dalam proses peninjauan. Mohon tunggu konfirmasi selanjutnya melalui WhatsApp.</p>
+                            <p class="timeline-title">Menunggu Pembayaran</p>
+                            <p class="timeline-desc">Selesaikan pembayaran QRIS sebelum batas waktu agar tanggal tetap tertahan untuk Anda.</p>
+                            @if ($booking->expires_at)
+                                <p class="timeline-date">Batas waktu: {{ $wib($booking->expires_at) }}</p>
+                            @endif
+                            @if ($payUrl)
+                                <a href="{{ $payUrl }}" class="btn-cek-status"><i class="ti ti-qrcode"></i> Lanjutkan Pembayaran</a>
+                            @endif
                         </div>
                     </div>
-                @elseif ($booking->status === 'approved')
+                @elseif ($state === 'approved')
                     <div class="timeline-item timeline-done timeline-success">
                         <div class="timeline-dot timeline-dot-approved">
                             <i class="ti ti-circle-check"></i>
                         </div>
                         <div class="timeline-content">
-                            <p class="timeline-title">Booking Telah Disetujui</p>
-                            <p class="timeline-desc">Selamat! Booking Anda telah disetujui oleh tim kami. Terima kasih telah memilih villa kami di NginapYuk, kami tunggu kedatangan Anda.</p>
-                            <p class="timeline-date">{{ \Carbon\Carbon::parse($booking->updated_at)->translatedFormat('d F Y, H:i') }} WIB</p>
+                            <p class="timeline-title">Pembayaran Diterima</p>
+                            <p class="timeline-desc">Booking Anda sudah terkonfirmasi. Terima kasih telah memilih villa kami di NginapYuk, kami tunggu kedatangan Anda. Pembatalan hanya dapat dilakukan melalui tim kami.</p>
+                            <p class="timeline-date">{{ $wib($booking->paid_at ?? $booking->updated_at) }}</p>
+                            @if ($receiptUrl)
+                                <a href="{{ $receiptUrl }}" class="btn-cek-status"><i class="ti ti-download"></i> Unduh Nota (PDF)</a>
+                            @endif
                         </div>
                     </div>
-                @elseif ($booking->status === 'rejected')
+                @elseif ($state === 'expired')
+                    <div class="timeline-item timeline-done timeline-danger">
+                        <div class="timeline-dot timeline-dot-rejected">
+                            <i class="ti ti-clock-off"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <p class="timeline-title">Waktu Pembayaran Habis</p>
+                            <p class="timeline-desc">Pembayaran tidak diterima sebelum batas waktu, sehingga tanggal dilepas kembali. Silakan lakukan pemesanan ulang.</p>
+                            <p class="timeline-date">{{ $wib($booking->expires_at) }}</p>
+                        </div>
+                    </div>
+                @elseif ($state === 'cancelled')
+                    <div class="timeline-item timeline-done timeline-danger">
+                        <div class="timeline-dot timeline-dot-rejected">
+                            <i class="ti ti-ban"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <p class="timeline-title">Booking Dibatalkan</p>
+                            <p class="timeline-desc">Booking ini telah dibatalkan. Untuk pertanyaan atau pengembalian dana, hubungi tim kami melalui halaman kontak dengan menyebutkan kode booking.</p>
+                            <p class="timeline-date">{{ $wib($booking->updated_at) }}</p>
+                        </div>
+                    </div>
+                @elseif ($state === 'rejected')
                     <div class="timeline-item timeline-done timeline-danger">
                         <div class="timeline-dot timeline-dot-rejected">
                             <i class="ti ti-circle-x"></i>
@@ -168,7 +195,7 @@
                                     <br><strong>Alasan:</strong> {{ $booking->reject_desc }}
                                 @endif
                             </p>
-                            <p class="timeline-date">{{ \Carbon\Carbon::parse($booking->updated_at)->translatedFormat('d F Y, H:i') }} WIB</p>
+                            <p class="timeline-date">{{ $wib($booking->updated_at) }}</p>
                         </div>
                     </div>
                 @endif

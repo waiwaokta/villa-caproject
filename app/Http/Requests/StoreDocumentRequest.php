@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDocumentRequest extends FormRequest
@@ -16,7 +15,6 @@ class StoreDocumentRequest extends FormRequest
     {
         return [
             'bookingID'  => 'required|string|exists:bookings,bookingID',
-            'doc_type'   => 'required|in:ktp,bukti_bayar',
             'file'       => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ];
     }
