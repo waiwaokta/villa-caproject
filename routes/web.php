@@ -75,3 +75,7 @@ Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
 Route::post('/kontak', [ContactController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('kontak.store');
+
+if (app()->environment('local')) {
+    Route::get('/_err/{code}', fn (int $code) => abort($code))->where('code', '[0-9]+'); // sementara untuk pratinjau, hapus sebelum commit
+}

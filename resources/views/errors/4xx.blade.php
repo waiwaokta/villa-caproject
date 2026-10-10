@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', $exception->getStatusCode())
+@section('marquee', 'PERMINTAAN GAGAL')
+@section('title', 'Permintaan tidak dapat diproses')
+@section('message', 'Ada yang salah dengan permintaan Anda. Silakan kembali ke beranda dan coba lagi.')

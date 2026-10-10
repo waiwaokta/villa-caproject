@@ -2255,3 +2255,125 @@ a { text-decoration: none; color: inherit; }
 .modal-box h3{margin:0 0 .5rem}
 .modal-actions{display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap}
 @media (max-width:600px){.nota-total{grid-template-columns:1fr}}
+
+/* ============================================
+   HALAMAN ERROR
+   ============================================ */
+.err-site {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--blue-deepest) 0%, var(--blue) 60%, var(--blue-deepest) 100%);
+    color: #fff;
+}
+
+.err-site::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    opacity: 1;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 0;
+    animation: grainMove 1s ease-in-out infinite reverse;
+}
+
+.err-site > .nav,
+.err-site > .err-stage,
+.err-site > .err-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.err-site .nav { background: transparent; border-bottom: none; backdrop-filter: none; -webkit-backdrop-filter: none; position: relative; z-index: 1; }
+
+.err-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    padding: 24px 0 40px;
+}
+
+/* BAND TEKS BERJALAN */
+.err-band {
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.35); /* garis tipis pemisah */
+}
+.err-band:first-of-type { border-top: 1px solid rgba(255,255,255,0.35); }
+
+.err-track {
+    display: flex;
+    width: max-content;
+    animation: errScroll 40s linear infinite;
+}
+.err-track-rev { animation-direction: reverse; } /* baris 2 berjalan ke arah sebaliknya */
+.err-group { display: flex; flex-shrink: 0; }
+.err-group span {
+    font-size: clamp(64px, 14vw, 180px); /* mengecil otomatis di layar kecil */
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    white-space: nowrap;
+    padding-right: 0.45em;
+}
+@keyframes errScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) { .err-track { animation: none; } } /* hormati pengaturan aksesibilitas */
+
+/* TEKS DAN TOMBOL */
+.err-text { text-align: center; padding: 40px 20px 0; }
+.err-title { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+.err-desc {
+    max-width: 520px;
+    margin: 0 auto 22px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.8);
+}
+.err-hint {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+.err-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.err-actions .btn-back-home,
+.err-actions .btn-cek-status { /* menimpa gaya tombol bawaan menjadi pill outline putih */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.75);
+    border-radius: 999px;
+    padding: 12px 28px;
+    margin-top: 0;
+    min-width: 0;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background .2s;
+}
+.err-actions .btn-back-home:hover,
+.err-actions .btn-cek-status:hover { background: rgba(255,255,255,0.14); }
+
+.err-footer { text-align: center; font-size: 11.5px; color: rgba(255,255,255,0.55); padding: 0 20px 20px; }
+
+@media (max-width: 640px) {
+    .err-text { padding-top: 28px; }
+    .err-actions .btn-back-home,
+    .err-actions .btn-cek-status { width: 100%; justify-content: center; } /* tombol penuh di HP */
+}
