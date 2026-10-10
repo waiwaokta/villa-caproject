@@ -6,6 +6,7 @@ use App\Models\Maintenance;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
+use App\Models\VillaView;
 class VillaController extends Controller
 {
     public function show(string $villaID, Request $request)
@@ -19,6 +20,8 @@ class VillaController extends Controller
 
         $prefillCheckIn  = $request->query('check_in'); 
         $prefillCheckOut = $request->query('check_out'); 
+
+        $this->recordView($villa->villaID, $request); // catat satu klik pada halaman detail
 
         return view('villa.show', compact('villa', 'availability', 'prefillCheckIn', 'prefillCheckOut'));
     }
@@ -108,4 +111,31 @@ class VillaController extends Controller
 
             return $occupiedDates;
         }
+    private function recordView(string $villaID, Request $request): void
+    {
+        $agent = strtolower((string) $request->userAgent()); // untuk menyaring bot
+
+        if ($request->user()?->role === 'admin' || preg_match('/bot|crawl|spider|slurp|preview|facebookexternalhit/', $agent)) {
+            return; // klik admin dan bot tidak dihitung
+        }
+
+        $key  = 'viewed_villa.' . $villaID;
+        $last = (int) $request->session()->get($key, 0);
+
+        if (now()->timestamp - $last < 1800) {
+            return; // pengunjung yang sama dalam 30 menit dihitung satu kali, refresh tidak menggelembungkan angka
+        }
+
+        $request->session()->put($key, now()->timestamp);
+
+        try {
+            VillaView::create([
+                'villaID'      => $villaID,
+                'visitor_hash' => hash('sha256', $request->session()->getId()), // tidak menyimpan IP
+                'viewed_at'    => now(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e); // gagal mencatat tidak boleh merusak halaman villa
+        }
+    }
 }

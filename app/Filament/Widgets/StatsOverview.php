@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Booking;
+use App\Models\VillaView;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -15,9 +16,9 @@ class StatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $totalBooking        = Booking::count();
-        $bookingPending      = Booking::where('status', 'pending')->count();
+        $bookingPending      = Booking::where('status', 'pending')->where('expires_at', '>', now())->count();
         $bookingApproved     = Booking::where('status', 'approved')->count();
-        $bookingRejected     = Booking::where('status', 'rejected')->count();
+        $klikperminggu       = VillaView::where('viewed_at', '>=', now()->subDays(7))->count();
 
         return [
             Stat::make('Total Booking', $totalBooking)
@@ -25,7 +26,12 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-calendar')
                 ->color('primary'),
 
-            Stat::make('Menunggu Persetujuan', $bookingPending)
+            Stat::make('Total Klik Villa', $klikperminggu)
+                ->description('1 minggu terakhir')
+                ->descriptionIcon('heroicon-o-cursor-arrow-rays')
+                ->color('info'),
+
+            Stat::make('Menunggu Pembayaran', $bookingPending)
                 ->description('Booking')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning'),
@@ -34,11 +40,6 @@ class StatsOverview extends BaseWidget
                 ->description('Booking')
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('success'),
-
-            Stat::make('Booking Ditolak', $bookingRejected)
-                ->description('Booking')
-                ->descriptionIcon('heroicon-o-x-circle')
-                ->color('danger'),
         ];
     }
 }

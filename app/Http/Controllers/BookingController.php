@@ -8,13 +8,11 @@ use App\Models\Document;
 use App\Models\Price;
 use App\Models\Villa;
 use App\Services\DayTypeResolver;
-use App\Services\FonnteService;
 use App\Services\HolidayService;
 use App\Services\MaintenanceService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -58,35 +56,29 @@ class BookingController extends Controller
             return back()->withErrors(['check_out' => 'Minimal menginap 1 malam.']);
         }
 
-        // AVAILABILITY CHECK — cek tanggal sudah di-booking orang lain atau belum
-        $isOverlap = Booking::where('villaID', $villa->villaID)
-            ->locking()
-            ->where(function ($q) use ($checkIn, $checkOut) {
-                $q->where('check_in', '<', $checkOut)
-                  ->where('check_out', '>', $checkIn);
-            })
-            ->exists();
-
-        if ($isOverlap) {
-            return back()->withErrors([
-                'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
-            ])->withInput();
-        }
-
-        // MAINTENANCE CHECK — cek villa sedang di-maintenance di rentang tanggal ini
         if ($this->maintenanceService->isVillaBlocked($villa->villaID, $checkIn, $checkOut)) {
             return back()->withErrors([
                 'check_in' => 'Villa sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.',
             ])->withInput();
         }
 
-        // Hitung total price PER MALAM berdasarkan klasifikasi hari masing-masing
-        $totalPrice = $this->calculateTotalPrice(
-            $villa->villaID,
-            $checkIn,
-            $checkOut
-        );
-        $booking = DB::transaction(function () use ($request, $villa, $nights, $totalPrice) {
+        $totalPrice = $this->calculateTotalPrice($villa->villaID, $checkIn, $checkOut);
+
+        $booking = DB::transaction(function () use ($request, $villa, $checkIn, $checkOut, $nights, $totalPrice) {
+
+            Villa::where('villaID', $villa->villaID)->lockForUpdate()->first();
+
+            $isOverlap = Booking::where('villaID', $villa->villaID)
+                ->locking()
+                ->where(function ($q) use ($checkIn, $checkOut) {
+                    $q->where('check_in', '<', $checkOut)
+                    ->where('check_out', '>', $checkIn);
+                })
+                ->exists();
+
+            if ($isOverlap) {
+                return null;
+            }
 
             $booking = Booking::create([
                 'villaID'      => $villa->villaID,
@@ -97,7 +89,7 @@ class BookingController extends Controller
                 'guest_name'   => $request->guest_name,
                 'guest_phone'  => $request->guest_phone,
                 'status'       => 'pending',
-                'expires_at'   => now()->addMinutes(15), // ditambahkan, batas waktu bayar
+                'expires_at'   => now()->addMinutes(15),
             ]);
 
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
@@ -105,8 +97,13 @@ class BookingController extends Controller
             return $booking;
         });
 
-        // app(FonnteService::class)->sendNewBookingAlert($booking); // dinonaktifkan sementara, pindah ke webhook pembayaran
-        return redirect($this->signedUrl('booking.nota', $booking->bookingID)); // diubah, ke halaman nota
+        if (!$booking) {
+            return back()->withErrors([
+                'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
+            ])->withInput();
+        }
+
+        return redirect($this->signedUrl('booking.nota', $booking->bookingID));
     }
 
     // ---------------------------------------------------------------
@@ -181,20 +178,26 @@ class BookingController extends Controller
 
     public function pay(string $bookingID, MidtransService $midtrans)
     {
-        $booking = Booking::with('villa')->where('bookingID', $bookingID)->firstOrFail();
-
-        if ($booking->status !== 'pending' || $booking->expires_at?->isPast()) {
-            return response()->json(['error' => 'Waktu pembayaran sudah habis, silakan booking ulang.'], 410);
-        }
-
         try {
-            $midtrans->createQris($booking);
+            $booking = DB::transaction(function () use ($bookingID, $midtrans) { // transaksi supaya baris booking terkunci selama QR dibuat
+                $booking = Booking::with('villa')->where('bookingID', $bookingID)->lockForUpdate()->firstOrFail(); // panggilan kedua menunggu, lalu melihat qris_url sudah terisi
+
+                if ($booking->status !== 'pending' || $booking->expires_at?->isPast()) {
+                    return null; // sudah tidak bisa dibayar
+                }
+
+                $midtrans->createQris($booking);
+
+                return $booking->refresh();
+            });
         } catch (\Throwable $e) {
             report($e);
             return response()->json(['error' => 'Gagal membuat QRIS, silakan coba lagi.'], 502);
         }
 
-        $booking->refresh();
+        if (!$booking) { // baris baru
+            return response()->json(['error' => 'Waktu pembayaran sudah habis, silakan booking ulang.'], 410);
+        }
 
         return response()->json([
             'qr_url'     => $this->signedUrl('booking.qr', $bookingID),

@@ -11,11 +11,9 @@ use Filament\Widgets\ChartWidget;
 class OkupansiVillaChart extends ChartWidget
 {
     protected ?string $heading = 'Tingkat Okupansi Villa';
-    protected static ?int $sort = 4; // taruh setelah widget lain, sesuaikan urutan
+    protected static ?int $sort = 3;
     protected ?string $maxHeight = '400px';
     protected int | string | array $columnSpan = 1;
-
-    // filter dropdown, sama pola dengan chart lain di dashboard
     public ?string $filter = 'this_month';
 
     protected function getFilters(): ?array

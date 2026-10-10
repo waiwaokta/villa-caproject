@@ -14,7 +14,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class BookingTerakhir extends BaseWidget
 {
     protected static ?string $heading = 'Booking Terbaru';
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 6;
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
@@ -59,13 +59,15 @@ class BookingTerakhir extends BaseWidget
                     ->formatStateUsing(fn($state) => match($state) {
                         'pending'  => 'Menunggu',
                         'approved' => 'Disetujui',
-                        'rejected' => 'Ditolak',
+                        'cancelled' => 'Dibatalkan',
                         default    => $state,
                     })
                     ->color(fn($state) => match($state) {
                         'pending'  => 'warning',
                         'approved' => 'success',
                         'rejected' => 'danger',
+                        'cancelled' => 'danger', 
+                        'expired'   => 'gray',
                         default    => 'gray',
                     }),
             ])
