@@ -27,7 +27,7 @@
                 <div id="qrisBox" hidden>
                     <img id="qrisImg" alt="QRIS" width="200" hidden>
                     <div id="qrisPlaceholder" class="qris-placeholder">Membuat kode QRIS</div>
-                    <p>Scan dengan aplikasi bank atau e-wallet.</p>
+                    <p>Scan dengan aplikasi bank atau e&#8209;wallet.</p>
                     <p id="payState">Menunggu pembayaran...</p>
                 </div>
             </div>

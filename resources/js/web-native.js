@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initVillaSearchDateGuard();
     initTickerCardVilla();
     initNotaPage();
+    initLoadingButtons();
 });
 
     function getTodayLocal() {
@@ -131,6 +132,7 @@ function initSearchFilter() {
     }
 
     window.doSearch = function () {
+        setButtonLoading(searchBtn, true, 'Mencari...');
         const lokasi   = document.getElementById('filter-lokasi').value;
         const checkin  = document.getElementById('filter-checkin').value;
         const checkout = document.getElementById('filter-checkout').value;
@@ -182,11 +184,24 @@ function initVillaSearchDateGuard() {
 function initNavHamburger() {
     const hamburger = document.querySelector('.nav-hamburger');
     const mobileMenu = document.querySelector('.nav-mobile-menu');
-    if (!hamburger || !mobileMenu) return;
+    const backdrop = document.querySelector('.nav-backdrop');
+    if (!hamburger || !mobileMenu || !backdrop) return;
 
-    hamburger.addEventListener('click', () => {
-        mobileMenu.classList.toggle('open');
-    });
+    const icon = hamburger.querySelector('i');
+
+    function setMenu(open) {
+        mobileMenu.classList.toggle('open', open);
+        backdrop.classList.toggle('open', open);
+        hamburger.classList.toggle('active', open);
+        hamburger.setAttribute('aria-expanded', open);
+        icon.className = open ? 'ti ti-x' : 'ti ti-menu-2';
+    }
+
+    hamburger.addEventListener('click', () => setMenu(!mobileMenu.classList.contains('open')));
+    backdrop.addEventListener('click', () => setMenu(false));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 768) setMenu(false); });
 }
 
 // ============================================
@@ -277,10 +292,10 @@ function initAvailabilityCalendar() {
             const isOccupied = occupiedDates.includes(dateStr);
 
             let cls = 'cal-day ';
-            if (isToday)         cls += 'cal-day-today';
-            else if (isPast)     cls += 'cal-day-past';
-            else if (isOccupied) cls += 'cal-day-occupied';
-            else                 cls += 'cal-day-available';
+            if (isOccupied && !isPast) cls += 'cal-day-occupied' + (isToday ? ' cal-day-is-today' : '');
+            else if (isToday)          cls += 'cal-day-today';
+            else if (isPast)           cls += 'cal-day-past';
+            else                       cls += 'cal-day-available';
 
             html += `<div class="${cls}">${d}</div>`;
         }
@@ -438,6 +453,14 @@ function initBookingForm() {
     const checkInInput  = document.getElementById('inputCheckIn');
     const checkOutInput = document.getElementById('inputCheckOut');
     const villaID       = document.querySelector('[name="villaID"]').value;
+    const alertBox = document.querySelector('.date-taken-alert');
+    if (alertBox) alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    document.querySelector('[data-focus-date]')?.addEventListener('click', () => {
+        checkInInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        checkInInput.focus();
+        if (checkInInput.showPicker) { try { checkInInput.showPicker(); } catch (e) {} }
+    });
 
     function syncCheckOutFromCheckIn() {
         const todayStr = getTodayLocal();
@@ -464,6 +487,26 @@ function initBookingForm() {
     } else if (!checkOutInput.value) {
         syncCheckOutFromCheckIn();
     }
+
+    // VALIDASI NOMOR WHATSAPP di browser
+    const phoneInput = form.querySelector('[name="guest_phone"]');
+    const phoneError = document.getElementById('phoneError');
+    const validPhone = v => /^(\+62|62|0)8[0-9]{8,12}$/.test(v.replace(/[\s-]/g, '')); // 08xx atau 628xx, total minimal 10 digit
+
+    function showPhoneError(show) {
+        phoneError.textContent = show ? 'Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx dengan minimal 10 digit.' : '';
+        phoneError.style.display = show ? 'block' : 'none';
+        phoneInput.classList.toggle('input-error', show);
+    }
+
+    phoneInput.addEventListener('input', () => { if (validPhone(phoneInput.value)) showPhoneError(false); }); // pesan hilang begitu nomor benar
+
+    form.addEventListener('submit', e => {
+        if (validPhone(phoneInput.value)) return;
+        e.preventDefault(); // submit dibatalkan, tombol juga tidak masuk loading
+        showPhoneError(true);
+        phoneError.scrollIntoView({ behavior: 'smooth', block: 'center' }); // pesan di atas kolom tanggal langsung terlihat
+    });
 
     fetchEstimate();
 
@@ -614,6 +657,7 @@ function initNotaPage() {
 
     document.getElementById('leaveGo').addEventListener('click', async () => {
         leaving = true;
+        setButtonLoading(document.getElementById('leaveGo'), true, 'Membatalkan...');
         try {
             await fetch(cancelUrl, {
                 method: 'POST',
@@ -661,6 +705,7 @@ function initNotaPage() {
     }
 
     btnPay.addEventListener('click', async () => {
+        setButtonLoading(btnPay, true, 'Membuat QRIS...');
         btnPay.disabled = true;
         qrisBox.hidden = false;
         holder.hidden = false;
@@ -676,12 +721,101 @@ function initNotaPage() {
 
             expires = new Date(data.expires_at); // batas waktu diperpanjang sejak QR dibuat
             showQr(data.qr_url);
+            setButtonLoading(btnPay, false);
         } catch (err) {
             console.error('Gagal membuat QRIS', err);
             holder.textContent = err.message;
             btnPay.disabled = false;
+            setButtonLoading(btnPay, false);
         }
     });
 
     if (qrUrl) showQr(qrUrl); // halaman di-reload setelah QR dibuat
+}
+
+// ============================================
+// LOADING TOMBOL — dipakai semua halaman
+// ============================================
+const LOADING_TEXT = {
+    'btn-submit-booking': 'Memproses booking...',
+};
+
+const LOADING_ICON_ONLY = ['btn-cek-booking', 'search-btn'];
+
+function loadingLabelFor(btn) {
+    if (!btn) return 'Memproses...';
+    if (btn.dataset.loadingText) return btn.dataset.loadingText;
+    const key = Object.keys(LOADING_TEXT).find(c => btn.classList.contains(c));
+    return key ? LOADING_TEXT[key] : 'Memproses...';
+}
+
+function setButtonLoading(btn, on, text) {
+    if (!btn) return;
+
+    if (on) {
+        if (btn.classList.contains('is-loading')) return; // sudah loading, abaikan
+        const iconOnly = btn.hasAttribute('data-loading-icon') || LOADING_ICON_ONLY.some(c => btn.classList.contains(c)); // data-loading-icon untuk tombol lain di blade
+        btn.dataset.originalHtml = btn.innerHTML; // simpan isi asli untuk dipulihkan
+
+        if (iconOnly) {
+            btn.style.width  = btn.offsetWidth + 'px'; // lebar dikunci persis, tombol tidak berubah ukuran
+            btn.style.height = btn.offsetHeight + 'px'; // tinggi juga dikunci
+            btn.setAttribute('aria-label', 'Memuat'); // pembaca layar tetap tahu tombol sedang bekerja
+        } else {
+            btn.style.minWidth = btn.offsetWidth + 'px'; // tombol bertulisan: lebar minimum dikunci
+        }
+
+        btn.classList.add('is-loading');
+        btn.setAttribute('aria-busy', 'true');
+        if (!btn.form) btn.disabled = true; // tombol non-form dinonaktifkan penuh, tombol submit dijaga lewat flag form
+
+        const inner   = document.createElement('span');
+        const spinner = document.createElement('span');
+        inner.className   = 'btn-loading-inner';
+        spinner.className = 'btn-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        inner.append(spinner);
+
+        if (!iconOnly) { // teks status hanya untuk tombol yang bukan icon-only
+            const label = document.createElement('span');
+            label.textContent = text || loadingLabelFor(btn);
+            inner.append(label);
+        }
+
+        btn.replaceChildren(inner);
+    } else {
+        if (!btn.classList.contains('is-loading')) return;
+        btn.innerHTML = btn.dataset.originalHtml ?? btn.innerHTML;
+        delete btn.dataset.originalHtml;
+        btn.style.width = '';
+        btn.style.height = '';
+        btn.style.minWidth = '';
+        btn.removeAttribute('aria-label');
+        btn.classList.remove('is-loading');
+        btn.removeAttribute('aria-busy');
+        if (!btn.form) btn.disabled = false;
+    }
+}
+
+function initLoadingButtons() {
+    document.addEventListener('submit', e => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || form.hasAttribute('data-no-loading')) return;
+        if (e.defaultPrevented) return;
+
+        if (form.dataset.submitting === '1') {
+            e.preventDefault();
+            return;
+        }
+        form.dataset.submitting = '1';
+
+        const btn = e.submitter || form.querySelector('[type="submit"]');
+        setButtonLoading(btn, true);
+    });
+
+    window.addEventListener('pageshow', e => {
+        if (!e.persisted) return;
+        document.querySelectorAll('.is-loading').forEach(b => setButtonLoading(b, false));
+        document.querySelectorAll('form[data-submitting]').forEach(f => delete f.dataset.submitting);
+    });
 }

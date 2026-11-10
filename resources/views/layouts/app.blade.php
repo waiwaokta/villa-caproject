@@ -31,25 +31,48 @@
     <div class="site">
         <nav class="nav">
             <a href="/" class="nav-brand">
-                <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="nav-brand-img"> {{-- DIUBAH — class khusus nav, bukan pakai footer-logo-img --}}
-                <span class="nav-brand-text">NginapYuk</span> {{-- DITAMBAHKAN — bungkus teks --}}
+                <img src="{{ asset('images/NginapYuk_Logo.png') }}" alt="Wisma PLN" class="nav-brand-img">
+                <span class="nav-brand-text">NginapYuk</span>
             </a>
+
             <div class="nav-links">
                 <a href="{{ route('villa.search') }}">VILLA</a>
                 <a href="{{ route('tentang') }}">TENTANG</a>
                 <a href="{{ route('kontak') }}">KONTAK</a>
             </div>
+
             <a href="/cek-booking" class="nav-btn">CEK BOOKING</a>
-            <button class="nav-hamburger">
+
+            <button class="nav-hamburger" type="button" aria-label="Buka menu" aria-expanded="false">
                 <i class="ti ti-menu-2"></i>
             </button>
+
+            {{-- Panel menu mobile --}}
+            <div class="nav-mobile-menu">
+                <a href="{{ route('villa.search') }}" class="{{ request()->routeIs('villa.*') ? 'active' : '' }}">
+                    <span class="nm-icon"><i class="ti ti-home-2"></i></span>
+                    <span class="nm-text">Villa</span>
+                    <i class="ti ti-chevron-right nm-arrow"></i>
+                </a>
+                <a href="{{ route('tentang') }}" class="{{ request()->routeIs('tentang') ? 'active' : '' }}">
+                    <span class="nm-icon"><i class="ti ti-info-circle"></i></span>
+                    <span class="nm-text">Tentang</span>
+                    <i class="ti ti-chevron-right nm-arrow"></i>
+                </a>
+                <a href="{{ route('kontak') }}" class="{{ request()->routeIs('kontak') ? 'active' : '' }}">
+                    <span class="nm-icon"><i class="ti ti-phone"></i></span>
+                    <span class="nm-text">Kontak</span>
+                    <i class="ti ti-chevron-right nm-arrow"></i>
+                </a>
+
+                <a href="{{ route('booking.cek') }}" class="nav-mobile-cta">
+                    <i class="ti ti-calendar-search"></i>
+                    <span>Cek Booking</span>
+                </a>
+            </div>
         </nav>
-        <div class="nav-mobile-menu">
-            <a href="{{ route('villa.search') }}">VILLA</a>
-            <a href="{{ route('tentang') }}">TENTANG</a>
-            <a href="{{ route('kontak') }}">KONTAK</a>
-            <a href="/cek-booking">CEK BOOKING</a>
-        </div>
+
+        <div class="nav-backdrop"></div>
 
         <main style="min-height: calc(100vh - 62px - 380px);">
             @yield('content')
@@ -58,30 +81,43 @@
         <footer class="footer-new">
             <div class="footer-gradient-wrap">
                 <div class="footer-main">
+                {{-- KIRI: brand, kontak, social media --}}
+                <div class="footer-col footer-col-brand">
+                    <a href="/" class="footer-logo">
+                        <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="footer-logo-img">
+                        <span class="footer-logo-text">NginapYuk</span>
+                    </a>
 
-                    {{-- KIRI — Brand, deskripsi, social media --}}
-                    <div class="footer-col footer-col-brand">
-                        <a href="/" class="footer-logo">
-                            <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="footer-logo-img">
-                            <span class="footer-logo-text">NginapYuk</span>
-                        </a>
-                        <p class="footer-desc">
-                            Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.
-                        </p>
-                        <div class="footer-address">
-                            <i class="ti ti-map-pin"></i>
-                            <span>Jl. Embong Trengguli No.19-21, Embong Kaliasin, Kec. Genteng, Surabaya, Jawa Timur 60271</span>
-                        </div>
-
-                        <p class="footer-social-label">Ikuti kami di sosial media</p>
-                        <div class="footer-social">
-                            <a href="https://www.instagram.com/plndistribusijatim/" target="_blank" rel="noopener" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
-                            <a href="https://x.com/plndisjatim" target="_blank" rel="noopener" aria-label="X"><i class="ti ti-brand-x"></i></a>
-                            <a href="https://www.facebook.com/p/PLN-Distribusi-Jawa-Timur-100064407082737/?locale=id_ID" target="_blank" rel="noopener" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+                    <div class="footer-contact-wrap">
+                        <p class="footer-col-title">Kontak Kami</p>
+                        <div class="footer-contact">
+                            <div class="footer-address">
+                                <i class="ti ti-map-pin"></i>
+                                <span>Jl. /////// //////. /////, Kec. ....., /////, ///////</span>
+                            </div>
+                            <div class="footer-address">
+                                <i class="ti ti-phone"></i>
+                                <span>[Nomor Telepon]</span>
+                            </div>
+                            <div class="footer-address">
+                                <i class="ti ti-mail"></i>
+                                <span>[Alamat Email]</span>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- TENGAH-KANAN — 2 kolom link --}}
+                    <div class="footer-social-wrap">
+                        <p class="footer-social-label">Ikuti kami di sosial media</p>
+                        <div class="footer-social">
+                            <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+                            <a href="https://x.com" target="_blank" rel="noopener" aria-label="X"><i class="ti ti-brand-x"></i></a>
+                            <a href="https://www.facebook.com/p" target="_blank" rel="noopener" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- KANAN: pilihan halaman (dibungkus supaya bisa dipindah urutannya di mobile) --}}
+                <div class="footer-links">
                     <div class="footer-col">
                         <p class="footer-col-title">VILLA</p>
                         <a href="{{ route('villa.search') }}">Villa</a>
@@ -94,13 +130,14 @@
                         <a href="{{ route('kontak') }}">Kontak</a>
                     </div>
                 </div>
+            </div>
                 
                 {{-- BOTTOM BAR — copyright + kebijakan, warna beda --}}
                 <div class="footer-bottom">
-                    <span class="footer-copyright">© {{ date('Y') }} PT PLN (Persero). Hak cipta dilindungi.</span>
+                    <span class="footer-copyright">© {{ date('Y') }} NginapYuk. Hak cipta dilindungi.</span>
                     <div class="footer-bottom-links">
-                        <a href="#">Kebijakan Privasi</a>
-                        <a href="#">Syarat & Ketentuan</a>
+                        <a href="{{ route('kebijakan') }}">Kebijakan Privasi</a>
+                        <a href="{{  route('syarat') }}">Syarat & Ketentuan</a>
                     </div>
                 </div>
             </div>

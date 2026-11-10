@@ -32,8 +32,8 @@
         </p>
 
         <div class="confirm-actions">
-            <a href="{{ $receiptUrl }}" class="btn-cek-status"><i class="ti ti-download"></i> Unduh Nota (PDF)</a>
-            <a href="{{ route('booking.cek') }}" class="btn-cek-status"><i class="ti ti-search"></i> Cek Status Booking</a>
+            <a href="{{ $receiptUrl }}" class="btn-cek-status"><i class="ti ti-download"></i> Unduh Nota</a>
+            <a href="{{ route('booking.cek') }}" class="btn-cek-status"><i class="ti ti-search"></i> Cek Status</a>
             <a href="/" class="btn-back-home"><i class="ti ti-home"></i> Kembali ke Beranda</a>
         </div>
     </div>

@@ -15,16 +15,22 @@
     </div>
 
     <form id="bookingForm" action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data" class="booking-form">
-        @if ($errors->any())
-    <div class="form-error" style="display:block; margin-bottom:20px;">
-        <strong>Ditemukan kesalahan:</strong>
-        <ul style="margin-top:8px; padding-left:18px;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+                @if ($errors->has('date_taken'))
+            <div class="date-taken-alert" role="alert">
+                <div class="date-taken-icon"><i class="ti ti-calendar-x"></i></div>
+                <div class="date-taken-body">
+                    <h3>Tanggal sudah dibooking tamu lain</h3>
+                    <p>Tanggal yang Anda pilih baru saja diambil tamu lain, jadi booking Anda belum dibuat dan belum ada pembayaran yang diproses. Silakan pilih tanggal lain atau cek kalender ketersediaan villa.</p>
+                    <p class="date-taken-note">Data diri Anda sudah terisi kembali, tetapi foto KTP perlu dipilih ulang.</p>
+                    <div class="date-taken-actions">
+                        <button type="button" class="btn-back-home" data-focus-date><i class="ti ti-calendar-event"></i> Pilih Tanggal Lain</button>
+                        <a href="/villa/{{ $villa->villaID }}#ketersediaan" class="btn-cek-status"><i class="ti ti-calendar-search"></i> Lihat Ketersediaan</a>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @php $otherErrors = collect($errors->getMessages())->except('date_taken')->flatten(); @endphp {{-- error lain tetap tampil sebagai daftar --}}
         @csrf
         <input type="hidden" name="villaID" value="{{ $villa->villaID }}">
 
@@ -34,14 +40,28 @@
                 {{-- STEP 1: TANGGAL --}}
                 <div class="form-section">
                     <h2><span class="step-badge">1</span> Pilih Tanggal</h2>
+                    <div class="form-errors-slot"> {{-- semua pesan error form dikumpulkan di sini, di atas kolom tanggal --}}
+                        @if ($otherErrors->isNotEmpty())
+                            <div class="form-error" role="alert">
+                                <strong>Periksa kembali data Anda:</strong>
+                                <ul>
+                                    @foreach ($otherErrors as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <div id="dateError" class="form-error" style="display:none;"></div>
+                        <div id="phoneError" class="form-error" style="display:none;"></div>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Check-in</label>
-                            <input type="date" name="check_in" id="inputCheckIn" required min="{{ date('Y-m-d') }}" value="{{ $prefillCheckIn }}">
+                            <input type="date" name="check_in" id="inputCheckIn" required min="{{ date('Y-m-d') }}" value="{{ old('check_in', $prefillCheckIn) }}" class="{{ $errors->has('date_taken') ? 'input-error' : '' }}">
                         </div>
                         <div class="form-group">
                             <label>Check-out</label>
-                            <input type="date" name="check_out" id="inputCheckOut" required min="{{ date('Y-m-d', strtotime('+1 day')) }}" value="{{ $prefillCheckOut }}"> {{-- DIUBAH: tambah atribut min --}}
+                            <input type="date" name="check_out" id="inputCheckOut" required min="{{ date('Y-m-d', strtotime('+1 day')) }}" value="{{ $prefillCheckOut }}" class="{{ $errors->has('date_taken') ? 'input-error' : '' }}">
                         </div>
                     </div>
                     <p class="form-hint"><i class="ti ti-info-circle"></i> Check-in mulai 14:00, check-out maksimal 12:00</p>
@@ -53,17 +73,15 @@
                     <h2><span class="step-badge">2</span> Data Pemesan</h2>
                     <div class="form-group">
                         <label>Nama Lengkap</label>
-                        <input type="text" name="guest_name" required maxlength="255" placeholder="Nama sesuai KTP">
+                        <input type="text" name="guest_name" required maxlength="255" placeholder="Nama sesuai KTP" value="{{ old('guest_name') }}">                    
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>No. WhatsApp Aktif</label>
-                            <input type="text" name="guest_phone" required maxlength="15" placeholder="08123456789">
-                        </div>
-                        <div class="form-group" id="docKtpWrap"> {{-- DIUBAH: dipindah ke sebelah WhatsApp, Step 3 dihapus --}}
+                            <input type="text" name="guest_phone" required maxlength="15" inputmode="tel" placeholder="08123456789" value="{{ old('guest_phone') }}" class="{{ $errors->has('guest_phone') ? 'input-error' : '' }}"> {{-- inputmode memunculkan keypad angka di HP --}}                        </div>
+                        <div class="form-group" id="docKtpWrap">
                             <label>Foto/Scan KTP</label>
-                            <input type="file" name="doc_ktp" accept=".jpg,.jpeg,.png" required> {{-- DIUBAH: tambah required, hanya gambar --}}
-                            <p class="form-hint">Format JPG atau PNG. Maks 2MB.</p> {{-- DIUBAH: PDF dihapus --}}
+                            <input type="file" name="doc_ktp" accept=".jpg,.jpeg,.png" required>
                         </div>
                     </div>
                 </div>

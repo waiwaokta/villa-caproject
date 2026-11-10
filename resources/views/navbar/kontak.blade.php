@@ -24,7 +24,7 @@
                 </div>
                 <h2>Hubungi Kami melalui WhatsApp</h2>
                 <p class="kontak-box-sub">Untuk respons yang lebih cepat, langsung chat kami melalui WhatsApp.</p>
-                <a href="https://wa.me/6281226387922" target="_blank" rel="noopener" class="btn-whatsapp">
+                <a href="https://wa.me/62" target="_blank" rel="noopener" class="btn-whatsapp">
                     <i class="ti ti-brand-whatsapp"></i> Chat via WhatsApp
                 </a>
             </div>

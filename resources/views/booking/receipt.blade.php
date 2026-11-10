@@ -9,24 +9,24 @@
     <title>Nota {{ $booking->bookingID }}</title>
     <style>
         @page { margin: 30px 34px; }
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 10.5px; color: #1f2937; }
+        body { font-family: 'Jakarta Sans', sans-serif; font-size: 12px; color: #1f2937; }
         table { width: 100%; border-collapse: collapse; }
         .head td { padding: 0; vertical-align: middle; }
         .brand { font-size: 17px; font-weight: bold; color: #0f766e; }
-        .doc-title { text-align: right; font-size: 12px; font-weight: bold; letter-spacing: 1px; }
+        .doc-title { text-align: right; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
         .line { border-top: 2px solid #0f766e; margin: 10px 0 14px; }
         .code-box { border: 1px solid #99f6e4; background: #f0fdfa; padding: 10px; text-align: center; margin-bottom: 14px; }
-        .code-label { font-size: 9px; color: #6b7280; letter-spacing: 1px; }
-        .code-value { font-size: 17px; font-weight: bold; letter-spacing: 1px; margin-top: 3px; }
-        .section { font-size: 9px; font-weight: bold; color: #0f766e; letter-spacing: 1px; margin: 14px 0 2px; }
+        .code-label { font-size: 11px; color: #6b7280; letter-spacing: 1px; }
+        .code-value { font-size: 18px; font-weight: bold; letter-spacing: 1px; margin-top: 3px; }
+        .section { font-size: 12px; font-weight: bolder; color: #0f766e; letter-spacing: 0.25px; margin: 14px 0 2px; }
         .rows td { padding: 6px 0; border-bottom: 1px dashed #d1d5db; vertical-align: top; }
-        .rows td.label { width: 36%; color: #6b7280; }
+        .rows td.label { width: 36%; color: #6b7280; font-weight: 700;}
         .rows td.value { text-align: right; font-weight: bold; }
         .total td { padding: 14px 0 0; vertical-align: middle; }
         .total .label { font-size: 11px; color: #6b7280; }
         .total .amount { text-align: right; font-size: 16px; font-weight: bold; color: #0f766e; }
         .badge { background: #dcfce7; color: #166534; padding: 3px 10px; font-weight: bold; font-size: 10px; }
-        .footer { margin-top: 24px; text-align: center; font-size: 9px; color: #6b7280; line-height: 1.5; }
+        .footer { margin-top: 96px; text-align: center; font-size: 9px; color: #6b7280; line-height: 1.5; }
     </style>
 </head>
 <body>

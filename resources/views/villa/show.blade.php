@@ -76,7 +76,7 @@
             @endif
 
             {{-- KALENDER AVAILABILITY --}}
-            <div class="villa-section">
+            <div class="villa-section" id="ketersediaan">
                 <h2>Ketersediaan</h2>
                 <p class="section-sub">Tanggal berwarna merah artinya sudah dibooking</p>
 
@@ -111,6 +111,7 @@
                 </div>
 
                 <div class="calendar-legend">
+                    <span><i class="legend-dot legend-today"></i> Hari ini</span>
                     <span><i class="legend-dot legend-available"></i> Tersedia</span>
                     <span><i class="legend-dot legend-occupied"></i> Sudah dibooking</span>
                     <span><i class="legend-dot legend-past"></i> Tanggal lewat</span>
@@ -124,7 +125,7 @@
                 <h3>Daftar Harga</h3>
                 <div class="price-table">
                     <div class="price-row price-row-header">
-                        <span></span>
+                        <span>Hari</span>
                         <span>Harga</span>
                     </div>
                     @foreach(['weekday' => 'Senin–Jumat', 'weekend' => 'Sabtu–Minggu', 'holiday' => 'Libur Panjang'] as $type => $label)

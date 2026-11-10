@@ -38,8 +38,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->booted(function () {
 
-        // // Rate limit booking — 3x per menit per IP
-        // RateLimiter::for('booking', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+        // Rate limit booking — 3x per menit per IP
+        RateLimiter::for('booking', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         // Rate limit cek-booking — 10x per menit per IP
         RateLimiter::for('cek-booking', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));

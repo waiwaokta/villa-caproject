@@ -105,7 +105,7 @@
                             </p>
                         @endif
                         @if($villa->desc)
-                            <p class="villa-card-desc">{{ Str::limit($villa->desc, 120) }}</p>
+                            <p class="villa-card-desc">{{ Str::limit($villa->desc, 30) }}</p>
                         @endif
                         <div class="villa-card-footer">
                             @if($harga)

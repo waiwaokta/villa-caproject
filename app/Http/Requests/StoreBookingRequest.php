@@ -18,7 +18,7 @@ class StoreBookingRequest extends FormRequest
             'villaID'     => 'required|string|exists:villas,villaID',
 
             'guest_name'  => 'required|string|max:255',
-            'guest_phone' => ['required', 'string', 'max:15', 'regex:/^[0-9+\-\s]+$/'],
+            'guest_phone' => ['required', 'regex:/^(\+62|62|0)8[0-9]{8,12}$/'],
 
             'check_in'    => 'required|date|after_or_equal:today',
             'check_out'   => 'required|date|after:check_in',
@@ -59,11 +59,16 @@ class StoreBookingRequest extends FormRequest
         return [
             'required'                => ':attribute wajib diisi.',
             'villaID.exists'          => 'Villa tidak ditemukan.',
-            'guest_phone.regex'       => 'Format nomor WhatsApp tidak valid.',
+            'guest_phone.regex'       => 'Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx dengan minimal 10 digit.',
             'check_in.after_or_equal' => 'Tanggal check-in tidak boleh sebelum hari ini.',
             'check_out.after'         => 'Tanggal check-out harus setelah check-in.',
             'doc_ktp.mimes'           => 'Foto KTP harus berformat JPG atau PNG.',
             'doc_ktp.max'             => 'Ukuran foto KTP maksimal 2MB.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['guest_phone' => preg_replace('/[\s\-]/', '', (string) $this->guest_phone)]); // spasi dan strip dibuang sebelum validasi
     }
 }

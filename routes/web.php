@@ -12,6 +12,23 @@ use App\Http\Controllers\CekBookingController;
 // Beranda
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
+// Halaman statis
+Route::get('/tentang', function () {
+    return view('navbar.tentang');
+})->name('tentang');
+Route::view('/syarat', 'navbar.syarat')->name('syarat');
+Route::view('/kebijakan', 'navbar.kebijakan')->name('kebijakan');
+
+// Kontak
+Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
+Route::post('/kontak', [ContactController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('kontak.store');
+
+if (app()->environment('local')) {
+    Route::get('/_err/{code}', fn (int $code) => abort($code))->where('code', '[0-9]+'); // sementara untuk pratinjau, hapus sebelum commit
+}
+
 // Detail villa
 Route::get('/villa/{villaID}', [VillaController::class, 'show'])
     ->name('villa.show');
@@ -29,7 +46,6 @@ Route::get('/booking/{villaID}', [BookingController::class, 'create'])
     ->name('booking.create');
 
 Route::post('/booking', [BookingController::class, 'store'])
-    ->middleware('throttle:3,1')
     ->name('booking.store');
 
 // Konfirmasi booking berhasil dikirim — DITAMBAHKAN, sebelumnya tidak ada route untuk confirm.blade.php
@@ -64,18 +80,3 @@ Route::middleware('check.document.access')->group(function () {
 // API estimasi harga
 Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
     ->middleware('throttle:30,1');
-
-// Halaman statis
-Route::get('/tentang', function () {
-    return view('navbar.tentang');
-})->name('tentang');
-
-// Kontak
-Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
-Route::post('/kontak', [ContactController::class, 'store'])
-    ->middleware('throttle:5,1')
-    ->name('kontak.store');
-
-if (app()->environment('local')) {
-    Route::get('/_err/{code}', fn (int $code) => abort($code))->where('code', '[0-9]+'); // sementara untuk pratinjau, hapus sebelum commit
-}

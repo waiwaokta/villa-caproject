@@ -99,7 +99,7 @@ class BookingController extends Controller
 
         if (!$booking) {
             return back()->withErrors([
-                'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
+                'date_taken' => 'Tanggal yang dipilih sudah dibooking tamu lain.',
             ])->withInput();
         }
 
