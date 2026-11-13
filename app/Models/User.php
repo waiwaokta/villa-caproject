@@ -23,7 +23,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'notify_new_booking' => 'boolean',
+            'notify_new_book' => 'boolean',
         ];
     }
 }

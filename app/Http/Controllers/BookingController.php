@@ -6,136 +6,113 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\Document;
 use App\Models\Price;
-use App\Models\Wisma;
+use App\Models\Villa;
 use App\Services\DayTypeResolver;
-use App\Services\FonnteService;
 use App\Services\HolidayService;
-use App\Services\MaintenanceService; // ditambahkan
+use App\Services\MaintenanceService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use App\Services\MidtransService;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Support\Facades\Http;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BookingController extends Controller
 {
     public function __construct(
         private HolidayService $holidayService,
         private DayTypeResolver $dayTypeResolver,
-        private MaintenanceService $maintenanceService // ditambahkan
+        private MaintenanceService $maintenanceService
     ) {}
 
-    public function create(string $wismaID, Request $request)
+    public function create(string $villaID, Request $request)
     {
-        $wisma = Wisma::with(['prices'])
-            ->where('wismaID', $wismaID)
+        $villa = Villa::with(['prices'])
+            ->where('villaID', $villaID)
             ->where('is_active', true)
             ->firstOrFail();
 
         $prefillCheckIn  = $request->query('check_in');
         $prefillCheckOut = $request->query('check_out');
 
-        return view('booking.form', compact('wisma', 'prefillCheckIn', 'prefillCheckOut'));
+        return view('booking.form', compact('villa', 'prefillCheckIn', 'prefillCheckOut'));
     }
     public function store(StoreBookingRequest $request)
     {
-        $wisma = Wisma::where('wismaID', $request->wismaID)
+        $villa = Villa::where('villaID', $request->villaID)
             ->where('is_active', true)
             ->firstOrFail();
 
         $checkIn  = Carbon::parse($request->check_in);
         $checkOut = Carbon::parse($request->check_out);
-        $nights   = $checkIn->diffInDays($checkOut);
+        $nights   = (int) $checkIn->diffInDays($checkOut);
 
         if ($nights < 1) {
             return back()->withErrors(['check_out' => 'Minimal menginap 1 malam.']);
         }
 
-        // ⚠️ AVAILABILITY CHECK — cek tanggal sudah di-booking orang lain atau belum
-        // pending DAN approved sama-sama lock tanggal, rejected dianggap available
-        $isOverlap = Booking::where('wismaID', $wisma->wismaID)
-            ->whereIn('status', ['pending', 'approved'])
-            ->where(function ($q) use ($checkIn, $checkOut) {
-                $q->where('check_in', '<', $checkOut)
-                  ->where('check_out', '>', $checkIn);
-            })
-            ->exists();
-
-        if ($isOverlap) {
+        if ($this->maintenanceService->isVillaBlocked($villa->villaID, $checkIn, $checkOut)) {
             return back()->withErrors([
-                'check_in' => 'Tanggal yang dipilih sudah dibooking. Silakan pilih tanggal lain.',
+                'check_in' => 'Villa sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.',
             ])->withInput();
         }
 
-        // ⚠️ MAINTENANCE CHECK — cek wisma sedang di-maintenance di rentang tanggal ini
-        if ($this->maintenanceService->isWismaBlocked($wisma->wismaID, $checkIn, $checkOut)) { // ditambahkan
-            return back()->withErrors([ // ditambahkan
-                'check_in' => 'Wisma sedang dalam masa maintenance pada tanggal yang dipilih. Silakan pilih tanggal lain.', // ditambahkan
-            ])->withInput(); // ditambahkan
-        }
+        $totalPrice = $this->calculateTotalPrice($villa->villaID, $checkIn, $checkOut);
 
-        // Hitung total price PER MALAM berdasarkan klasifikasi hari masing-masing
-        $totalPrice = $this->calculateTotalPrice(
-            $wisma->wismaID,
-            $request->user_type,
-            $checkIn,
-            $checkOut
-        );
+        $booking = DB::transaction(function () use ($request, $villa, $checkIn, $checkOut, $nights, $totalPrice) {
 
-        
-        $booking = DB::transaction(function () use ($request, $wisma, $nights, $totalPrice,) {
+            Villa::where('villaID', $villa->villaID)->lockForUpdate()->first();
 
-        $booking = Booking::create([
-            'user_id'      => Auth::id(),
-            'wismaID'      => $wisma->wismaID,
-            'check_in'     => $request->check_in,
-            'check_out'    => $request->check_out,
-            'total_nights' => $nights,
-            'total_price'  => $totalPrice,
-            'user_type'    => $request->user_type,
-            'booking_type' => $request->booking_type,
-            'guest_name'   => $request->guest_name,
-            'guest_phone'  => $request->guest_phone,
-            'guest_ktp'    => $request->guest_ktp,
-            'employee_id'  => $request->employee_id,
-            'inst_name'    => $request->inst_name,
-            'inst_npwp'    => $request->inst_npwp,
-            'status'       => 'pending',
-        ]);
+            $isOverlap = Booking::where('villaID', $villa->villaID)
+                ->locking()
+                ->where(function ($q) use ($checkIn, $checkOut) {
+                    $q->where('check_in', '<', $checkOut)
+                    ->where('check_out', '>', $checkIn);
+                })
+                ->exists();
 
-        $this->uploadDocument($booking->bookingID, 'bukti_bayar', $request->file('doc_bukti_bayar'));
+            if ($isOverlap) {
+                return null;
+            }
 
-        if ($request->hasFile('doc_ktp')) {
+            $booking = Booking::create([
+                'villaID'      => $villa->villaID,
+                'check_in'     => $request->check_in,
+                'check_out'    => $request->check_out,
+                'total_nights' => $nights,
+                'total_price'  => $totalPrice,
+                'guest_name'   => $request->guest_name,
+                'guest_phone'  => $request->guest_phone,
+                'status'       => 'pending',
+                'expires_at'   => now()->addMinutes(15),
+            ]);
+
             $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp'));
+
+            return $booking;
+        });
+
+        if (!$booking) {
+            return back()->withErrors([
+                'date_taken' => 'Tanggal yang dipilih sudah dibooking tamu lain.',
+            ])->withInput();
         }
 
-        if ($request->hasFile('doc_npwp')) {
-            $this->uploadDocument($booking->bookingID, 'npwp', $request->file('doc_npwp'));
-        }
-
-        if ($request->hasFile('doc_id_pln')) {
-            $this->uploadDocument($booking->bookingID, 'id_pln', $request->file('doc_id_pln'));
-        }
-
-        if ($request->hasFile('doc_ktp_pln')) {
-            $this->uploadDocument($booking->bookingID, 'ktp', $request->file('doc_ktp_pln'));
-        }
-        return $booking;
-    });
-
-        app(FonnteService::class)->sendNewBookingAlert($booking);
-        return redirect()->route('booking.confirm', $booking->bookingID);
+        return redirect($this->signedUrl('booking.nota', $booking->bookingID));
     }
 
     // ---------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------
 
-    private function calculateTotalPrice(string $wismaID, string $userType, Carbon $checkIn, Carbon $checkOut): float
+    private function calculateTotalPrice(string $villaID, Carbon $checkIn, Carbon $checkOut): float
     {
-        $prices = Price::where('wismaID', $wismaID)
-            ->where('user_type', $userType)
+        $prices = Price::where('villaID', $villaID)
             ->get()
             ->keyBy('day_type');
 
@@ -149,7 +126,7 @@ class BookingController extends Controller
             $dayType = $this->dayTypeResolver->resolve($date, $holidayDates);
 
             if (!isset($prices[$dayType])) {
-                throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk wisma ini.");
+                throw new \RuntimeException("Harga untuk tipe hari '{$dayType}' belum diatur untuk villa ini.");
             }
 
             $total += (float) $prices[$dayType]->price;
@@ -172,13 +149,139 @@ class BookingController extends Controller
         ]);
     }
 
+    private function signedUrl(string $route, string $bookingID, int $minutes = 30): string
+    {
+        return URL::temporarySignedRoute($route, now()->addMinutes($minutes), ['bookingID' => $bookingID]);
+    }
+
+    public function nota(string $bookingID)
+    {
+        $booking = Booking::with('villa')->where('bookingID', $bookingID)->firstOrFail();
+
+        if ($booking->status === 'approved') {
+            return redirect($this->signedUrl('booking.confirm', $bookingID, 1440));
+        }
+        if ($booking->status !== 'pending' || $booking->expires_at?->isPast()) {
+            return redirect('/')->with('error', 'Waktu pembayaran habis, silakan booking ulang.');
+        }
+
+        return view('booking.nota', [
+            'booking'   => $booking,
+            'nights'    => $booking->total_nights,
+            'ktpUrl'    => $this->signedUrl('booking.ktp', $bookingID),
+            'statusUrl' => $this->signedUrl('booking.status', $bookingID),
+            'cancelUrl' => $this->signedUrl('booking.cancel', $bookingID),
+            'payUrl'    => $this->signedUrl('booking.pay', $bookingID),
+            'qrUrl'     => $booking->qris_url ? $this->signedUrl('booking.qr', $bookingID) : null,
+        ]);
+    }
+
+    public function pay(string $bookingID, MidtransService $midtrans)
+    {
+        try {
+            $booking = DB::transaction(function () use ($bookingID, $midtrans) { // transaksi supaya baris booking terkunci selama QR dibuat
+                $booking = Booking::with('villa')->where('bookingID', $bookingID)->lockForUpdate()->firstOrFail(); // panggilan kedua menunggu, lalu melihat qris_url sudah terisi
+
+                if ($booking->status !== 'pending' || $booking->expires_at?->isPast()) {
+                    return null; // sudah tidak bisa dibayar
+                }
+
+                $midtrans->createQris($booking);
+
+                return $booking->refresh();
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['error' => 'Gagal membuat QRIS, silakan coba lagi.'], 502);
+        }
+
+        if (!$booking) { // baris baru
+            return response()->json(['error' => 'Waktu pembayaran sudah habis, silakan booking ulang.'], 410);
+        }
+
+        return response()->json([
+            'qr_url'     => $this->signedUrl('booking.qr', $bookingID),
+            'expires_at' => $booking->expires_at->toIso8601String(),
+        ]);
+    }
+
+    public function qr(string $bookingID)
+    {
+        $booking = Booking::where('bookingID', $bookingID)->whereNotNull('qris_url')->firstOrFail();
+
+        $png = Http::timeout(10)->get($booking->qris_url);
+        abort_unless($png->successful(), 502);
+
+        return response($png->body(), 200, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    public function cancel(Request $request, string $bookingID, MidtransService $midtrans)
+    {
+        $booking = Booking::where('bookingID', $bookingID)->where('status', 'pending')->first();
+
+        if ($booking) {
+            $midtrans->sync($booking); // jaga-jaga kalau pembayaran baru saja masuk
+            $booking->refresh();
+
+            if ($booking->status === 'pending') {
+                $booking->update(['status' => 'cancelled']);
+                $midtrans->cancelQris($booking);
+            }
+        }
+
+        return $request->expectsJson()
+            ? response()->json(['ok' => true])
+            : redirect('/')->with('info', 'Booking dibatalkan.');
+    }
+
+    public function status(string $bookingID, MidtransService $midtrans)
+    {
+        $booking = Booking::where('bookingID', $bookingID)->firstOrFail();
+
+        $midtrans->sync($booking);
+        $booking->refresh();
+
+        return response()->json([
+            'status'    => $booking->status,
+            'redirect'  => $booking->status === 'approved' ? $this->signedUrl('booking.confirm', $bookingID, 1440) : null,
+            'qr_active' => (bool) $booking->qris_url, // false kalau QR hangus
+        ]);
+    }
+
+    public function ktp(string $bookingID)
+    {
+        $doc = Document::where('bookingID', $bookingID)->where('doc_type', 'ktp')->firstOrFail();
+
+        /** @var FilesystemAdapter $disk */
+        $disk = Storage::disk('private');
+        abort_unless($disk->exists($doc->file_path), 404);
+
+        return $disk->response($doc->file_path);
+    }
+
     public function confirm(string $bookingID)
     {
-        $booking = Booking::with('wisma:wismaID,name')
-            ->select(['bookingID', 'wismaID', 'check_in', 'check_out', 'guest_name'])
-            ->where('bookingID', $bookingID)
-            ->firstOrFail();
+        $booking = Booking::with('villa')->where('bookingID', $bookingID)->firstOrFail();
+        abort_unless($booking->status === 'approved', 403);
 
-        return view('booking.confirm', compact('booking'));
+        return view('booking.confirm', [
+            'booking'    => $booking,
+            'nights'     => $booking->total_nights,
+            'receiptUrl' => $this->signedUrl('booking.receipt', $bookingID, 1440),
+        ]);
+    }
+
+    public function receipt(string $bookingID)
+    {
+        $booking = Booking::with('villa')->where('bookingID', $bookingID)->firstOrFail();
+        abort_unless($booking->status === 'approved', 403); // nota hanya untuk booking yang sudah lunas
+
+        $pdf = Pdf::loadView('booking.receipt', ['booking' => $booking])
+            ->setPaper('a5', 'portrait');
+
+        return $pdf->download('Nota-' . $booking->bookingID . '.pdf');
     }
 }

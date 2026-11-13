@@ -8,28 +8,28 @@ use Carbon\Carbon;
 class MaintenanceService
 {
     /**
-     * Cek apakah wisma tertentu punya maintenance block yang overlap dengan rentang tanggal.
-     * wismaID null di tabel artinya berlaku untuk SEMUA wisma.
+     * Cek apakah villa tertentu punya maintenance block yang overlap dengan rentang tanggal.
+     * villaID null di tabel artinya berlaku untuk SEMUA villa.
      */
-    public function isWismaBlocked(string $wismaID, Carbon $checkIn, Carbon $checkOut): bool
+    public function isVillaBlocked(string $villaID, Carbon $checkIn, Carbon $checkOut): bool
     {
-        return Maintenance::where(function ($q) use ($wismaID) {
-                $q->where('wismaID', $wismaID)
-                  ->orWhereNull('wismaID');
+        return Maintenance::where(function ($q) use ($villaID) {
+                $q->where('villaID', $villaID)
+                  ->orWhereNull('villaID');
             })
             ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
             ->exists();
     }
 
     /**
-     * Ambil semua tanggal maintenance untuk 1 wisma dalam rentang tertentu (termasuk yang berlaku semua wisma).
+     * Ambil semua tanggal maintenance untuk 1 villa dalam rentang tertentu (termasuk yang berlaku semua villa).
      * Dipakai untuk kalender visual.
      */
-    public function getBlockedDatesForWisma(string $wismaID, Carbon $start, Carbon $end): array
+    public function getBlockedDatesForVilla(string $villaID, Carbon $start, Carbon $end): array
     {
-        return Maintenance::where(function ($q) use ($wismaID) {
-                $q->where('wismaID', $wismaID)
-                  ->orWhereNull('wismaID');
+        return Maintenance::where(function ($q) use ($villaID) {
+                $q->where('villaID', $villaID)
+                  ->orWhereNull('villaID');
             })
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->pluck('date')

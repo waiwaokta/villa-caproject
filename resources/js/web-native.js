@@ -1,15 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initSliderWisma();
+    initSliderVilla();
     initSearchFilter();
+    initCapacityFilter();
     initNavHamburger();
     initGallery();
     initLightbox();
     initAvailabilityCalendar();
     initBookingForm();
     initStatTicker();
-    initWismaCardClick();
-    initWismaSearchDateGuard();
-    initTickerCardWisma();
+    initVillaCardClick();
+    initVillaSearchDateGuard();
+    initTickerCardVilla();
+    initNotaPage();
+    initLoadingButtons();
 });
 
     function getTodayLocal() {
@@ -32,9 +35,9 @@ function initStatTicker() {
 }
 
     // ============================================
-    // SLIDER WISMA — beranda
+    // SLIDER VILLA — beranda
     // ============================================
-    function initSliderWisma() {
+    function initSliderVilla() {
     const fwWrap = document.getElementById('fwWrap');
     if (!fwWrap) return; // halaman ini tidak punya slider, skip
 
@@ -130,6 +133,7 @@ function initSearchFilter() {
     }
 
     window.doSearch = function () {
+        setButtonLoading(searchBtn, true, 'Mencari...');
         const lokasi   = document.getElementById('filter-lokasi').value;
         const checkin  = document.getElementById('filter-checkin').value;
         const checkout = document.getElementById('filter-checkout').value;
@@ -147,11 +151,11 @@ function initSearchFilter() {
 }
 
 // ============================================
-// VALIDASI TANGGAL — form cari wisma (/cari)
+// VALIDASI TANGGAL — form cari villa (/cari)
 // ============================================
-function initWismaSearchDateGuard() {
-    const form = document.querySelector('.wisma-box-standalone');
-    if (!form) return; // halaman ini tidak punya form cari wisma, skip
+function initVillaSearchDateGuard() {
+    const form = document.querySelector('.villa-box-standalone');
+    if (!form) return; // halaman ini tidak punya form cari villa, skip
 
     const checkinInput  = form.querySelector('[name="check_in"]');
     const checkoutInput = form.querySelector('[name="check_out"]');
@@ -176,20 +180,82 @@ function initWismaSearchDateGuard() {
 }
 
 // ============================================
+// KAPASITAS — beranda dan /cari, tersimpan sementara selama tab terbuka
+// ============================================
+function initCapacityFilter() {
+    const input = document.getElementById('filter-capacity');
+    if (!input) return;
+
+    const KEY = 'guest_capacity';
+    const store = {
+        get() { try { return sessionStorage.getItem(KEY) || ''; } catch (e) { return ''; } },
+        set(v) { try { v ? sessionStorage.setItem(KEY, v) : sessionStorage.removeItem(KEY); } catch (e) {} }
+    };
+
+    const saved = store.get();
+
+    if (input.value) {
+        // nilai sudah ada dari URL atau server, simpan
+        store.set(input.value);
+    } else if (saved) {
+        const isSearchPage = document.querySelector('.villa-box-standalone');
+        const params = new URLSearchParams(window.location.search);
+
+        if (isSearchPage && !params.has('capacity')) {
+            // masuk /cari lewat menu: tambahkan capacity ke URL supaya hasilnya ikut terfilter
+            params.set('capacity', saved);
+            window.location.replace(window.location.pathname + '?' + params.toString());
+            return;
+        }
+        if (!isSearchPage) input.value = saved; // beranda: isi kolom saja
+    }
+
+    // cegah karakter yang bukan angka bulat
+    input.addEventListener('keydown', e => {
+        if (['e', 'E', '+', '-', '.', ','].includes(e.key)) e.preventDefault();
+    });
+
+    input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '').slice(0, 3);
+        store.set(input.value); // kolom dikosongkan berarti simpanan ikut terhapus
+    });
+
+    input.addEventListener('blur', () => {
+        if (input.value !== '' && parseInt(input.value, 10) < 1) {
+            input.value = '';
+            store.set('');
+        }
+    });
+}
+
+// ============================================
 // NAV HAMBURGER — mobile menu, semua halaman
 // ============================================
 function initNavHamburger() {
     const hamburger = document.querySelector('.nav-hamburger');
     const mobileMenu = document.querySelector('.nav-mobile-menu');
-    if (!hamburger || !mobileMenu) return;
+    const backdrop = document.querySelector('.nav-backdrop');
+    if (!hamburger || !mobileMenu || !backdrop) return;
 
-    hamburger.addEventListener('click', () => {
-        mobileMenu.classList.toggle('open');
-    });
+    const icon = hamburger.querySelector('i');
+
+    function setMenu(open) {
+        mobileMenu.classList.toggle('open', open);
+        backdrop.classList.toggle('open', open);
+        hamburger.classList.toggle('active', open);
+        hamburger.setAttribute('aria-expanded', open);
+        icon.className = open ? 'ti ti-x' : 'ti ti-menu-2';
+    }
+
+    hamburger.addEventListener('click', () => setMenu(!mobileMenu.classList.contains('open')));
+    backdrop.addEventListener('click', () => setMenu(false));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 768) setMenu(false); });
 }
 
 // ============================================
-// GALERI FOTO — detail wisma
+// GALERI FOTO — detail villa
 // ============================================
 function initGallery() {
     const thumbs = document.querySelectorAll('.gallery-thumb');
@@ -206,7 +272,7 @@ function initGallery() {
 }
 
 // ============================================
-// KALENDER AVAILABILITY — detail wisma
+// KALENDER AVAILABILITY — detail villa
 // ============================================
 function initAvailabilityCalendar() {
     const wrap = document.getElementById('calendarWrap');
@@ -276,10 +342,10 @@ function initAvailabilityCalendar() {
             const isOccupied = occupiedDates.includes(dateStr);
 
             let cls = 'cal-day ';
-            if (isToday)         cls += 'cal-day-today';
-            else if (isPast)     cls += 'cal-day-past';
-            else if (isOccupied) cls += 'cal-day-occupied';
-            else                 cls += 'cal-day-available';
+            if (isOccupied && !isPast) cls += 'cal-day-occupied' + (isToday ? ' cal-day-is-today' : '');
+            else if (isToday)          cls += 'cal-day-today';
+            else if (isPast)           cls += 'cal-day-past';
+            else                       cls += 'cal-day-available';
 
             html += `<div class="${cls}">${d}</div>`;
         }
@@ -319,7 +385,7 @@ function initAvailabilityCalendar() {
 }
 
 // ============================================
-// LIGHTBOX GALERI — detail wisma
+// LIGHTBOX GALERI — detail villa
 // ============================================
 function initLightbox() {
     const overlay     = document.getElementById('lightboxOverlay');
@@ -425,63 +491,26 @@ function initLightbox() {
 }
 
 // ============================================
-// FORM BOOKING — show/hide field dinamis + estimasi harga
+// FORM BOOKING — estimasi harga
 // ============================================
 function initBookingForm() {
     const form = document.getElementById('bookingForm');
     if (!form) return;
-
-    const userTypeRadios    = document.querySelectorAll('input[name="user_type"]');
-    const bookingTypeRadios = document.querySelectorAll('input[name="booking_type"]');
-    const bookingTypeWrap   = document.getElementById('bookingTypeWrap');
-    const employeeIdWrap    = document.getElementById('employeeIdWrap');
-    const instansiWrap      = document.getElementById('instansiWrap');
-    const docKtpWrap        = document.getElementById('docKtpWrap');
-    const docNpwpWrap       = document.getElementById('docNpwpWrap');
-    const docIdPlnWrap      = document.getElementById('docIdPlnWrap');
-    const docPlnKtpNpwpWrap = document.getElementById('docPlnKtpNpwpWrap');
-
-    function getUserType() {
-        return document.querySelector('input[name="user_type"]:checked')?.value;
-    }
-    function getBookingType() {
-        return document.querySelector('input[name="booking_type"]:checked')?.value;
-    }
-
-    function updateFieldVisibility() {
-        const userType    = getUserType();
-        const bookingType = getBookingType();
-        const isPln       = userType === 'pln';
-        const isInstansi  = !isPln && bookingType === 'instansi';
-
-        bookingTypeWrap.style.display = isPln ? 'none' : 'grid';
-        employeeIdWrap.style.display = isPln ? 'block' : 'none';
-        instansiWrap.style.display = isInstansi ? 'block' : 'none';
-
-        docKtpWrap.style.display        = isPln ? 'none' : 'block';
-        docNpwpWrap.style.display       = isInstansi ? 'block' : 'none';
-        docIdPlnWrap.style.display      = isPln ? 'block' : 'none';
-        docPlnKtpNpwpWrap.style.display = isPln ? 'block' : 'none';
-
-        document.querySelector('[name="doc_ktp"]').required = !isPln;
-        document.querySelector('[name="doc_npwp"]').required = isInstansi;
-        document.querySelector('[name="doc_id_pln"]').required = isPln;
-    }
-
-    userTypeRadios.forEach(r => r.addEventListener('change', () => {
-        updateFieldVisibility();
-        fetchEstimate();
-    }));
-    bookingTypeRadios.forEach(r => r.addEventListener('change', updateFieldVisibility));
-
-    updateFieldVisibility();
 
     // ============================================
     // ESTIMASI HARGA — real-time via AJAX
     // ============================================
     const checkInInput  = document.getElementById('inputCheckIn');
     const checkOutInput = document.getElementById('inputCheckOut');
-    const wismaID       = document.querySelector('[name="wismaID"]').value;
+    const villaID       = document.querySelector('[name="villaID"]').value;
+    const alertBox = document.querySelector('.date-taken-alert');
+    if (alertBox) alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    document.querySelector('[data-focus-date]')?.addEventListener('click', () => {
+        checkInInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        checkInInput.focus();
+        if (checkInInput.showPicker) { try { checkInInput.showPicker(); } catch (e) {} }
+    });
 
     function syncCheckOutFromCheckIn() {
         const todayStr = getTodayLocal();
@@ -509,6 +538,26 @@ function initBookingForm() {
         syncCheckOutFromCheckIn();
     }
 
+    // VALIDASI NOMOR WHATSAPP di browser
+    const phoneInput = form.querySelector('[name="guest_phone"]');
+    const phoneError = document.getElementById('phoneError');
+    const validPhone = v => /^(\+62|62|0)8[0-9]{8,12}$/.test(v.replace(/[\s-]/g, '')); // 08xx atau 628xx, total minimal 10 digit
+
+    function showPhoneError(show) {
+        phoneError.textContent = show ? 'Nomor WhatsApp tidak valid. Gunakan format 08xxxxxxxxxx dengan minimal 10 digit.' : '';
+        phoneError.style.display = show ? 'block' : 'none';
+        phoneInput.classList.toggle('input-error', show);
+    }
+
+    phoneInput.addEventListener('input', () => { if (validPhone(phoneInput.value)) showPhoneError(false); }); // pesan hilang begitu nomor benar
+
+    form.addEventListener('submit', e => {
+        if (validPhone(phoneInput.value)) return;
+        e.preventDefault(); // submit dibatalkan, tombol juga tidak masuk loading
+        showPhoneError(true);
+        phoneError.scrollIntoView({ behavior: 'smooth', block: 'center' }); // pesan di atas kolom tanggal langsung terlihat
+    });
+
     fetchEstimate();
 
     checkInInput.addEventListener('change', () => { 
@@ -520,7 +569,6 @@ function initBookingForm() {
     async function fetchEstimate() {
         const checkIn  = checkInInput.value;
         const checkOut = checkOutInput.value;
-        const userType = getUserType();
 
         const placeholder = document.getElementById('estimateLoading');
         const content      = document.getElementById('estimateContent');
@@ -533,7 +581,8 @@ function initBookingForm() {
         }
 
         try {
-            const params = new URLSearchParams({ wismaID, user_type: userType, check_in: checkIn, check_out: checkOut });
+            const params = new URLSearchParams({ villaID, check_in: checkIn, check_out: checkOut });
+            const cap = document.getElementById('filter-capacity'); if (cap && cap.value) params.set('capacity', cap.value);
             const res = await fetch('/api/estimate-price?' + params.toString());
             const data = await res.json();
 
@@ -563,35 +612,14 @@ function initBookingForm() {
             console.error('Gagal memuat estimasi harga', err);
         }
     }
-
-    // // Kalau tanggal sudah terisi otomatis dari prefill (misal dari halaman /cari), langsung fetch estimasi tanpa perlu user pilih ulang
-    // checkInInput.addEventListener('change', () => {
-    //     const todayStr = getTodayLocal();
-    //     const selected = checkInInput.value;
-
-    //     if (selected < todayStr) {
-    //         checkInInput.value = todayStr;
-    //     }
-
-    //     const nextDay = new Date(checkInInput.value + 'T00:00:00');
-    //     nextDay.setDate(nextDay.getDate() + 1);
-    //     const y = nextDay.getFullYear();
-    //     const m = String(nextDay.getMonth() + 1).padStart(2, '0');
-    //     const d = String(nextDay.getDate()).padStart(2, '0');
-    //     const nextDayStr = `${y}-${m}-${d}`;
-
-    //     checkOutInput.min = nextDayStr;
-    //     checkOutInput.value = nextDayStr;
-    //     fetchEstimate();
-    // });
 }
 
 // ============================================
-// CARD WISMA — halaman /cari, klik card ke detail
+// CARD VILLA — halaman /cari, klik card ke detail
 // ============================================
-function initWismaCardClick() {
-    const cards = document.querySelectorAll('.wisma-card');
-    if (!cards.length) return; // halaman ini tidak punya wisma-card, skip
+function initVillaCardClick() {
+    const cards = document.querySelectorAll('.villa-card');
+    if (!cards.length) return; // halaman ini tidak punya villa-card, skip
 
     cards.forEach(card => {
         card.style.cursor = 'pointer';
@@ -603,9 +631,9 @@ function initWismaCardClick() {
 }
 
 // ============================================
-// TICKER KARTU REKOMENDASI WISMA — halaman /cari
+// TICKER KARTU REKOMENDASI VILLA — halaman /cari
 // ============================================
-function initTickerCardWisma() {
+function initTickerCardVilla() {
     const track = document.getElementById('rekomendasiTrack');
     if (!track) return;
 
@@ -618,4 +646,227 @@ function initTickerCardWisma() {
 
     const original = track.innerHTML;
     track.innerHTML = original.repeat(repeatCount);
+}
+
+// ============================================
+// HALAMAN NOTA — countdown, polling status, konfirmasi keluar halaman
+// ============================================
+function initNotaPage() {
+    const page = document.getElementById('notaPage');
+    if (!page) return; // halaman ini bukan halaman nota, skip
+
+    let expires     = new Date(page.dataset.expires);
+    const statusUrl = page.dataset.statusUrl;
+    const cancelUrl = page.dataset.cancelUrl;
+    const payUrl    = page.dataset.payUrl;
+    const qrUrl     = page.dataset.qrUrl; // terisi kalau halaman di-reload setelah QR dibuat
+    const csrf      = page.dataset.csrf;
+    const cd        = document.getElementById('countdown');
+    const modal     = document.getElementById('leaveModal');
+    const btnPay    = document.getElementById('btnPay');
+    const qrisBox   = document.getElementById('qrisBox');
+    const qrisImg   = document.getElementById('qrisImg');
+    const holder    = document.getElementById('qrisPlaceholder');
+
+    let leaving   = false; // true kalau keluar halaman sudah disetujui, atau pembayaran selesai
+    let target    = null;
+    let pollTimer = null;
+
+    // Countdown batas waktu bayar
+    function tick() {
+        const s = Math.max(0, Math.floor((expires - new Date()) / 1000));
+        cd.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+        if (s === 0) {
+            leaving = true;
+            location.reload();
+        }
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // Peringatan bawaan browser: tutup tab, refresh, tombol back
+    window.addEventListener('beforeunload', e => {
+        if (leaving) return;
+        e.preventDefault();
+        e.returnValue = '';
+    });
+
+    // Klik link atau tombol Kembali di dalam situs: tampilkan popup sendiri
+    document.addEventListener('click', e => {
+        const el = e.target.closest('a[href], [data-leave]');
+        if (!el || el.target === '_blank') return; // preview KTP dibuka di tab baru, jangan dicegat
+        const url = el.dataset.leave || el.getAttribute('href');
+        if (!url || url.startsWith('#') || url.startsWith('javascript:')) return;
+        e.preventDefault();
+        target = url;
+        modal.hidden = false;
+    });
+
+    document.getElementById('leaveStay').addEventListener('click', () => {
+        modal.hidden = true;
+    });
+
+    document.getElementById('leaveGo').addEventListener('click', async () => {
+        leaving = true;
+        setButtonLoading(document.getElementById('leaveGo'), true, 'Membatalkan...');
+        try {
+            await fetch(cancelUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+            });
+        } catch (err) {
+            console.error('Gagal membatalkan booking', err);
+        }
+        window.location.href = target;
+    });
+
+    // Tampilkan QR dan mulai polling status pembayaran
+    function showQr(url) {
+        qrisImg.src = url;
+        qrisImg.hidden = false;
+        holder.hidden = true;
+        qrisBox.hidden = false;
+        btnPay.hidden = true;
+        if (!pollTimer) pollTimer = setInterval(pollStatus, 4000);
+    }
+
+    // QR hangus: kembali ke tombol Bayar supaya tamu bisa membuat QR baru
+    function resetQr() {
+        clearInterval(pollTimer);
+        pollTimer = null;
+        qrisImg.hidden = true;
+        qrisBox.hidden = true;
+        btnPay.hidden = false;
+        btnPay.disabled = false;
+    }
+
+    async function pollStatus() {
+        try {
+            const res  = await fetch(statusUrl, { headers: { Accept: 'application/json' } });
+            const data = await res.json();
+            if (data.redirect) {
+                leaving = true;
+                window.location.href = data.redirect;
+            } else if (pollTimer && data.qr_active === false) {
+                resetQr();
+            }
+        } catch (err) {
+            console.error('Gagal cek status pembayaran', err);
+        }
+    }
+
+    btnPay.addEventListener('click', async () => {
+        setButtonLoading(btnPay, true, 'Membuat QRIS...');
+        btnPay.disabled = true;
+        qrisBox.hidden = false;
+        holder.hidden = false;
+        holder.textContent = 'Membuat kode QRIS...';
+
+        try {
+            const res  = await fetch(payUrl, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Gagal membuat QRIS.');
+
+            expires = new Date(data.expires_at); // batas waktu diperpanjang sejak QR dibuat
+            showQr(data.qr_url);
+            setButtonLoading(btnPay, false);
+        } catch (err) {
+            console.error('Gagal membuat QRIS', err);
+            holder.textContent = err.message;
+            btnPay.disabled = false;
+            setButtonLoading(btnPay, false);
+        }
+    });
+
+    if (qrUrl) showQr(qrUrl); // halaman di-reload setelah QR dibuat
+}
+
+// ============================================
+// LOADING TOMBOL — dipakai semua halaman
+// ============================================
+const LOADING_TEXT = {
+    'btn-submit-booking': 'Memproses booking...',
+};
+
+const LOADING_ICON_ONLY = ['btn-cek-booking', 'search-btn'];
+
+function loadingLabelFor(btn) {
+    if (!btn) return 'Memproses...';
+    if (btn.dataset.loadingText) return btn.dataset.loadingText;
+    const key = Object.keys(LOADING_TEXT).find(c => btn.classList.contains(c));
+    return key ? LOADING_TEXT[key] : 'Memproses...';
+}
+
+function setButtonLoading(btn, on, text) {
+    if (!btn) return;
+
+    if (on) {
+        if (btn.classList.contains('is-loading')) return; // sudah loading, abaikan
+        const iconOnly = btn.hasAttribute('data-loading-icon') || LOADING_ICON_ONLY.some(c => btn.classList.contains(c)); // data-loading-icon untuk tombol lain di blade
+        btn.dataset.originalHtml = btn.innerHTML; // simpan isi asli untuk dipulihkan
+
+        if (iconOnly) {
+            btn.style.width  = btn.offsetWidth + 'px'; // lebar dikunci persis, tombol tidak berubah ukuran
+            btn.style.height = btn.offsetHeight + 'px'; // tinggi juga dikunci
+            btn.setAttribute('aria-label', 'Memuat'); // pembaca layar tetap tahu tombol sedang bekerja
+        } else {
+            btn.style.minWidth = btn.offsetWidth + 'px'; // tombol bertulisan: lebar minimum dikunci
+        }
+
+        btn.classList.add('is-loading');
+        btn.setAttribute('aria-busy', 'true');
+        if (!btn.form) btn.disabled = true; // tombol non-form dinonaktifkan penuh, tombol submit dijaga lewat flag form
+
+        const inner   = document.createElement('span');
+        const spinner = document.createElement('span');
+        inner.className   = 'btn-loading-inner';
+        spinner.className = 'btn-spinner';
+        spinner.setAttribute('aria-hidden', 'true');
+        inner.append(spinner);
+
+        if (!iconOnly) { // teks status hanya untuk tombol yang bukan icon-only
+            const label = document.createElement('span');
+            label.textContent = text || loadingLabelFor(btn);
+            inner.append(label);
+        }
+
+        btn.replaceChildren(inner);
+    } else {
+        if (!btn.classList.contains('is-loading')) return;
+        btn.innerHTML = btn.dataset.originalHtml ?? btn.innerHTML;
+        delete btn.dataset.originalHtml;
+        btn.style.width = '';
+        btn.style.height = '';
+        btn.style.minWidth = '';
+        btn.removeAttribute('aria-label');
+        btn.classList.remove('is-loading');
+        btn.removeAttribute('aria-busy');
+        if (!btn.form) btn.disabled = false;
+    }
+}
+
+function initLoadingButtons() {
+    document.addEventListener('submit', e => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement) || form.hasAttribute('data-no-loading')) return;
+        if (e.defaultPrevented) return;
+
+        if (form.dataset.submitting === '1') {
+            e.preventDefault();
+            return;
+        }
+        form.dataset.submitting = '1';
+
+        const btn = e.submitter || form.querySelector('[type="submit"]');
+        setButtonLoading(btn, true);
+    });
+
+    window.addEventListener('pageshow', e => {
+        if (!e.persisted) return;
+        document.querySelectorAll('.is-loading').forEach(b => setButtonLoading(b, false));
+        document.querySelectorAll('form[data-submitting]').forEach(f => delete f.dataset.submitting);
+    });
 }

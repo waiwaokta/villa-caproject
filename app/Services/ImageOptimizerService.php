@@ -15,7 +15,7 @@ class ImageOptimizerService
     private const MAX_HEIGHT = 2200;
     private const QUALITY = 90;
 
-    public function optimize(UploadedFile $file, string $directory = 'wisma-photos'): string
+    public function optimize(UploadedFile $file, string $directory = 'villa-photos'): string
     {
         $manager = ImageManager::usingDriver(Driver::class);
 

@@ -19,7 +19,7 @@ class FacilityResource extends Resource
 {
     protected static ?string $model = Facility::class;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Sparkles;
-    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+    protected static string | UnitEnum | null $navigationGroup = 'Villa';
     protected static ?string $navigationLabel = 'Master Fasilitas';
     protected static ?string $pluralModelLabel = 'Fasilitas';
     protected static ?int $navigationSort = 4;

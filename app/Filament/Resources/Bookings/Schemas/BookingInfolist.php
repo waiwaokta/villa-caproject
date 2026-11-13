@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -29,8 +30,8 @@ class BookingInfolist
                             ->copyable()
                             ->fontFamily('mono'),
 
-                        TextEntry::make('wisma.name')
-                            ->label('Wisma'),
+                        TextEntry::make('villa.name')
+                            ->label('Villa'),
 
                         TextEntry::make('check_in')
                             ->label('Check-in')
@@ -49,29 +50,21 @@ class BookingInfolist
                             ->money('IDR')
                             ->weight(FontWeight::Bold),
 
-                        TextEntry::make('user_type')
-                            ->label('Tipe Pengguna')
+                        TextEntry::make('status')
+                            ->label('Status')
                             ->badge()
                             ->formatStateUsing(fn($state) => match($state) {
-                                'pln'  => 'PLN',
-                                'umum' => 'Umum',
-                                default => $state,
-                            })
-                            ->color(fn($state) => match($state) {
-                                'pln'  => 'info',
-                                'umum' => 'success',
-                                default => 'gray',
-                            }),
+                                'pending'   => 'Menunggu Pembayaran',
+                                'approved'  => 'Lunas',
+                                'rejected'  => 'Ditolak',
+                                'cancelled' => 'Dibatalkan',
+                                default     => $state,
+                            }), // status booking
 
-                        TextEntry::make('booking_type')
-                            ->label('Tipe Booking')
-                            ->badge()
-                            ->formatStateUsing(fn($state) => match($state) {
-                                'perorangan' => 'Perorangan',
-                                'instansi'   => 'Instansi',
-                                default      => $state,
-                            })
-                            ->color('gray'),
+                        TextEntry::make('paid_at')
+                            ->label('Waktu Bayar')
+                            ->dateTime('d M Y, H:i', 'Asia/Jakarta')
+                            ->placeholder('-'),
                     ]),
 
                 // KANAN — Data Tamu
@@ -86,24 +79,6 @@ class BookingInfolist
                         TextEntry::make('guest_phone')
                             ->label('No. HP'),
 
-                        TextEntry::make('guest_ktp')
-                            ->label('NIK KTP'),
-
-                        TextEntry::make('employee_id')
-                            ->label('ID Pegawai PLN')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->user_type === 'pln'),
-
-                        TextEntry::make('inst_name')
-                            ->label('Nama Instansi')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->booking_type === 'instansi'),
-
-                        TextEntry::make('inst_npwp')
-                            ->label('NPWP Instansi')
-                            ->placeholder('-')
-                            ->visible(fn($record) => $record->booking_type === 'instansi'),
-
                         TextEntry::make('created_at')
                             ->label('Tgl Booking')
                             ->dateTime('d M Y, H:i'),
@@ -116,33 +91,23 @@ class BookingInfolist
                     ->schema([
                         RepeatableEntry::make('documents')
                             ->label('')
-                            ->columns(4)
+                            ->columns(3)
                             ->schema([
                                 TextEntry::make('doc_type')
                                     ->label('Tipe Dokumen')
                                     ->badge()
                                     ->formatStateUsing(fn($state) => match($state) {
-                                        'ktp'         => 'KTP',
-                                        'bukti_bayar' => 'Bukti Bayar',
-                                        'id_pln'      => 'ID PLN',
-                                        'npwp'        => 'NPWP',
-                                        default       => $state,
+                                        'ktp'   => 'KTP',
+                                        default => $state,
                                     })
                                     ->color(fn($state) => match($state) {
-                                        'ktp'         => 'info',
-                                        'bukti_bayar' => 'success',
-                                        'id_pln'      => 'warning',
-                                        'npwp'        => 'gray',
-                                        default       => 'gray',
+                                        'ktp'   => 'info',
+                                        default => 'gray',
                                     }),
 
-                                TextEntry::make('documentID')
-                                    ->label('Lihat Dokumen')
-                                    ->formatStateUsing(fn($state) => 'Buka Dokumen')
-                                    ->url(fn($record) => url('/dokumen/' . $record->documentID))
-                                    ->openUrlInNewTab()
-                                    ->color('primary')
-                                    ->icon('heroicon-o-arrow-top-right-on-square'),
+                                ViewEntry::make('documentID')
+                                    ->label('Dokumen')
+                                    ->view('filament.infolists.document-preview'),
 
                                 TextEntry::make('created_at')
                                     ->label('Diunggah')

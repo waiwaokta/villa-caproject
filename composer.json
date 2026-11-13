@@ -9,6 +9,7 @@
         "php": "^8.3",
         "afatmustafa/blade-hugeicons": "^2.0",
         "andreiio/blade-remix-icon": "^3.9",
+        "barryvdh/laravel-dompdf": "^3.1",
         "codeat3/blade-google-material-design-icons": "^1.21",
         "codeat3/blade-phosphor-icons": "^2.4",
         "davidhsianturi/blade-bootstrap-icons": "^2.2",

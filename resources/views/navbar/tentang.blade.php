@@ -14,66 +14,79 @@
         </div>
 
         {{-- Header TIDAK di dalam .tentang-hero-box — elemen terpisah, diposisikan lewat CSS --}}
-        <h1 class="tentang-hero-title">Tentang Wisma PLN</h1>
+        <h1 class="tentang-hero-title">Tentang NginapYuk</h1>
     </div>
 
     {{-- KONTEN ESSAY --}}
     <div class="tentang-content">
         <div class="tentang-section">
-            <h2>Awal Mula Sebuah Kebutuhan</h2>
+            <h2>Reservasi Villa yang Menyenangkan</h2>
             <p>
-                Setiap perjalanan dinas dan setiap kunjungan kerja selalu membawa satu pertanyaan yang sama. Di mana kami akan menginap. Pertanyaan sederhana ini menjadi alasan lahirnya Wisma PLN, sebuah program dari PT PLN (Persero) untuk menyediakan tempat menginap yang nyaman dan terpercaya bagi pegawai, pensiunan, serta masyarakat umum.
+                NginapYuk adalah perusahaan yang berfokus pada layanan pemesanan villa berbasis website. Kami membantu Anda mencari tempat menginap, memeriksa informasi properti, memilih tanggal, dan melakukan reservasi melalui proses yang mudah diikuti.
             </p>
             <p>
-                Wisma PLN bukan sekadar tempat tidur untuk semalam. Program ini merupakan bagian dari perhatian PLN terhadap kenyamanan siapa saja yang sedang dalam perjalanan, baik untuk urusan pekerjaan maupun untuk beristirahat bersama keluarga.
-            </p>
-        </div>
-
-        <div class="tentang-section">
-            <h2>Alasan Memilih Wisma PLN</h2>
-            <p>
-                Banyak pilihan penginapan tersedia saat ini. Namun kepercayaan tidak muncul begitu saja. Kepercayaan dibangun dari konsistensi. Wisma PLN dikelola langsung oleh unit internal PT PLN (Persero) sehingga standar kebersihan, keamanan, dan pelayanan selalu terjaga.
-            </p>
-            <p>
-                Bagi pegawai dan pensiunan PLN, kami menyediakan tarif khusus sebagai bentuk penghargaan atas kontribusi yang telah diberikan kepada perusahaan. Bagi masyarakat umum, Wisma PLN tetap terbuka dengan harga yang wajar dan jelas sejak awal, tanpa biaya tambahan yang tidak terduga.
-            </p>
-            <p>
-                Wisma kami tersebar di beberapa lokasi strategis sehingga memudahkan perjalanan dinas maupun liburan keluarga. Setiap wisma dilengkapi fasilitas yang memadai, mulai dari ruang keluarga yang luas, dapur yang berfungsi baik, hingga area parkir yang cukup. Semua dijaga dalam kondisi bersih dan nyaman untuk ditinggali.
+                Bagi kami, kenyamanan perjalanan dimulai dari informasi yang jelas. Karena itu, NginapYuk menyajikan foto, fasilitas, kapasitas, lokasi, dan rincian harga agar Anda dapat mempertimbangkan pilihan sebelum memesan.
             </p>
         </div>
 
         <div class="tentang-section">
-            <h2>Lebih dari Sekadar Menginap</h2>
+            <h2>Apa yang Kami Tawarkan</h2>
             <p>
-                Kami memahami bahwa setiap tamu memiliki tujuan yang berbeda. Ada yang datang untuk menyelesaikan tugas kantor, ada yang membawa keluarga untuk berlibur, dan ada pula yang hanya membutuhkan waktu istirahat setelah perjalanan panjang. Apa pun tujuannya, Wisma PLN berusaha menjadi tempat yang menyambut dengan baik.
+                NginapYuk menyediakan pencarian villa berdasarkan lokasi, tanggal menginap, dan jumlah tamu. Setiap halaman detail membantu Anda mengenali properti serta memahami aturan menginapnya.            
             </p>
             <p>
-                Proses pemesanan dibuat sesederhana mungkin. Cukup pilih wisma, tentukan tanggal, lengkapi data diri, dan unggah dokumen yang diperlukan. Tim kami akan memverifikasi dan mengirim konfirmasi melalui WhatsApp tanpa menunggu waktu yang lama.
+                Pemesanan dapat dilakukan tanpa membuat akun tamu. Setelah memilih villa, Anda mengisi data yang diperlukan, memeriksa rincian biaya, dan mengikuti pembayaran QRIS. Informasi penting mengenai pesanan disampaikan melalui WhatsApp.            
+            </p>
+            <p>
+                Harga menyesuaikan villa, durasi menginap, dan jenis hari yang dipilih. Total pembayaran ditampilkan sebelum transaksi diselesaikan.            
+            </p>
+        </div>
+
+        <div class="tentang-section">
+            <h2>Mengapa NginapYuk Dikembangkan</h2>
+            <p>
+                Proses pemesanan melalui percakapan manual dapat membuat informasi harga, ketersediaan, dan status pembayaran tersebar di berbagai tempat.            
+            </p>
+            <p>
+                NginapYuk dikembangkan untuk menyatukan proses tersebut. Tamu dapat menemukan informasi dan mengajukan reservasi melalui website, sementara pengelola dapat mengatur properti, kalender, serta pesanan secara lebih teratur.
+            </p>
+            <p>
+                Kalender yang dikelola secara terpusat dan penahanan tanggal selama proses pemesanan membantu mengurangi risiko jadwal yang bertabrakan.
+            </p>
+        </div>
+
+        <div class="tentang-section">
+            <h2>Tujuan Kami</h2>
+            <p>
+                Kami ingin membantu tamu memilih villa berdasarkan informasi yang dapat diperiksa dan memahami setiap tahap pemesanannya.
+            </p>
+            <p>
+                Kami juga ingin memudahkan pengelola menjaga informasi properti, mengatur ketersediaan, dan menangani reservasi, sehingga layanan kepada tamu dapat diberikan dengan lebih konsisten.
             </p>
         </div>
 
         <div class="tentang-stats">
             <div class="tentang-stat-item">
-                <strong>6</strong>
-                <span>Wisma Tersedia</span>
+                <strong>10+</strong>
+                <span>Villa Tersedia</span>
             </div>
             <div class="tentang-stat-item">
-                <strong>2x</strong>
-                <span>Tarif Lebih Hemat</span>
+                <strong>24 Jam</strong>
+                <span>Pemesanan Online</span>
             </div>
             <div class="tentang-stat-item">
                 <strong>100%</strong>
-                <span>Dikelola Resmi PLN</span>
+                <span>Pembayaran Terverifikasi</span>
             </div>
         </div>
 
         <div class="tentang-section tentang-section-closing">
             <h2>Setiap Perjalanan Punya Tempat untuk Kembali</h2>
             <p>
-                Kenyamanan menginap adalah bagian penting dari sebuah perjalanan yang baik. Karena itu, Wisma PLN akan terus berkembang. Kami menambah destinasi, memperbaiki fasilitas, dan meningkatkan pelayanan agar setiap tamu mendapatkan pengalaman terbaik.
+                Kenyamanan menginap adalah bagian penting dari sebuah perjalanan yang baik. Karena itu, NginapYuk akan terus berkembang. Kami menambah destinasi, memperbaiki fasilitas, dan meningkatkan pelayanan agar setiap tamu mendapatkan pengalaman terbaik.
             </p>
             <p>
-                Terima kasih telah mempercayakan perjalanan Anda kepada kami. Kami menantikan kedatangan Anda di salah satu wisma PLN, di mana pun Anda berada.
+                Terima kasih telah mempercayakan perjalanan Anda kepada kami.
             </p>
         </div>
 

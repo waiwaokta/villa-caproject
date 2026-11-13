@@ -4,37 +4,63 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BerandaController;
-use App\Http\Controllers\WismaController;
+use App\Http\Controllers\VillaController;
 use App\Http\Controllers\Api\EstimatePriceController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CekBookingController;
 
 // Beranda
-Route::get('/', [BerandaController::class, 'index'])->name('beranda'); // DIHAPUS — duplikat redirect('/admin') yang lama, sekarang cuma 1 definisi '/'
+Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
-// Detail Wisma
-Route::get('/wisma/{wismaID}', [WismaController::class, 'show'])
-    ->name('wisma.show');
+// Halaman statis
+Route::get('/tentang', function () {
+    return view('navbar.tentang');
+})->name('tentang');
+Route::view('/syarat', 'navbar.syarat')->name('syarat');
+Route::view('/kebijakan', 'navbar.kebijakan')->name('kebijakan');
 
-// Foto wisma — public
+// Kontak
+Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
+Route::post('/kontak', [ContactController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('kontak.store');
+
+if (app()->environment('local')) {
+    Route::get('/_err/{code}', fn (int $code) => abort($code))->where('code', '[0-9]+'); // sementara untuk pratinjau, hapus sebelum commit
+}
+
+// Detail villa
+Route::get('/villa/{villaID}', [VillaController::class, 'show'])
+    ->name('villa.show');
+
+// Foto villa — public
 Route::get('/foto/{photoID}', [BerandaController::class, 'foto'])
     ->name('dokumen.foto');
 
-// Cari wisma
-Route::get('/cari', [WismaController::class, 'search'])
-    ->name('wisma.search');
+// Cari villa
+Route::get('/cari', [VillaController::class, 'search'])
+    ->name('villa.search');
 
 // Booking — form & submit
-Route::get('/booking/{wismaID}', [BookingController::class, 'create'])
+Route::get('/booking/{villaID}', [BookingController::class, 'create'])
     ->name('booking.create');
 
 Route::post('/booking', [BookingController::class, 'store'])
-    ->middleware('throttle:3,1')
     ->name('booking.store');
 
 // Konfirmasi booking berhasil dikirim — DITAMBAHKAN, sebelumnya tidak ada route untuk confirm.blade.php
-Route::get('/booking/confirm/{bookingID}', [BookingController::class, 'confirm'])
-    ->name('booking.confirm');
+Route::prefix('booking/{bookingID}')->middleware('signed')->group(function () {
+    Route::get('nota',    [BookingController::class, 'nota'])->name('booking.nota');
+    Route::post('pay', [BookingController::class, 'pay'])->name('booking.pay');
+    Route::get('qr',   [BookingController::class, 'qr'])->name('booking.qr');
+    Route::get('ktp',     [BookingController::class, 'ktp'])->name('booking.ktp');
+    Route::post('cancel', [BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::get('status',  [BookingController::class, 'status'])->name('booking.status');
+    Route::get('confirm', [BookingController::class, 'confirm'])->name('booking.confirm');
+    Route::get('receipt', [BookingController::class, 'receipt'])
+    ->middleware('throttle:20,1')
+    ->name('booking.receipt');
+});
 
 // Cek booking — tracking status
 Route::get('/cek-booking', [CekBookingController::class, 'index'])
@@ -45,25 +71,12 @@ Route::post('/cek-booking', [CekBookingController::class, 'cari'])
     ->middleware('throttle:cek-booking')
     ->name('booking.cek.cari');
 
-// Dokumen — private access (DIHAPUS duplikatnya, sekarang cuma 1 block)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dokumen/{documentID}', [DocumentController::class, 'show'])
-        ->middleware('check.document.access');
-    Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy'])
-        ->middleware('role:admin');
+// Dokumen (private access)
+Route::middleware('check.document.access')->group(function () {
+    Route::get('/dokumen/{documentID}', [DocumentController::class, 'show']);
+    Route::delete('/dokumen/{documentID}', [DocumentController::class, 'destroy']);
 });
 
 // API estimasi harga
 Route::get('/api/estimate-price', [EstimatePriceController::class, 'calculate'])
     ->middleware('throttle:30,1');
-
-// Halaman statis
-Route::get('/tentang', function () {
-    return view('navbar.tentang');
-})->name('tentang');
-
-// Kontak
-Route::get('/kontak', [ContactController::class, 'index'])->name('kontak');
-Route::post('/kontak', [ContactController::class, 'store'])
-    ->middleware('throttle:5,1')
-    ->name('kontak.store');

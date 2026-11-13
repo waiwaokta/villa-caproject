@@ -11,7 +11,7 @@ class Maintenance extends Model
     protected $primaryKey = 'maintenanceID';
     protected $keyType = 'string';
     public $incrementing = false;
-    protected $fillable = ['wismaID', 'date', 'reason'];
+    protected $fillable = ['villaID', 'date', 'reason'];
     protected $casts = [
         'date' => 'date',
     ];
@@ -25,8 +25,8 @@ class Maintenance extends Model
         });
     }
 
-    public function wisma()
+    public function villa()
     {
-        return $this->belongsTo(Wisma::class, 'wismaID', 'wismaID');
+        return $this->belongsTo(Villa::class, 'villaID', 'villaID');
     }
 }

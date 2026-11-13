@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', $exception->getStatusCode())
+@section('marquee', 'SERVER BERMASALAH')
+@section('title', 'Terjadi gangguan pada server')
+@section('message', 'Maaf, ada gangguan di sisi kami. Silakan coba lagi beberapa saat lagi.')

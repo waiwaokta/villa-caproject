@@ -14,14 +14,14 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class BookingTerakhir extends BaseWidget
 {
     protected static ?string $heading = 'Booking Terbaru';
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 6;
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {
         return $table
             ->query(fn() => Booking::query()
-                ->with('wisma')
+                ->with('villa')
                 ->latest('created_at')
                 ->limit(5)
             )
@@ -32,8 +32,8 @@ class BookingTerakhir extends BaseWidget
                     ->fontFamily('mono')
                     ->copyable(),
 
-                TextColumn::make('wisma.name')
-                    ->label('Wisma'),
+                TextColumn::make('villa.name')
+                    ->label('Villa'),
 
                 TextColumn::make('guest_name')
                     ->label('Nama Tamu'),
@@ -59,13 +59,15 @@ class BookingTerakhir extends BaseWidget
                     ->formatStateUsing(fn($state) => match($state) {
                         'pending'  => 'Menunggu',
                         'approved' => 'Disetujui',
-                        'rejected' => 'Ditolak',
+                        'cancelled' => 'Dibatalkan',
                         default    => $state,
                     })
                     ->color(fn($state) => match($state) {
                         'pending'  => 'warning',
                         'approved' => 'success',
                         'rejected' => 'danger',
+                        'cancelled' => 'danger', 
+                        'expired'   => 'gray',
                         default    => 'gray',
                     }),
             ])
@@ -79,7 +81,7 @@ class BookingTerakhir extends BaseWidget
             ->emptyStateActions([
                 Action::make('laporan')
                     ->label('Lihat Laporan')
-                    ->url('/kelolawismapln/laporan-pemasukan')
+                    ->url('/adminpage/laporan-pemasukan')
                     ->icon('heroicon-m-chart-bar')
                     ->button(),
             ]);

@@ -17,17 +17,20 @@ class Booking extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'user_id', 'wismaID', 'check_in', 'check_out',
-        'total_nights', 'total_price', 'user_type', 'booking_type',
-        'guest_name', 'guest_phone', 'guest_ktp',
-        'employee_id', 'inst_name', 'inst_npwp',
-        'status', 'reject_desc'
+        'villaID', 'check_in', 'check_out',
+        'total_nights', 'total_price',
+        'guest_name', 'guest_phone',
+        'status', 'reject_desc',
+        'expires_at', 'paid_at',
+        'payment_order_id', 'qris_url'
     ];
 
     protected $casts = [
         'check_in'    => 'date',
         'check_out'   => 'date',
         'total_price' => 'decimal:2',
+        'expires_at' => 'datetime',
+        'paid_at'    => 'datetime',
     ];
 
     protected static function boot(): void
@@ -35,8 +38,8 @@ class Booking extends Model
         parent::boot();
         static::creating(function ($model) {
             if (empty($model->bookingID)) {
-                // Format WPL-YYYY-XXXXXX
-                $model->bookingID = 'WPL-' . date('Y') . '-' . strtoupper(Str::random(6));
+                // Format BK-YYYY-XXXXXX
+                $model->bookingID = 'BK-' . date('Y') . '-' . strtoupper(Str::random(6));
             }
         });
     }
@@ -46,13 +49,20 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function wisma()
+    public function villa()
     {
-        return $this->belongsTo(Wisma::class, 'wismaID', 'wismaID');
+        return $this->belongsTo(Villa::class, 'villaID', 'villaID');
     }
 
     public function documents()
     {
         return $this->hasMany(Document::class, 'bookingID', 'bookingID');
+    }
+
+    public function scopeLocking($q)
+    {
+        return $q->where(fn ($w) => $w->where('status', 'approved')
+            ->orWhere(fn ($p) => $p->where('status', 'pending')
+                ->where(fn ($x) => $x->whereNull('expires_at')->orWhere('expires_at', '>', now()))));
     }
 }

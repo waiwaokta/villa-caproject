@@ -15,13 +15,6 @@ class ContactController extends Controller
 
     public function store(StoreContactRequest $request)
     {
-        Mail::to(config('mail.contact_email_to'))
-            ->send(new ContactFormMail(
-                name: $request->name,
-                email: $request->email,
-                description: $request->description,
-            ));
-
-        return back()->with('success', 'Pesan Anda berhasil dikirim. Kami akan segera menghubungi Anda.');
+        //
     }
 }

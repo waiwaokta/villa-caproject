@@ -1,0 +1,146 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\Booking;
+use App\Models\Villa;
+use App\Models\Maintenance;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Http\Request;
+use App\Models\VillaView;
+class VillaController extends Controller
+{
+    public function show(string $villaID, Request $request)
+    {
+        $villa = Villa::with(['villaPhotos', 'prices', 'facilities'])
+            ->where('villaID', $villaID)
+            ->where('is_active', true)
+            ->has('villaPhotos')
+            ->firstOrFail();
+        $availability = $this->getAvailability($villaID);
+
+        $prefillCheckIn  = $request->query('check_in'); 
+        $prefillCheckOut = $request->query('check_out'); 
+
+        $this->recordView($villa->villaID, $request); // catat satu klik pada halaman detail
+
+        return view('villa.show', compact('villa', 'availability', 'prefillCheckIn', 'prefillCheckOut'));
+    }
+    public function search(Request $request)
+    {
+        $checkIn  = $request->filled('check_in') ? Carbon::parse($request->check_in) : Carbon::today();
+        $checkOut = $request->filled('check_out') ? Carbon::parse($request->check_out) : Carbon::tomorrow();
+        $capacity = $request->filled('capacity') ? max(1, (int) $request->capacity) : null;
+
+        // Cek dulu apakah ada maintenance block yang berlaku untuk SEMUA villa di rentang ini
+        $isGlobalBlocked = Maintenance::whereNull('villaID')
+            ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
+            ->exists();
+
+        $villas = Villa::with(['primaryPhoto', 'prices'])
+            ->where('is_active', true)
+            ->has('villaPhotos')
+            ->when($request->filled('lokasi'), function ($q) use ($request) {
+                $q->where('location', 'like', '%' . $request->lokasi . '%');
+            })
+            ->when($capacity, function ($q) use ($capacity) {
+                $q->where('capacity', '>=', $capacity);
+            })
+            ->when(!$isGlobalBlocked, function ($q) use ($checkIn, $checkOut) { // skip filter maintenance kalau sudah pasti semua villa diblok (hasil kosong)
+                $q->whereDoesntHave('bookings', function ($q2) use ($checkIn, $checkOut) {
+                        $q2->locking()
+                        ->where('check_in', '<', $checkOut)
+                        ->where('check_out', '>', $checkIn);
+                    })
+                    ->whereDoesntHave('Maintenance', function ($q2) use ($checkIn, $checkOut) {
+                        $q2->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()]);
+                    });
+            }, function ($q) { // kalau global blocked, langsung kosongkan hasil
+                $q->whereRaw('1 = 0');
+            })
+            ->get();
+
+        $lokasi = Villa::where('is_active', true)
+            ->has('villaPhotos')
+            ->whereNotNull('location')
+            ->distinct()
+            ->pluck('location');
+
+        $rekomendasi = collect();
+            if ($villas->isEmpty()) {
+                $rekomendasi = Villa::with(['primaryPhoto', 'prices'])
+                    ->where('is_active', true)
+                    ->has('villaPhotos')
+                    ->inRandomOrder()
+                    ->limit(8)
+                    ->get();
+            }
+
+        return view('villa.villa', [
+            'villas'    => $villas,
+            'lokasi'    => $lokasi,
+            'checkIn'   => $checkIn->toDateString(),
+            'checkOut'  => $checkOut->toDateString(),
+            'lokasiTerpilih' => $request->lokasi ?? '',
+            'capacity' => $capacity ?? '',
+            'rekomendasi' => $rekomendasi,
+            'sudahSearch' => $request->filled('check_in') || $request->filled('lokasi'),
+        ]);
+    }
+    private function getAvailability(string $villaID): array
+        {
+            $bookings = Booking::where('villaID', $villaID)
+                ->locking()
+                ->where('check_out', '>=', Carbon::today())
+                ->get(['check_in', 'check_out']);
+            $occupiedDates = [];
+            foreach ($bookings as $booking) {
+                $checkIn  = Carbon::parse($booking->check_in);
+                $checkOut = Carbon::parse($booking->check_out);
+                $period = CarbonPeriod::create($checkIn, $checkOut->copy()->subDay());
+                foreach ($period as $date) {
+                    $occupiedDates[$date->toDateString()] = true;
+                }
+            }
+
+            // gabungkan tanggal maintenance (khusus villa ini + yang berlaku semua villa)
+            $maintenanceDates = Maintenance::where(function ($q) use ($villaID) {
+                    $q->where('villaID', $villaID)
+                    ->orWhereNull('villaID');
+                })
+                ->where('date', '>=', Carbon::today())
+                ->pluck('date');
+
+            foreach ($maintenanceDates as $date) {
+                $occupiedDates[Carbon::parse($date)->toDateString()] = true;
+            }
+
+            return $occupiedDates;
+        }
+    private function recordView(string $villaID, Request $request): void
+    {
+        $agent = strtolower((string) $request->userAgent()); // untuk menyaring bot
+
+        if ($request->user()?->role === 'admin' || preg_match('/bot|crawl|spider|slurp|preview|facebookexternalhit/', $agent)) {
+            return; // klik admin dan bot tidak dihitung
+        }
+
+        $key  = 'viewed_villa.' . $villaID;
+        $last = (int) $request->session()->get($key, 0);
+
+        if (now()->timestamp - $last < 1800) {
+            return; // pengunjung yang sama dalam 30 menit dihitung satu kali, refresh tidak menggelembungkan angka
+        }
+
+        $request->session()->put($key, now()->timestamp);
+
+        try {
+            VillaView::create([
+                'villaID'      => $villaID,
+                'visitor_hash' => hash('sha256', $request->session()->getId()), // tidak menyimpan IP
+                'viewed_at'    => now(),
+            ]);
+        } catch (\Throwable $e) {
+            report($e); // gagal mencatat tidak boleh merusak halaman villa
+        }
+    }
+}

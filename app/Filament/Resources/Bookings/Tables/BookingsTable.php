@@ -2,22 +2,19 @@
 
 namespace App\Filament\Resources\Bookings\Tables;
 
+use App\Filament\Actions\CancelBookingAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Support\Enums\FontWeight;
-use Filament\Notifications\Notification;
-use App\Services\FonnteService;
-use Illuminate\Support\Facades\Log;
+use App\Services\MidtransService;
 
 
 class BookingsTable
@@ -33,8 +30,8 @@ class BookingsTable
                 //     ->fontFamily('mono')
                 //     ->weight(\Filament\Support\Enums\FontWeight::Bold),
 
-                TextColumn::make('wisma.name')
-                    ->label('Wisma')
+                TextColumn::make('villa.name')
+                    ->label('Villa')
                     ->weight(FontWeight::Bold)
                     ->searchable()
                     ->sortable(),
@@ -69,34 +66,31 @@ class BookingsTable
                     ->money('IDR', locale: 'id')
                     ->sortable(),
 
-                TextColumn::make('user_type')
-                    ->label('Tipe Tamu')
-                    ->badge()
-                    ->formatStateUsing(fn($state) => match($state) {
-                        'pln'  => 'PLN',
-                        'umum' => 'Umum',
-                        default => $state,
-                    })
-                    ->color(fn($state) => match($state) {
-                        'pln'  => 'info',
-                        'umum' => 'success',
-                        default => 'gray',
-                    }),
+                TextColumn::make('paid_at')
+                    ->label('Dibayar')
+                    ->dateTime('d M Y, H:i', 'Asia/Jakarta') // waktu bayar dalam WIB
+                    ->placeholder('-')
+                    ->sortable(),
 
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
+                    ->state(fn($record) => $record->status === 'pending' && $record->expires_at && $record->expires_at->isPast() ? 'expired' : $record->status)
                     ->formatStateUsing(fn($state) => match($state) {
-                        'pending'  => 'Menunggu',
-                        'approved' => 'Disetujui',
-                        'rejected' => 'Ditolak',
-                        default    => $state,
+                        'pending'   => 'Menunggu Pembayaran', 
+                        'approved'  => 'Lunas', 
+                        'rejected'  => 'Ditolak',
+                        'cancelled' => 'Dibatalkan',
+                        'expired'   => 'Kedaluwarsa', 
+                        default     => $state,
                     })
                     ->color(fn($state) => match($state) {
-                        'pending'  => 'warning',
-                        'approved' => 'success',
-                        'rejected' => 'danger',
-                        default    => 'gray',
+                        'pending'   => 'warning',
+                        'approved'  => 'success',
+                        'rejected'  => 'danger',
+                        'cancelled' => 'danger', 
+                        'expired'   => 'gray', 
+                        default     => 'gray',
                     }),
 
                 TextColumn::make('created_at')
@@ -109,81 +103,21 @@ class BookingsTable
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'pending'  => 'Menunggu',
-                        'approved' => 'Disetujui',
-                        'rejected' => 'Ditolak',
-                    ]),
-                SelectFilter::make('user_type')
-                    ->label('Tipe Pengguna')
-                    ->options([
-                        'pln'  => 'PLN',
-                        'umum' => 'Umum',
+                        'pending'   => 'Menunggu Pembayaran',
+                        'approved'  => 'Lunas',
+                        'rejected'  => 'Ditolak',
+                        'cancelled' => 'Dibatalkan',
                     ]),
                 TrashedFilter::make(),
             ])
             ->recordActions([
                 ViewAction::make(),
-                Action::make('approve')
-                    ->label('Acc')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->visible(fn(Model $record) => $record->status === 'pending')
-                    ->requiresConfirmation()
-                    ->modalHeading('Setujui Booking')
-                    ->modalDescription(fn(Model $record) => "Setujui booking {$record->bookingID} atas nama {$record->guest_name}?")
-                    ->action(function (Model $record) {
-                        $record->update(['status' => 'approved']);
-
-                        try {
-                            app(FonnteService::class)->sendApproved($record);
-                        } catch (\Throwable $e) {
-                            Log::error('WA approve gagal (dari tabel)', [
-                                'bookingID' => $record->bookingID,
-                                'error'     => $e->getMessage(),
-                            ]);
-                        }
-
-                        Notification::make()
-                            ->title('Booking disetujui')
-                            ->body('Notifikasi WhatsApp telah dikirim ke tamu.')
-                            ->success()
-                            ->send();
-                    }),
-
-                Action::make('reject')
-                    ->label('Tolak')
-                    ->icon('heroicon-o-x-circle')
-                    ->color('danger')
-                    ->visible(fn(Model $record) => $record->status === 'pending')
-                    ->requiresConfirmation()
-                    ->modalHeading('Tolak Booking')
-                    ->form([
-                        Textarea::make('reject_desc')
-                            ->label('Alasan Penolakan')
-                            ->required()
-                            ->placeholder('Tulis alasan penolakan...'),
-                    ])
-                    ->action(function (array $data, Model $record) {
-                            $record->update([
-                                'status'      => 'rejected',
-                                'reject_desc' => $data['reject_desc'],
-                            ]);
-
-                            try {
-                                app(FonnteService::class)->sendRejected($record);
-                            } catch (\Throwable $e) {
-                                Log::error('WA reject gagal (dari tabel)', [
-                                    'bookingID' => $record->bookingID,
-                                    'error'     => $e->getMessage(),
-                                ]);
-                            }
-
-                            Notification::make()
-                                ->title('Booking ditolak')
-                                ->body('Notifikasi WhatsApp telah dikirim ke tamu.')
-                                ->danger()
-                                ->send();
-                        }),
+                CancelBookingAction::make(),
+                Action::make('syncPayment')
+                    ->label('Cek Pembayaran')
+                    ->icon('heroicon-o-arrow-path')
+                    ->visible(fn ($record) => $record->status === 'pending' && $record->payment_order_id)
+                    ->action(fn ($record) => app(MidtransService::class)->sync($record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

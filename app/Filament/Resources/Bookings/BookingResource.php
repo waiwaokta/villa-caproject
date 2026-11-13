@@ -27,7 +27,7 @@ class BookingResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::DocumentCheck;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Wisma';
+    protected static string | UnitEnum | null $navigationGroup = 'Villa';
 
     protected static ?string $navigationLabel = 'Daftar Booking';
 
@@ -79,18 +79,18 @@ class BookingResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = static::getModel()::where('status', 'pending')->count();
+        $count = static::getModel()::where('status', 'pending')->where('expires_at', '>', now())->count();
         return $count > 0 ? (string) $count : null;
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        $count = static::getModel()::where('status', 'pending')->count();
+        $count = static::getModel()::where('status', 'pending')->where('expires_at', '>', now())->count();
         return $count > 10 ? 'warning' : 'primary';
     }
 
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Total Pending (Belum Dikonfirmasi)';
+        return 'Menunggu pembayaran tamu';
     }
 }
