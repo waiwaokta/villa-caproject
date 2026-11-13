@@ -45,6 +45,8 @@ class VillaForm
                             ->label('Kapasitas (orang)')
                             ->numeric()
                             ->minValue(1)
+                            ->maxValue(999)
+                            ->suffix('orang')
                             ->required(),
                         Toggle::make('is_active')
                             ->label('Tampilkan di web')

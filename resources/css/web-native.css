@@ -109,7 +109,7 @@ a { text-decoration: none; color: inherit; }
     letter-spacing: -0.01em;
 }
 .nav-brand-img {
-    height: 24px;
+    height: 32px;
     width: auto;
     object-fit: contain;
     vertical-align: middle;
@@ -331,7 +331,7 @@ a { text-decoration: none; color: inherit; }
     width: fit-content;
 }
 .footer-logo i { color: var(--blue-accent); font-size: 22px; }
-.footer-logo-img { height: 28px; width: auto; object-fit: contain; vertical-align: middle; margin-top: -4px;}
+.footer-logo-img { height: 42px; width: auto; object-fit: contain; vertical-align: middle; margin-top: -4px;}
 
 .footer-desc {
     font-size: 12.5px;
@@ -962,10 +962,39 @@ a { text-decoration: none; color: inherit; }
     .fw-btn-detail { order: -1; }
     .fw-price { margin-left: 0; padding-left: 0; border-left: none; }
     .fw-counter, .fw-dots { right: 24px; }
-    .sf { flex: 1 1 45%; }
+}
+
+/* ---------- Kolom kapasitas & search box ---------- */
+.sf-capacity { flex: 0 0 110px; }
+.sf-capacity input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.sf-capacity input::-webkit-outer-spin-button,
+.sf-capacity input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+@media (max-width: 968px) {
+    .search-box .sf.sf-capacity { flex: 1 1 45%; }
+}
+
+@media (max-width: 640px) {
     .search-box { flex-wrap: wrap; padding: 14px; gap: 10px; }
-    .sf:first-child { order: 3; flex: 1 1 100%; }
-    .search-btn { flex: 1 1 100%;  order: 4;}
+
+    /* baris 1: check-in dan check-out */
+    .search-box .sf.sf-checkin,
+    .search-box .sf.sf-checkout { flex: 1 1 calc(50% - 5px); min-width: 0; }
+    .search-box .sf.sf-checkin  { order: 1; }
+    .search-box .sf.sf-checkout { order: 2; }
+
+    /* baris 2: lokasi, kapasitas, tombol cari kecil */
+    .search-box .sf.sf-lokasi   { order: 3; flex: 0 0 calc(50% - 5px);; min-width: 0; }
+    .search-box .sf.sf-capacity { order: 4; flex: 0 0 84px; min-width: 0; }
+    .search-box .search-btn {
+        order: 5;
+        flex: 0 0 62px;
+        width: 62px;
+        height: 38px;
+        padding: 0;
+        justify-content: center;
+    }
+    .search-btn-text { display: none; }
 }
 
 /* ============================================
@@ -1986,6 +2015,15 @@ a { text-decoration: none; color: inherit; }
     gap: 4px;
     margin-bottom: 8px;
 }
+
+.villa-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-bottom: 8px;
+}
+.villa-card-meta .villa-card-location { margin-bottom: 0; }
 .villa-card-location i { font-size: 12px; }
 .villa-card-desc {
     font-size: 12px;

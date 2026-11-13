@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->brandName('Kelola NginapYuk')
-            // ->brandLogo(fn () => view('filament.brand'))
+            ->brandLogo(fn () => view('filament.brand'))
             // ->favicon(asset('images/favicon.ico'))
             ->font('Public Sans')
             ->id('admin')

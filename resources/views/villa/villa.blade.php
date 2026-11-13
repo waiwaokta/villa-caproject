@@ -14,39 +14,41 @@
     </div>
 
     <form class="search-box villa-box-standalone" method="GET" action="{{ route('villa.search') }}">
-        <div class="sf">
+        <div class="sf sf-lokasi">
             <label>Lokasi</label>
             <select name="lokasi">
                 <option value="">Semua lokasi</option>
                 @foreach($lokasi as $l)
-                    <option value="{{ $l }}" {{ $lokasiTerpilih == $l ? 'selected' : '' }}>
-                        {{ $l }}
-                    </option>
+                    <option value="{{ $l }}" {{ $lokasiTerpilih == $l ? 'selected' : '' }}>{{ $l }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="sf">
+        <div class="sf sf-checkin">
             <label>Check-in</label>
             <input type="date" name="check_in" value="{{ $checkIn }}" min="{{ date('Y-m-d') }}">
         </div>
-        <div class="sf">
+        <div class="sf sf-checkout">
             <label>Check-out</label>
             <input type="date" name="check_out" value="{{ $checkOut }}">
         </div>
-        <button type="submit" class="search-btn">
-            <i class="ti ti-search"></i> Cari
+        <div class="sf sf-capacity">
+            <label>Kapasitas</label>
+            <input type="number" id="filter-capacity" name="capacity" min="1" max="999" inputmode="numeric" placeholder="Orang" value="{{ $capacity }}">
+        </div>
+        <button type="submit" class="search-btn" aria-label="Cari">
+            <i class="ti ti-search"></i><span class="search-btn-text"> Cari</span>
         </button>
     </form>
 
     <div class="villa-result-info">
-        <p>{{ count($villas) }} villa tersedia untuk tanggal {{ \Carbon\Carbon::parse($checkIn)->translatedFormat('d M Y') }} — {{ \Carbon\Carbon::parse($checkOut)->translatedFormat('d M Y') }}</p>
+        <p>{{ count($villas) }} villa tersedia untuk tanggal {{ \Carbon\Carbon::parse($checkIn)->translatedFormat('d M Y') }} — {{ \Carbon\Carbon::parse($checkOut)->translatedFormat('d M Y') }}@if($capacity), kapasitas minimal {{ $capacity }} orang @endif</p>
+        
     </div>
 
     @if($villas->isEmpty())
         <div class="villa-empty">
             <i class="ti ti-calendar-off"></i>
-            <p>Villa tidak tersedia untuk tanggal dan lokasi yang dipilih.</p>
-            <p class="villa-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
+            <p>Villa tidak tersedia untuk tanggal, lokasi{{ $capacity ? ', dan kapasitas' : '' }} yang dipilih.</p>            <p class="villa-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
         </div>
         @if ($rekomendasi->isNotEmpty())
             <div class="villa-rekomendasi">
@@ -99,10 +101,19 @@
                     </div>
                     <div class="villa-card-body">
                         <h3 class="villa-card-title">{{ $villa->name }}</h3>
-                        @if($villa->location)
-                            <p class="villa-card-location">
-                                <i class="ti ti-map-pin"></i> {{ $villa->location }}
-                            </p>
+                        @if($villa->location || $villa->capacity)
+                            <div class="villa-card-meta">
+                                @if($villa->location)
+                                    <p class="villa-card-location">
+                                        <i class="ti ti-map-pin"></i> {{ $villa->location }}
+                                    </p>
+                                @endif
+                                @if($villa->capacity)
+                                    <p class="villa-card-location">
+                                        <i class="ti ti-users"></i> {{ $villa->capacity }} orang
+                                    </p>
+                                @endif
+                            </div>
                         @endif
                         @if($villa->desc)
                             <p class="villa-card-desc">{{ Str::limit($villa->desc, 30) }}</p>

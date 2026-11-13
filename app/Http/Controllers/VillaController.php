@@ -29,6 +29,7 @@ class VillaController extends Controller
     {
         $checkIn  = $request->filled('check_in') ? Carbon::parse($request->check_in) : Carbon::today();
         $checkOut = $request->filled('check_out') ? Carbon::parse($request->check_out) : Carbon::tomorrow();
+        $capacity = $request->filled('capacity') ? max(1, (int) $request->capacity) : null;
 
         // Cek dulu apakah ada maintenance block yang berlaku untuk SEMUA villa di rentang ini
         $isGlobalBlocked = Maintenance::whereNull('villaID')
@@ -40,6 +41,9 @@ class VillaController extends Controller
             ->has('villaPhotos')
             ->when($request->filled('lokasi'), function ($q) use ($request) {
                 $q->where('location', 'like', '%' . $request->lokasi . '%');
+            })
+            ->when($capacity, function ($q) use ($capacity) {
+                $q->where('capacity', '>=', $capacity);
             })
             ->when(!$isGlobalBlocked, function ($q) use ($checkIn, $checkOut) { // skip filter maintenance kalau sudah pasti semua villa diblok (hasil kosong)
                 $q->whereDoesntHave('bookings', function ($q2) use ($checkIn, $checkOut) {
@@ -77,6 +81,7 @@ class VillaController extends Controller
             'checkIn'   => $checkIn->toDateString(),
             'checkOut'  => $checkOut->toDateString(),
             'lokasiTerpilih' => $request->lokasi ?? '',
+            'capacity' => $capacity ?? '',
             'rekomendasi' => $rekomendasi,
             'sudahSearch' => $request->filled('check_in') || $request->filled('lokasi'),
         ]);

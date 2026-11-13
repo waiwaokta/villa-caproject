@@ -84,7 +84,7 @@
                 {{-- KIRI: brand, kontak, social media --}}
                 <div class="footer-col footer-col-brand">
                     <a href="/" class="footer-logo">
-                        <img src="{{ asset('images/Logo_PLN_nontext.png') }}" alt="Wisma PLN" class="footer-logo-img">
+                        <img src="{{ asset('images/Nginapyuk_LogoWhite.png') }}" alt="Wisma PLN" class="footer-logo-img">
                         <span class="footer-logo-text">NginapYuk</span>
                     </a>
 
@@ -92,8 +92,8 @@
                         <p class="footer-col-title">Kontak Kami</p>
                         <div class="footer-contact">
                             <div class="footer-address">
-                                <i class="ti ti-map-pin"></i>
-                                <span>Jl. /////// //////. /////, Kec. ....., /////, ///////</span>
+                                <i class="ti ti-building"></i>
+                                <span>[Alamat Kantor]</span>
                             </div>
                             <div class="footer-address">
                                 <i class="ti ti-phone"></i>

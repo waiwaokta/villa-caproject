@@ -71,12 +71,12 @@
                 <span>Villa Tersedia</span>
             </div>
             <div class="tentang-stat-item">
-                <strong>2x</strong>
-                <span>Tarif Lebih Terjangkau</span>
+                <strong>24 Jam</strong>
+                <span>Pemesanan Online</span>
             </div>
             <div class="tentang-stat-item">
                 <strong>100%</strong>
-                <span>Di</span>
+                <span>Pembayaran Terverifikasi</span>
             </div>
         </div>
 

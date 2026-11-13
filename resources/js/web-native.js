@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initSliderVilla();
     initSearchFilter();
+    initCapacityFilter();
     initNavHamburger();
     initGallery();
     initLightbox();
@@ -176,6 +177,55 @@ function initVillaSearchDateGuard() {
 
     syncMin(); // jalankan sekali di awal, karena value sudah terisi dari controller
     checkinInput.addEventListener('change', syncMin);
+}
+
+// ============================================
+// KAPASITAS — beranda dan /cari, tersimpan sementara selama tab terbuka
+// ============================================
+function initCapacityFilter() {
+    const input = document.getElementById('filter-capacity');
+    if (!input) return;
+
+    const KEY = 'guest_capacity';
+    const store = {
+        get() { try { return sessionStorage.getItem(KEY) || ''; } catch (e) { return ''; } },
+        set(v) { try { v ? sessionStorage.setItem(KEY, v) : sessionStorage.removeItem(KEY); } catch (e) {} }
+    };
+
+    const saved = store.get();
+
+    if (input.value) {
+        // nilai sudah ada dari URL atau server, simpan
+        store.set(input.value);
+    } else if (saved) {
+        const isSearchPage = document.querySelector('.villa-box-standalone');
+        const params = new URLSearchParams(window.location.search);
+
+        if (isSearchPage && !params.has('capacity')) {
+            // masuk /cari lewat menu: tambahkan capacity ke URL supaya hasilnya ikut terfilter
+            params.set('capacity', saved);
+            window.location.replace(window.location.pathname + '?' + params.toString());
+            return;
+        }
+        if (!isSearchPage) input.value = saved; // beranda: isi kolom saja
+    }
+
+    // cegah karakter yang bukan angka bulat
+    input.addEventListener('keydown', e => {
+        if (['e', 'E', '+', '-', '.', ','].includes(e.key)) e.preventDefault();
+    });
+
+    input.addEventListener('input', () => {
+        input.value = input.value.replace(/\D/g, '').slice(0, 3);
+        store.set(input.value); // kolom dikosongkan berarti simpanan ikut terhapus
+    });
+
+    input.addEventListener('blur', () => {
+        if (input.value !== '' && parseInt(input.value, 10) < 1) {
+            input.value = '';
+            store.set('');
+        }
+    });
 }
 
 // ============================================
@@ -532,6 +582,7 @@ function initBookingForm() {
 
         try {
             const params = new URLSearchParams({ villaID, check_in: checkIn, check_out: checkOut });
+            const cap = document.getElementById('filter-capacity'); if (cap && cap.value) params.set('capacity', cap.value);
             const res = await fetch('/api/estimate-price?' + params.toString());
             const data = await res.json();
 

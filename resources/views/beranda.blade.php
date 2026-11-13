@@ -26,27 +26,29 @@
             <h1>Temukan <span>Villa Impian</span><br>untuk liburan Anda</h1>
             <p>Tersedia di berbagai destinasi dengan harga yang transparan</p>
             <div class="search-box">
-                <div class="sf">
+                <div class="sf sf-lokasi">
                     <label>Lokasi</label>
                     <select name="lokasi" id="filter-lokasi">
                         <option value="">Semua lokasi</option>
                         @foreach($lokasi as $l)
-                            <option value="{{ $l }}" {{ request('lokasi') == $l ? 'selected' : '' }}>
-                                {{ $l }}
-                            </option>
+                            <option value="{{ $l }}" {{ request('lokasi') == $l ? 'selected' : '' }}>{{ $l }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="sf">
+                <div class="sf sf-checkin">
                     <label>Check-in</label>
                     <input type="date" id="filter-checkin" min="{{ date('Y-m-d') }}" value="{{ request('check_in') }}">
                 </div>
-                <div class="sf">
+                <div class="sf sf-checkout">
                     <label>Check-out</label>
                     <input type="date" id="filter-checkout" value="{{ request('check_out') }}">
                 </div>
-                <button class="search-btn" onclick="doSearch()">
-                    <i class="ti ti-search"></i> Cari
+                <div class="sf sf-capacity">
+                    <label>Kapasitas</label>
+                    <input type="number" id="filter-capacity" name="capacity" min="1" max="999" inputmode="numeric" placeholder="Orang" value="{{ request('capacity') }}">
+                </div>
+                <button class="search-btn" onclick="doSearch()" aria-label="Cari">
+                    <i class="ti ti-search"></i><span class="search-btn-text"> Cari</span>
                 </button>
             </div>
         </div>

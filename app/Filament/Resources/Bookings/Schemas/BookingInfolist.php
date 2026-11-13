@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Bookings\Schemas;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
@@ -90,27 +91,23 @@ class BookingInfolist
                     ->schema([
                         RepeatableEntry::make('documents')
                             ->label('')
-                            ->columns(4)
+                            ->columns(3)
                             ->schema([
                                 TextEntry::make('doc_type')
                                     ->label('Tipe Dokumen')
                                     ->badge()
                                     ->formatStateUsing(fn($state) => match($state) {
-                                        'ktp'         => 'KTP',
-                                        default       => $state,
+                                        'ktp'   => 'KTP',
+                                        default => $state,
                                     })
                                     ->color(fn($state) => match($state) {
-                                        'ktp'         => 'info',
-                                        default       => 'gray',
+                                        'ktp'   => 'info',
+                                        default => 'gray',
                                     }),
 
-                                TextEntry::make('documentID')
-                                    ->label('Lihat Dokumen')
-                                    ->formatStateUsing(fn($state) => 'Buka Dokumen')
-                                    ->url(fn($record) => url('/dokumen/' . $record->documentID))
-                                    ->openUrlInNewTab()
-                                    ->color('primary')
-                                    ->icon('heroicon-o-arrow-top-right-on-square'),
+                                ViewEntry::make('documentID')
+                                    ->label('Dokumen')
+                                    ->view('filament.infolists.document-preview'),
 
                                 TextEntry::make('created_at')
                                     ->label('Diunggah')

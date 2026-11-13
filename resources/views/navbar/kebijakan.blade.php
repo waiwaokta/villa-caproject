@@ -6,7 +6,7 @@
 @php
     $diperbarui = '11 Oktober 2026'; // ubah tanggal ini setiap kali isi halaman diperbarui
     $kontakEmail = '[Alamat Email Pengelola]'; // ISI: email resmi pengelola
-    $kontakWa    = '[Nomor WhatsApp Pengelola]'; // ISI: nomor WhatsApp resmi pengelola
+    $kontakWa    = '[Nomor Telepon Pengelola]'; // ISI: nomor WhatsApp resmi pengelola
 @endphp
 
 <div class="legal-page">
@@ -127,7 +127,7 @@
         <ul class="legal-contact">
             <li><span>Nama layanan</span><strong>NginapYuk</strong></li>
             <li><span>Email</span><strong>{{ $kontakEmail }}</strong></li>
-            <li><span>Nomor WhatsApp</span><strong>{{ $kontakWa }}</strong></li>
+            <li><span>Nomor Telepon</span><strong>{{ $kontakWa }}</strong></li>
             <li><span>Website</span><strong>{{ url('/') }}</strong></li>
         </ul>
     </section>
