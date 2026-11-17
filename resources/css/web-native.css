@@ -823,6 +823,14 @@ a { text-decoration: none; color: inherit; }
     border: none;
 }
 .fw-dot.active { width: 22px; border-radius: 3px; background: #fff; }
+.fw-dots { gap: 0; align-items: center; } /* jarak pindah ke margin dot, supaya dot tersembunyi tidak menyisakan celah */
+.fw-dot {
+    margin: 0 3px;
+    flex-shrink: 0;
+    transition: width .3s ease, height .3s ease, margin .3s ease, opacity .3s ease, background .25s; /* geser dan ubah ukuran terlihat halus */
+}
+.fw-dot.is-edge { width: 4px; height: 4px; opacity: .5; } /* titik ujung lebih kecil dan pudar */
+.fw-dot.is-hidden { width: 0; height: 0; margin: 0; opacity: 0; pointer-events: none; } /* di luar jendela 5 titik */
 
 .slider-bottom-fade {
     height: 24px;
@@ -1942,15 +1950,6 @@ a { text-decoration: none; color: inherit; }
     margin-bottom: 24px;
 }
 
-.villa-result-info {
-    margin-bottom: 20px;
-}
-.villa-result-info p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 500;
-}
-
 .villa-empty {
     text-align: center;
     padding: 60px 20px;
@@ -1960,6 +1959,94 @@ a { text-decoration: none; color: inherit; }
 .villa-empty i { font-size: 40px; color: var(--text-secondary); opacity: 0.4; margin-bottom: 12px; display: block; }
 .villa-empty p { font-size: 14px; color: var(--text); font-weight: 600; }
 .villa-empty-sub { font-size: 12px; color: var(--text-secondary); font-weight: 400 !important; margin-top: 4px; }
+
+.villa-result-info {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.result-short { display: none; }
+
+.sort-control { position: relative; flex-shrink: 0; margin-left: auto; }
+.sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    border: 1px solid #d9d9d4;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+}
+.sort-btn i { font-size: 15px; }
+.sort-btn .sort-caret { font-size: 13px; transition: transform .2s; }
+.sort-btn:hover { border-color: #b9b9b3; color: var(--text); }
+.sort-control.open .sort-caret { transform: rotate(180deg); }
+.sort-btn:focus-visible { outline: 2px solid color-mix(in srgb, var(--blue-accent) 45%, transparent); outline-offset: 2px; }
+
+.sort-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 30;
+    min-width: 100%;
+    width: max-content;
+    padding: 6px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transform-origin: top right;
+    transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+}
+.sort-control.open .sort-menu { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+
+.sort-option {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 9px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: left;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.sort-option i { font-size: 15px; opacity: 0; }
+.sort-option:hover,
+.sort-option:focus-visible { background: var(--cream2); outline: none; }
+.sort-option.is-selected { color: var(--text); font-weight: 700; }
+.sort-option.is-selected i { opacity: 1; color: var(--text); }
+
+@media (max-width: 640px) {
+    .villa-result-info { flex-wrap: nowrap; gap: 10px; }
+    .villa-result-info p { flex: 1; min-width: 0; }
+    .result-full { display: none; }
+    .result-short { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+@media (prefers-reduced-motion: reduce) { .sort-menu { transition: none; } } /* hormati pengaturan aksesibilitas */
 
 .villa-result-list {
     display: flex;

@@ -7,7 +7,10 @@
     <title>@yield('title', 'NginapYuk')</title>
 
     {{-- Favicon --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}"> <!-- iOS -->
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}"> <!-- Android -->
 
     {{-- Open Graph Meta (preview pas link di-share ke WA/Telegram/dll) --}}
     <meta property="og:title" content="@yield('title', 'NginapYuk')">

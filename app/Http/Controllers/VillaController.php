@@ -29,6 +29,7 @@ class VillaController extends Controller
     {
         $checkIn  = $request->filled('check_in') ? Carbon::parse($request->check_in) : Carbon::today();
         $checkOut = $request->filled('check_out') ? Carbon::parse($request->check_out) : Carbon::tomorrow();
+        $sort = in_array($request->query('sort'), ['terbaru', 'harga-asc', 'harga-desc', 'nama-asc', 'nama-desc'], true) ? $request->query('sort') : null;
         $capacity = $request->filled('capacity') ? max(1, (int) $request->capacity) : null;
 
         // Cek dulu apakah ada maintenance block yang berlaku untuk SEMUA villa di rentang ini
@@ -57,6 +58,16 @@ class VillaController extends Controller
             }, function ($q) { // kalau global blocked, langsung kosongkan hasil
                 $q->whereRaw('1 = 0');
             })
+            ->when($sort, function ($q) use ($sort) { // urutan hasil pencarian
+                match ($sort) {
+                    'terbaru'    => $q->orderByDesc('created_at'),
+                    'harga-asc'  => $q->withMin('prices as min_price', 'price')->orderBy('min_price'),
+                    'harga-desc' => $q->withMin('prices as min_price', 'price')->orderByDesc('min_price'),
+                    'nama-asc'   => $q->orderBy('name'),
+                    'nama-desc'  => $q->orderByDesc('name'),
+                };
+                $q->orderBy('name');
+            })
             ->get();
 
         $lokasi = Villa::where('is_active', true)
@@ -84,6 +95,7 @@ class VillaController extends Controller
             'capacity' => $capacity ?? '',
             'rekomendasi' => $rekomendasi,
             'sudahSearch' => $request->filled('check_in') || $request->filled('lokasi'),
+            'sort' => $sort,
         ]);
     }
     private function getAvailability(string $villaID): array
