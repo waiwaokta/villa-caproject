@@ -14,7 +14,6 @@
 
     {{-- Open Graph Meta (preview pas link di-share ke WA/Telegram/dll) --}}
     <meta property="og:title" content="@yield('title', 'NginapYuk')">
-    <meta property="og:description" content="Penginapan resmi PT PLN (Persero), hadir untuk mendukung kenyamanan perjalanan dinas maupun liburan Anda.">
     <meta property="og:image" content="{{ asset('images/og-image.jpg') }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:type" content="website">
