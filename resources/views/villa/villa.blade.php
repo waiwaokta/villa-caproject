@@ -38,17 +38,59 @@
         <button type="submit" class="search-btn" aria-label="Cari">
             <i class="ti ti-search"></i><span class="search-btn-text"> Cari</span>
         </button>
+        @if ($sort) <input type="hidden" name="sort" value="{{ $sort }}"> @endif
     </form>
 
     <div class="villa-result-info">
-        <p>{{ count($villas) }} villa tersedia untuk tanggal {{ \Carbon\Carbon::parse($checkIn)->translatedFormat('d M Y') }} — {{ \Carbon\Carbon::parse($checkOut)->translatedFormat('d M Y') }}@if($capacity), kapasitas minimal {{ $capacity }} orang @endif</p>
-        
+        <p>
+            <span class="result-full">{{ count($villas) }} villa tersedia untuk tanggal {{ \Carbon\Carbon::parse($checkIn)->translatedFormat('d M Y') }} — {{ \Carbon\Carbon::parse($checkOut)->translatedFormat('d M Y') }}@if($capacity), kapasitas minimal {{ $capacity }} orang @endif</span>
+            <span class="result-short">{{ $villas->count() }} villa tersedia dari pencarian</span>
+        </p>
+        @if ($villas->count() > 1) {{-- sortir tidak berguna untuk satu hasil --}}
+            @php
+                $sortOptions = [
+                    'terbaru'    => 'Terbaru',
+                    'harga-asc'  => 'Harga terendah',
+                    'harga-desc' => 'Harga tertinggi',
+                    'nama-asc'   => 'Nama A–Z',
+                    'nama-desc'  => 'Nama Z–A',
+                ];
+            @endphp
+            <div class="sort-control" id="sortControl">
+                <button type="button" class="sort-btn" id="sortBtn" aria-haspopup="listbox" aria-expanded="false">
+                    <i class="ti ti-arrows-sort" aria-hidden="true"></i>
+                    @php
+                        $sortOptions = [
+                            'terbaru'    => 'Terbaru',
+                            'harga-asc'  => 'Harga (terendah)',
+                            'harga-desc' => 'Harga (tertinggi)',
+                            'nama-asc'   => 'Nama (A–Z)',
+                            'nama-desc'  => 'Nama (Z–A)',
+                        ];
+                        $sortLabel = $sortOptions[(string) ($sort ?? '')] ?? 'Urutkan'; // label tombol, aman saat $sort kosong
+                    @endphp
+                    <span>{{ $sortLabel }}</span>
+                    <i class="ti ti-chevron-down sort-caret" aria-hidden="true"></i>
+                </button>
+                <div class="sort-menu" role="listbox" aria-label="Urutkan villa">
+                    @foreach ($sortOptions as $value => $label)
+                        <button type="button" role="option" data-value="{{ $value }}"
+                                class="sort-option {{ $sort === $value ? 'is-selected' : '' }}"
+                                aria-selected="{{ $sort === $value ? 'true' : 'false' }}">
+                            <span>{{ $label }}</span>
+                            <i class="ti ti-check" aria-hidden="true"></i>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 
     @if($villas->isEmpty())
         <div class="villa-empty">
             <i class="ti ti-calendar-off"></i>
-            <p>Villa tidak tersedia untuk tanggal, lokasi{{ $capacity ? ', dan kapasitas' : '' }} yang dipilih.</p>            <p class="villa-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
+            <p>Villa tidak tersedia untuk tanggal, lokasi{{ $capacity ? ', dan kapasitas' : '' }} yang dipilih.</p>            
+            <p class="villa-empty-sub">Coba ganti tanggal atau lokasi pencarian.</p>
         </div>
         @if ($rekomendasi->isNotEmpty())
             <div class="villa-rekomendasi">

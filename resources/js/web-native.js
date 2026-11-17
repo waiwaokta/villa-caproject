@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTickerCardVilla();
     initNotaPage();
     initLoadingButtons();
+    initSortVilla();
 });
 
     function getTodayLocal() {
@@ -34,63 +35,83 @@ function initStatTicker() {
     track.innerHTML = original.repeat(4);
 }
 
-    // ============================================
-    // SLIDER VILLA — beranda
-    // ============================================
-    function initSliderVilla() {
-    const fwWrap = document.getElementById('fwWrap');
-    if (!fwWrap) return; // halaman ini tidak punya slider, skip
+// ============================================
+// SLIDER VILLA — beranda
+// ============================================
+function initSliderVilla() {
+const fwWrap = document.getElementById('fwWrap');
+if (!fwWrap) return; // halaman ini tidak punya slider, skip
 
     const fwTrack  = document.getElementById('fwTrack');
     const fwDotsEl = document.getElementById('fwDots');
     const total    = parseInt(fwWrap.dataset.total, 10);
     let cur = 0, startX = 0, isDragging = false, accumX = 0, scrollLocked = false;
 
-    for (let i = 0; i < total; i++) {
+    const MAX_DOTS = 5; // jumlah titik yang tampil bersamaan
+    const dots = [];
+
+    fwDotsEl.replaceChildren(); // pengaman: buang titik lama bila ada, supaya tidak dobel
+
+    for (let i = 0; i < total; i++) { // SATU-SATUNYA loop pembuat titik, hapus loop lama
         const d = document.createElement('div');
-        d.className = 'fw-dot' + (i === 0 ? ' active' : '');
+        d.className = 'fw-dot';
         d.onclick = () => goTo(i);
         fwDotsEl.appendChild(d);
+        dots.push(d);
+    }
+
+    function renderDots() {
+        const start = total > MAX_DOTS ? Math.max(0, Math.min(cur - Math.floor(MAX_DOTS / 2), total - MAX_DOTS)) : 0; // aktif diusahakan di tengah jendela
+        const end   = Math.min(total, start + MAX_DOTS) - 1;
+
+        dots.forEach((d, i) => {
+            const visible = i >= start && i <= end;
+            d.classList.toggle('is-hidden', !visible);
+            d.classList.toggle('active', i === cur);
+            d.classList.toggle('is-edge', visible && i !== cur && ((i === start && start > 0) || (i === end && end < total - 1))); // titik ujung mengecil bila masih ada slide di sisi itu
+        });
     }
 
     function goTo(n) {
         cur = Math.max(0, Math.min(n, total - 1));
         fwTrack.style.transform = `translateX(-${cur * 100}%)`;
         document.getElementById('fwCounter').textContent = `${cur + 1} / ${total}`;
-        document.querySelectorAll('.fw-dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+        renderDots(); // hanya sekali, setelah cur berubah
     }
 
-    fwWrap.addEventListener('wheel', e => {
-        const isH = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-        if (!isH) return;
-        e.preventDefault();
-        if (scrollLocked) return;
-        accumX += e.deltaX;
-        if (Math.abs(accumX) > 50) {
-            goTo(accumX > 0 ? cur + 1 : cur - 1);
-            accumX = 0;
-            scrollLocked = true;
-            setTimeout(() => { scrollLocked = false; }, 500);
-        }
-    }, { passive: false });
+    renderDots(); // keadaan awal
 
-    fwWrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; }, { passive: true });
-    fwWrap.addEventListener('touchend', e => {
-        if (!isDragging) return;
-        const diff = startX - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
-        isDragging = false;
-    });
+fwWrap.addEventListener('wheel', e => {
+    const isH = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (!isH) return;
+    e.preventDefault();
+    if (scrollLocked) return;
+    accumX += e.deltaX;
+    if (Math.abs(accumX) > 50) {
+        goTo(accumX > 0 ? cur + 1 : cur - 1);
+        accumX = 0;
+        scrollLocked = true;
+        setTimeout(() => { scrollLocked = false; }, 500);
+    }
+}, { passive: false });
 
-    fwWrap.addEventListener('mousedown', e => { startX = e.clientX; isDragging = true; e.preventDefault(); });
-    document.addEventListener('mouseup', e => {
-        if (!isDragging) return;
-        const diff = startX - e.clientX;
-        if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
-        isDragging = false;
-    });
+fwWrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; }, { passive: true });
+fwWrap.addEventListener('touchend', e => {
+    if (!isDragging) return;
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
+    isDragging = false;
+});
 
-    setInterval(() => goTo(cur + 1 < total ? cur + 1 : 0), 5500);
+fwWrap.addEventListener('mousedown', e => { startX = e.clientX; isDragging = true; e.preventDefault(); });
+document.addEventListener('mouseup', e => {
+    if (!isDragging) return;
+    const diff = startX - e.clientX;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
+    isDragging = false;
+});
+
+setInterval(() => goTo(cur + 1 < total ? cur + 1 : 0), 5500);
 }
 
 // ============================================
@@ -225,6 +246,38 @@ function initCapacityFilter() {
             input.value = '';
             store.set('');
         }
+    });
+}
+
+// ============================================
+// SORTIR VILLA — halaman /cari
+// ============================================
+function initSortVilla() {
+    const control = document.getElementById('sortControl');
+    if (!control) return;
+
+    const btn = document.getElementById('sortBtn');
+    const setOpen = open => {
+        control.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', String(open));
+    };
+
+    btn.addEventListener('click', e => {
+        e.stopPropagation();
+        setOpen(!control.classList.contains('open'));
+    });
+    document.addEventListener('click', e => { if (!control.contains(e.target)) setOpen(false); }); // klik di luar menutup menu
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { setOpen(false); btn.focus(); } // Esc menutup menu
+    });
+
+    control.querySelectorAll('.sort-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (opt.dataset.value === params.get('sort')) { setOpen(false); return; }
+            params.set('sort', opt.dataset.value);
+            window.location.search = params.toString();
+        });
     });
 }
 
