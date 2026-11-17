@@ -34,7 +34,7 @@
     <div class="site">
         <nav class="nav">
             <a href="/" class="nav-brand">
-                <img src="{{ asset('images/NginapYuk_Logo.png') }}" alt="Wisma PLN" class="nav-brand-img">
+                <img src="{{ asset('images/NginapYuk_Logo.png') }}" alt="NginapYuk" class="nav-brand-img">
                 <span class="nav-brand-text">NginapYuk</span>
             </a>
 
@@ -87,7 +87,7 @@
                 {{-- KIRI: brand, kontak, social media --}}
                 <div class="footer-col footer-col-brand">
                     <a href="/" class="footer-logo">
-                        <img src="{{ asset('images/Nginapyuk_LogoWhite.png') }}" alt="Wisma PLN" class="footer-logo-img">
+                        <img src="{{ asset('images/Nginapyuk_LogoWhite.png') }}" alt="NginapYuk" class="footer-logo-img">
                         <span class="footer-logo-text">NginapYuk</span>
                     </a>
 
