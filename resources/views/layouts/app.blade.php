@@ -86,7 +86,7 @@
                 {{-- KIRI: brand, kontak, social media --}}
                 <div class="footer-col footer-col-brand">
                     <a href="/" class="footer-logo">
-                        <img src="{{ asset('images/Nginapyuk_LogoWhite.png') }}" alt="NginapYuk" class="footer-logo-img">
+                        <img src="{{ asset('images/NginapYuk_LogoWhite.png') }}" alt="NginapYuk" class="footer-logo-img">
                         <span class="footer-logo-text">NginapYuk</span>
                     </a>
 
